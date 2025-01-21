@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import GuessInput from "./GuessInput";
-import '../../../styles/games/classic/classic.css';
+import GuessInput from "../components/games/classic/GuessInput";
+import '../styles/games/classic/classic.css';
 
 
 const ClassicMode: React.FC = () => {
