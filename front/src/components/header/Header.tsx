@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from '../../res/Blind-Blind-logo-blanc.png'
 import '../../styles/header/Header.css'
+import {Link} from "react-router-dom";
 
 
 const Header = () => {
@@ -11,8 +12,8 @@ const Header = () => {
                 <span className="site-name">Blind-Blind</span>
             </div>
             <nav className="nav">
-                <a href="#home" className="nav-link">Accueil</a>
-                <a href="#games" className="nav-link">Mini-jeux</a>
+                <Link to="/" className="nav-link">Accueil</Link>
+                <Link to="/classic" className="nav-link">Mini-jeux</Link>
             </nav>
         </header>
     )

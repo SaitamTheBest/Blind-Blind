@@ -1,0 +1,28 @@
+.classic-mode {
+    text-align: center;
+    padding: 20px;
+}
+
+.classic-title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.description {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.start-game-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.start-game-button:hover {
+    background-color: #0056b3;
+}
