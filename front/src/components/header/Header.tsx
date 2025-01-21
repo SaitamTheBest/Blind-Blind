@@ -7,10 +7,10 @@ import {Link} from "react-router-dom";
 const Header = () => {
     return(
         <header className="header">
-            <div className="header-left">
+            <Link to="/" className="header-left">
                 <img src={logo} alt="Blind-Blind Logo" className="logo" />
                 <span className="site-name">Blind-Blind</span>
-            </div>
+            </Link>
             <nav className="nav">
                 <Link to="/" className="nav-link">Accueil</Link>
                 <Link to="/classic" className="nav-link">Mini-jeux</Link>

@@ -11,6 +11,12 @@
 .header-left {
     display: flex;
     align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.header-left:hover {
+    text-decoration: none;
 }
 
 .logo {
