@@ -131,3 +131,5 @@ dist
 
 #IDE
 .idea
+
+./backend/.env
