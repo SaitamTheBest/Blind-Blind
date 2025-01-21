@@ -6,14 +6,14 @@ export default function  Footer() {
         <footer>
             <p>Nos réseaux sociaux :</p>
             <div className="social-media">
-                <a href="https://www.twitter.com" aria-label="Twitter">
-                    <img src="https://img.icons8.com/ios-filled/24/ffffff/twitter.png" alt="Twitter"/>
+                <a href="https://x.com/BlindBlind_Off" aria-label="Twitter page">
+                    <img src="https://img.icons8.com/?size=100&id=6Fsj3rv2DCmG&format=png&color=ffffff" alt="Twitter"/>
                 </a>
-                <a href="https://www.instagram.com" aria-label="Instagram">
-                    <img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new.png" alt="Instagram"/>
+                <a href="https://www.instagram.com/blindblind_off?igsh=MXQwMGF6aXEzMmEz" aria-label="Instagram page">
+                    <img src="https://img.icons8.com/?size=100&id=32292&format=png&color=ffffff" alt="Instagram"/>
                 </a>
-                <a href="https://www.discord.com" aria-label="Discord">
-                    <img src="https://img.icons8.com/ios-filled/24/ffffff/discord.png" alt="Discord"/>
+                <a href="https://discord.gg/bMFeHyfKut" aria-label="Discord server">
+                    <img src="https://img.icons8.com/?size=100&id=25627&format=png&color=ffffff" alt="Discord"/>
                 </a>
             </div>
         </footer>
