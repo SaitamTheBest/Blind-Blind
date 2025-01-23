@@ -62,6 +62,8 @@ async function getRandomTrack(token) {
             type: 'track', // Recherche uniquement des morceaux
             limit: 1,      // Limite le résultat à une seule track/musique
             offset: Math.floor(Math.random() * 1000), // Permet de varier les résultats avec un décalage
+            market: ['FR', 'US'], // Permet de filtrer les résultats par pays (France et États-Unis)
+            seed_genres: ["pop", "rock", "jazz", "metal"] // Trier pour n'avoir que des genres souhaités (pop, jazz, rock, etc)
         };
 
         console.log('Paramètres envoyés pour la recherche Spotify:', params);
@@ -81,10 +83,13 @@ async function getRandomTrack(token) {
         // Retourne les détails de la track/musique sélectionnée
         return {
             name: track.name,
-            artists: track.artists.map((artist) => artist.name).join(', '),
+            artists: track.artists.map((artist) => artist.name).join('; '),
             album: track.album.name,
             link: track.external_urls.spotify,
             preview_url: track.preview_url,
+            image: track.album.images,
+            date: track.album.release_date,
+            genres: track.seed_genres,
         };
     } catch (error) {
         console.error('Erreur rencontrée dans getRandomTrack :', error.message);
