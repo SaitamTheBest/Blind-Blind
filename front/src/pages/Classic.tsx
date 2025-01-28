@@ -13,13 +13,14 @@ const ClassicMode: React.FC = () => {
     };
 
     return (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-            <h1>Devinez la chanson !</h1>
-            <div>
-                <GuessInput onGuessSubmit={handleGuessSubmit} />
-                <h3>Propositions :</h3>
-                <AnswersTable messages={messages} />
-
+        <div className="classic-container">
+            <div className="content">
+                <h1>Devinez la chanson !</h1>
+                <div>
+                    <GuessInput onGuessSubmit={handleGuessSubmit} />
+                    <h3>Propositions :</h3>
+                    <AnswersTable messages={messages} />
+                </div>
             </div>
         </div>
     );
