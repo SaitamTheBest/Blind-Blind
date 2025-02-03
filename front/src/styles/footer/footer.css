@@ -8,8 +8,9 @@ footer {
     padding: 20px 0;
     height: 30px;
     width: 100%;
-    position: fixed;
+    position: relative;
     bottom: 0;
+    margin: auto;
 }
 
 p {

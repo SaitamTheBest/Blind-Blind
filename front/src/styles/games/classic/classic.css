@@ -1,8 +1,8 @@
 .classic-container {
     position: relative;
-    height: calc(100vh - 80px);
+    min-height: calc(100% - 80px);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     --s: 200px;
     --c1: #ffffff;
@@ -23,6 +23,8 @@
     background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
     padding: 20px;
     border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
