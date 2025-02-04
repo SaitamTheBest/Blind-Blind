@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import "../../../styles/games/classic/GuessInput.css";
 
 type GuessInputProps = {
     onGuessSubmit: (guess: string) => void;
@@ -20,15 +21,15 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
+        <form onSubmit={handleSubmit} className="guess-form">
             <input
                 type="text"
+                className="guess-input"
                 value={guess}
                 onChange={handleChange}
                 placeholder="Mettez le titre d'une chanson ici..."
-                style={{ padding: '10px', fontSize: '16px', width: '80%' }}
             />
-            <button type="submit" style={{ padding: '10px 20px', marginLeft: '10px' }}>
+            <button type="submit" className="guess-submit">
                 Envoyer
             </button>
         </form>
