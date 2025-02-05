@@ -1,6 +1,6 @@
 .classic-container {
     position: relative;
-    min-height: calc(100% - 80px);
+    min-height: calc(100vh - 140px);
     display: flex;
     align-items: flex-start;
     justify-content: center;
