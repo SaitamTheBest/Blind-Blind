@@ -1,0 +1,42 @@
+.classic-container {
+    position: relative;
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    --s: 200px;
+    --c1: #ffffff;
+    --c2: #e8e8e8;
+    --c3: #ededed;
+
+    background:
+            repeating-conic-gradient(from 30deg,#0000 0 120deg,var(--c3) 0 50%)
+            calc(var(--s)/2) calc(var(--s)*tan(30deg)/2),
+            repeating-conic-gradient(from 30deg,var(--c1) 0 60deg,var(--c2) 0 120deg,var(--c3) 0 50%);
+    background-size: var(--s) calc(var(--s)*tan(30deg));
+    overflow: hidden;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: #555;
+}

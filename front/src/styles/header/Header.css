@@ -3,14 +3,21 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background: #0E102D;
+    background: black;
     color: white;
+    height: 50px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header-left {
     display: flex;
     align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.header-left:hover {
+    text-decoration: none;
 }
 
 .logo {

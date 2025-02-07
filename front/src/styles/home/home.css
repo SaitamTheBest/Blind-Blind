@@ -1,11 +1,20 @@
 .home {
-    background: radial-gradient(circle, rgba(87,14,103,1) 20%, rgba(42,28,95,1) 93%);
+    --s: 200px;
+    --c1: #000000;
+    --c2: #202022;
+    --c3: #141414;
+
+    background:
+            repeating-conic-gradient(from 30deg,#0000 0 120deg,var(--c3) 0 50%)
+            calc(var(--s)/2) calc(var(--s)*tan(30deg)/2),
+            repeating-conic-gradient(from 30deg,var(--c1) 0 60deg,var(--c2) 0 120deg,var(--c3) 0 50%);
+    background-size: var(--s) calc(var(--s)*tan(30deg));
     display: flex;
     justify-content: center;
     text-align: center;
     align-items: center;
     flex-direction: column;
-    height: 100vh;
+    height: calc(100vh - 140px);
 }
 
 .home-title {
@@ -18,7 +27,6 @@
     color: #d8d8d8;
 }
 
-/* CSS */
 .play-button {
   appearance: none;
   background-color: #000000;
