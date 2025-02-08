@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
 import '../styles/games/classic/classic.css';
@@ -6,6 +6,7 @@ import '../styles/games/classic/classic.css';
 const ClassicMode: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const [randomTrack, setRandomTrack] = useState<any>(null);
+    const isMounted = useRef(false);
 
     const handleGuessSubmit = (guess: string) => {
         if (guess.trim() !== '') {
@@ -14,7 +15,12 @@ const ClassicMode: React.FC = () => {
     };
 
     useEffect(() => {
+        isMounted.current = true;
         fetchRandomTrack();
+
+        return () => {
+            isMounted.current = false;
+        };
     }, []);
 
     const fetchRandomTrack = async () => {
@@ -30,7 +36,9 @@ const ClassicMode: React.FC = () => {
 
             console.log('Données reçues :', data);
 
-            setRandomTrack(data);
+            if (isMounted.current) {
+                setRandomTrack(data);
+            }
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
         }
