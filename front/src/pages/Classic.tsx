@@ -5,27 +5,28 @@ import '../styles/games/classic/classic.css';
 
 const ClassicMode: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
+    const [tracks, setTracks] = useState<any[]>([]);
     const [randomTrack, setRandomTrack] = useState<any>(null);
     const isMounted = useRef(false);
 
     const handleGuessSubmit = (guess: string) => {
         if (guess.trim() !== '') {
-            setMessages([guess, ...messages]); // Ajouter le nouveau message en haut
+            setMessages([guess, ...messages]);
         }
     };
 
     useEffect(() => {
         isMounted.current = true;
-        fetchRandomTrack();
+        fetchTracks();
 
         return () => {
             isMounted.current = false;
         };
     }, []);
 
-    const fetchRandomTrack = async () => {
+    const fetchTracks = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/tracks/random-track');
+            const response = await fetch('http://localhost:3001/api/tracks/all-tracks');
 
             if (!response.ok) {
                 console.error('Réponse du serveur incorrecte :', response);
@@ -34,10 +35,10 @@ const ClassicMode: React.FC = () => {
 
             const data = await response.json();
 
-            console.log('Données reçues :', data);
-
             if (isMounted.current) {
-                setRandomTrack(data);
+                setTracks(data);
+                const randomIndex = Math.floor(Math.random() * data.length);
+                setRandomTrack(data[randomIndex]);
             }
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
