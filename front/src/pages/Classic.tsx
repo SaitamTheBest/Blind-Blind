@@ -19,7 +19,7 @@ const ClassicMode: React.FC = () => {
 
     const fetchRandomTrack = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/random-track');
+            const response = await fetch('http://localhost:3001/api/tracks/random-track');
 
             if (!response.ok) {
                 console.error('Réponse du serveur incorrecte :', response);
