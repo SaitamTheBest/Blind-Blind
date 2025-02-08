@@ -3,16 +3,7 @@ import '../../../styles/games/classic/AnswersTable.css';
 
 type AnswersTableProps = {
     messages: string[];
-};
-
-// Exemple des données correctes (à remplacer par le JSON plus tard)
-const correctData = {
-    titre: "That's What I Like",
-    artiste: 'Bruno Mars',
-    album: '24K Magic',
-    genre: 'R&B',
-    popularite: 92,
-    annee: 2017,
+    randomTrack: any;
 };
 
 // Fonction pour déterminer la classe CSS de la cellule numérique
@@ -23,7 +14,7 @@ const getNumericCellClass = (proposition: number, correcte: number) => {
     return proposition > correcte ? 'td-arrow-up' : 'td-arrow-down';
 };
 
-const AnswersTable: React.FC<AnswersTableProps> = ({ messages }) => {
+const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) => {
     if (messages.length === 0) {
         return null;
     }
@@ -43,14 +34,14 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages }) => {
             <tbody>
             {messages.map((message, index) => (
                 <tr key={index}>
-                    <td className={message === correctData.titre ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === correctData.artiste ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === correctData.album ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === correctData.genre ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={getNumericCellClass(parseInt(message), correctData.popularite)}>
+                    <td className={message === randomTrack.name ? 'correct' : 'incorrect'}>{message}</td>
+                    <td className={message === randomTrack.artists ? 'correct' : 'incorrect'}>{message}</td>
+                    <td className={message === randomTrack.album ? 'correct' : 'incorrect'}>{message}</td>
+                    <td className={message === randomTrack.name ? 'correct' : 'incorrect'}>{message}</td>
+                    <td className={getNumericCellClass(parseInt(message), randomTrack.popularity)}>
                         {message}
                     </td>
-                    <td className={getNumericCellClass(parseInt(message), correctData.annee)}>
+                    <td className={getNumericCellClass(parseInt(message), randomTrack.release_date)}>
                         {message}
                     </td>
                 </tr>

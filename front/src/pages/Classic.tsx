@@ -1,14 +1,38 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
 import '../styles/games/classic/classic.css';
 
 const ClassicMode: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
+    const [randomTrack, setRandomTrack] = useState<any>(null);
 
     const handleGuessSubmit = (guess: string) => {
         if (guess.trim() !== '') {
             setMessages([guess, ...messages]); // Ajouter le nouveau message en haut
+        }
+    };
+
+    useEffect(() => {
+        fetchRandomTrack();
+    }, []);
+
+    const fetchRandomTrack = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/random-track');
+
+            if (!response.ok) {
+                console.error('Réponse du serveur incorrecte :', response);
+                return;
+            }
+
+            const data = await response.json();
+
+            console.log('Données reçues :', data);
+
+            setRandomTrack(data);
+        } catch (error) {
+            console.error('Erreur lors de la récupération de la musique :', error);
         }
     };
 
@@ -19,7 +43,7 @@ const ClassicMode: React.FC = () => {
                 <div>
                     <GuessInput onGuessSubmit={handleGuessSubmit} />
                     <h3>Propositions :</h3>
-                    <AnswersTable messages={messages} />
+                    <AnswersTable messages={messages} randomTrack={randomTrack} />
                 </div>
             </div>
         </div>
