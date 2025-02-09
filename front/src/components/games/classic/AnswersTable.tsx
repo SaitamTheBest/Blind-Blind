@@ -2,16 +2,8 @@ import React from 'react';
 import '../../../styles/games/classic/AnswersTable.css';
 
 type AnswersTableProps = {
-    messages: string[];
+    messages: any[];
     randomTrack: any;
-};
-
-// Fonction pour déterminer la classe CSS de la cellule numérique
-const getNumericCellClass = (proposition: number, correcte: number) => {
-    if (proposition === correcte) {
-        return 'correct';
-    }
-    return proposition > correcte ? 'td-arrow-up' : 'td-arrow-down';
 };
 
 const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) => {
@@ -19,37 +11,46 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
         return null;
     }
 
+    const getArrowClass = (value: number, reference: number): string => {
+        if (value > reference) {
+            return 'td-arrow-up';
+        } else if (value < reference) {
+            return 'td-arrow-down';
+        } else {
+            return '';
+        }
+    };
+
     return (
-        <table>
-            <thead>
-            <tr>
-                <th>Titre</th>
-                <th>Artiste</th>
-                <th>Album</th>
-                <th>Genre</th>
-                <th>Popularité</th>
-                <th>Année</th>
-            </tr>
-            </thead>
-            <tbody>
-            {messages.map((message, index) => (
-                <tr key={index}>
-                    <td className={message === randomTrack.name ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === randomTrack.artists ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === randomTrack.album ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === randomTrack.name ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={getNumericCellClass(parseInt(message), randomTrack.popularity)}>
-                        {message}
-                    </td>
-                    <td className={getNumericCellClass(parseInt(message), randomTrack.release_date)}>
-                        {message}
-                    </td>
+        <div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Artiste</th>
+                    <th>Album</th>
+                    <th>Popularité</th>
+                    <th>Année</th>
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {messages.map((message, index) => (
+                    <tr key={index}>
+                        <td className={message.isCorrect.name ? 'correct' : 'incorrect'}>{message.name}</td>
+                        <td className={message.isCorrect.artists ? 'correct' : 'incorrect'}>{message.artists}</td>
+                        <td className={message.isCorrect.album ? 'correct' : 'incorrect'}>{message.album}</td>
+                        <td className={`${message.isCorrect.popularity ? 'correct' : 'incorrect'} ${getArrowClass(message.popularity, randomTrack.popularity)}`}>
+                            {message.popularity}
+                        </td>
+                        <td className={`${message.isCorrect.release_date ? 'correct' : 'incorrect'} ${getArrowClass(parseInt(message.release_date.split('-')[0]), parseInt(randomTrack.release_date.split('-')[0]))}`}>
+                            {message.release_date.split('-')[0]}
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 
 export default AnswersTable;
-
