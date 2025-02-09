@@ -46,7 +46,7 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks }) => {
     };
 
     const handleTrackSelect = (track: any) => {
-        setGuess(track.name);
+        setGuess('');
         setSearchTerm('');
         setFilteredTracks([]);
         onGuessSubmit(track);

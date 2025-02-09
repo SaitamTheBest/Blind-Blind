@@ -15,15 +15,14 @@ export default async function getAllTracks(token) {
             }
         });
 
-        // Accède à response.data.tracks.items au lieu de response.data.items
         return response.data.tracks.items.map(track => ({
             name: track.name,
             artists: track.artists.map(artist => artist.name).join('; '),
             album: track.album.name,
             link: track.external_urls.spotify,
             preview_url: track.preview_url,
-            image: track.album.images[0]?.url, // Prendre la première image du album
-            release_date: track.album.release_date,
+            image: track.album.images[0]?.url,
+            release_date: track.album.release_date.split('-')[0],
             popularity: track.popularity
         }));
     } catch (error) {
