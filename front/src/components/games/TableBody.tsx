@@ -25,14 +25,14 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
         <tbody>
             {guess.map((message, index) => (
                 <tr key={index}>
-                    <td className={message.isCorrect.name ? 'correct' : 'incorrect'}>{message.name}</td>
-                    <td className={message.isCorrect.artists ? 'correct' : 'incorrect'}>{message.artists}</td>
-                    <td className={message.isCorrect.album ? 'correct' : 'incorrect'}>{message.album}</td>
-                    <td className={message.isCorrect.genres ? 'correct' : 'incorrect'}>{message.genres}</td>
-                    <td className={`${message.isCorrect.popularity ? 'correct' : 'incorrect'} ${getArrowClass(message.popularity, randomItem.popularity)}`}>
+                    <td className={message.isCorrect.name}>{message.name}</td>
+                    <td className={message.isCorrect.artists}>{(message.artists).join(', ')}</td>
+                    <td className={message.isCorrect.album}>{message.album}</td>
+                    <td className={message.isCorrect.genres}>{(message.genres).join(', ')}</td>
+                    <td className={`${message.isCorrect.popularity} ${getArrowClass(message.popularity, randomItem.popularity)}`}>
                         {message.popularity}
                     </td>
-                    <td className={`${message.isCorrect.release_date ? 'correct' : 'incorrect'} ${getArrowClass(parseInt(message.release_date.split('-')[0]), parseInt(randomItem.release_date.split('-')[0]))}`}>
+                    <td className={`${message.isCorrect.release_date} ${getArrowClass(parseInt(message.release_date.split('-')[0]), parseInt(randomItem.release_date.split('-')[0]))}`}>
                         {message.release_date.split('-')[0]}
                     </td>
                 </tr>

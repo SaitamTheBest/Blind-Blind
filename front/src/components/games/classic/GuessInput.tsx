@@ -21,7 +21,7 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks }) => {
         setSearchTerm(term);
         setFilteredTracks(tracks.filter(track =>
             track.name.toLowerCase().includes(term) ||
-            track.artists.toLowerCase().includes(term)
+            (track.artists).join(', ').toLowerCase().includes(term)
         ));
     };
 

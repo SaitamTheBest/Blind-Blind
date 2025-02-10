@@ -1,13 +1,35 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
 import '../styles/games/classic/classic.css';
+
+enum CategoryGuessResponse {
+    Correct = 'correct',
+    MidCorrect = 'mid-correct',
+    Incorrect = 'incorrect'
+}
 
 const ClassicMode: React.FC = () => {
     const [messages, setMessages] = useState<any[]>([]);
     const [tracks, setTracks] = useState<any[]>([]);
     const [randomTrack, setRandomTrack] = useState<any>(null);
     const isMounted = useRef(false);
+
+    const verificateItem = (correctItem: any, item: any): CategoryGuessResponse => {
+        if (item === correctItem) {
+            return CategoryGuessResponse.Correct;
+        } else if (Array.isArray(item) && Array.isArray(correctItem)) {
+            const itemSet = new Set(item);
+            const correctItemSet = new Set(correctItem);
+            // @ts-ignore
+            if (itemSet.size === correctItemSet.size && [...itemSet].every(i => correctItemSet.has(i))) {
+                return CategoryGuessResponse.Correct;
+            } else if (item.some((i: any) => correctItem.includes(i))) {
+                return CategoryGuessResponse.MidCorrect;
+            }
+        }
+        return CategoryGuessResponse.Incorrect;
+    };
 
     const handleGuessSubmit = (track: any) => {
         if (track && track.name) {
@@ -19,12 +41,12 @@ const ClassicMode: React.FC = () => {
                 popularity: track.popularity,
                 release_date: track.release_date,
                 isCorrect: {
-                    name: track.name.toLowerCase() === randomTrack.name.toLowerCase(),
-                    artists: track.artists.toLowerCase() === randomTrack.artists.toLowerCase(),
-                    genres: track.genres === randomTrack.genres,
-                    album: track.album.toLowerCase() === randomTrack.album.toLowerCase(),
-                    popularity: track.popularity === randomTrack.popularity,
-                    release_date: track.release_date === randomTrack.release_date
+                    name: verificateItem(randomTrack.name, track.name),
+                    artists: verificateItem(randomTrack.artists, track.artists),
+                    genres: verificateItem(randomTrack.genres, track.genres),
+                    album: verificateItem(randomTrack.album, track.album),
+                    popularity: verificateItem(randomTrack.popularity, track.popularity),
+                    release_date: verificateItem(randomTrack.release_date, track.release_date)
                 }
             };
             setMessages([guessDetails, ...messages]);

@@ -38,6 +38,10 @@ td {
     background-color: #f64a57;
 }
 
+.mid-correct {
+    background-color: #ff9e3d;
+}
+
 /* Arrière-plan pour les flèches vers le haut et le bas */
 .td-arrow-up {
     background-image: url('../../../res/fond.png');
