@@ -30,7 +30,7 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit }) => {
                 placeholder="Mettez le titre d'une chanson ici..."
             />
             <button type="submit" className="guess-submit">
-                Envoyer
+                <img src="/Blind-Blind-logo-blanc.png" alt="Submit" className="guess-submit-icon" />
             </button>
         </form>
     );
