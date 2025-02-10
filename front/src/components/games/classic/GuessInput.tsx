@@ -46,10 +46,12 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks }) => {
     };
 
     const handleTrackSelect = (track: any) => {
-        setGuess('');
-        setSearchTerm('');
-        setFilteredTracks([]);
-        onGuessSubmit(track);
+        if (filteredTracks.length > 0) {
+            setGuess('');
+            setSearchTerm('');
+            setFilteredTracks([]);
+            onGuessSubmit(track);
+        }
     };
 
     return (
@@ -69,7 +71,7 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks }) => {
                 <ul className="autocomplete-list">
                     {filteredTracks.map((track, index) => (
                         <li key={index} onClick={() => handleTrackSelect(track)}>
-                            {track.name} - {track.artists}
+                            {track.name} - {(track.artists).join(', ')}
                         </li>
                     ))}
                 </ul>
