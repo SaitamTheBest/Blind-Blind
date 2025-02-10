@@ -15,11 +15,13 @@ const ClassicMode: React.FC = () => {
                 name: track.name,
                 artists: track.artists,
                 album: track.album,
+                genres: track.genres,
                 popularity: track.popularity,
                 release_date: track.release_date,
                 isCorrect: {
                     name: track.name.toLowerCase() === randomTrack.name.toLowerCase(),
                     artists: track.artists.toLowerCase() === randomTrack.artists.toLowerCase(),
+                    genres: track.genres === randomTrack.genres,
                     album: track.album.toLowerCase() === randomTrack.album.toLowerCase(),
                     popularity: track.popularity === randomTrack.popularity,
                     release_date: track.release_date === randomTrack.release_date

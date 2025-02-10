@@ -28,6 +28,7 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
                     <td className={message.isCorrect.name ? 'correct' : 'incorrect'}>{message.name}</td>
                     <td className={message.isCorrect.artists ? 'correct' : 'incorrect'}>{message.artists}</td>
                     <td className={message.isCorrect.album ? 'correct' : 'incorrect'}>{message.album}</td>
+                    <td className={message.isCorrect.genres ? 'correct' : 'incorrect'}>{message.genres}</td>
                     <td className={`${message.isCorrect.popularity ? 'correct' : 'incorrect'} ${getArrowClass(message.popularity, randomItem.popularity)}`}>
                         {message.popularity}
                     </td>
