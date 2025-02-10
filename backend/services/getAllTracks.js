@@ -11,6 +11,7 @@ export default async function getAllTracks(token) {
             params: {
                 q: `year:1970-${currentYear}`,
                 type: 'track',
+                limit: 50,
                 market: 'FR'
             }
         });
