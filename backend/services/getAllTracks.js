@@ -43,7 +43,7 @@ export default async function getAllTracks(token) {
                 }
             }
             if (artistGenres.length === 0) {
-                artistGenres.push('Inconnu');
+                artistGenres.push('No data 😔');
             }
 
             return {
