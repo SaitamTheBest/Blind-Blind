@@ -20,15 +20,21 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled
         const term = e.target.value.toLowerCase();
         setGuess(e.target.value);
         setSearchTerm(term);
-        setFilteredTracks(tracks.filter(track =>
-            track.name.toLowerCase().includes(term) ||
-            (track.artists).join(', ').toLowerCase().includes(term)
-        ));
+
+
+        if (term.length > 0) {
+            setFilteredTracks(tracks.filter(track =>
+                track.name.toLowerCase().includes(term) ||
+                (track.artists).join(', ').toLowerCase().includes(term)
+            ));
+        } else {
+            setFilteredTracks([]);
+        }
     };
 
     const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
-        if (e) e.preventDefault();
-        if (filteredTracks.length > 0) {
+        e?.preventDefault();
+        if (guess.length > 0 && filteredTracks.length > 0) {
             onGuessSubmit(filteredTracks[0]);
             setGuess('');
             setSearchTerm('');
@@ -37,22 +43,22 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && filteredTracks.length > 0) {
+        if (e.key === 'Enter') {
             e.preventDefault();
-            onGuessSubmit(filteredTracks[0]);
-            setGuess('');
-            setSearchTerm('');
-            setFilteredTracks([]);
+            if (guess.length > 0 && filteredTracks.length > 0) {
+                onGuessSubmit(filteredTracks[0]);
+                setGuess('');
+                setSearchTerm('');
+                setFilteredTracks([]);
+            }
         }
     };
 
     const handleTrackSelect = (track: any) => {
-        if (filteredTracks.length > 0) {
-            setGuess('');
-            setSearchTerm('');
-            setFilteredTracks([]);
-            onGuessSubmit(track);
-        }
+        setGuess('');
+        setSearchTerm('');
+        setFilteredTracks([]);
+        onGuessSubmit(track);
     };
 
     return (
@@ -66,10 +72,10 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled
                 placeholder="Mettez le titre d'une chanson ici..."
                 disabled={disabled}
             />
-            <button type="submit" className="guess-submit" disabled={disabled}>
+            <button type="submit" className="guess-submit" disabled={disabled || guess.length === 0}>
                 Envoyer
             </button>
-            {searchTerm && (
+            {searchTerm && filteredTracks.length > 0 && (
                 <ul className="autocomplete-list">
                     {filteredTracks.map((track, index) => (
                         <li key={index} onClick={() => handleTrackSelect(track)}>
