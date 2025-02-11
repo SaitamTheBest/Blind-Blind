@@ -25,7 +25,6 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
         <tbody>
             {guess.map((message, index) => (
                 <tr key={index}>
-                    <td className={message.isCorrect.name}>{message.name}</td>
                     <td className={message.isCorrect.artists}>{(message.artists).join(', ')}</td>
                     <td className={message.isCorrect.album}>{message.album}</td>
                     <td className={message.isCorrect.genres}>{(message.genres).join(', ')}</td>
@@ -35,6 +34,7 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
                     <td className={`${message.isCorrect.release_date} ${getArrowClass(parseInt(message.release_date.split('-')[0]), parseInt(randomItem.release_date.split('-')[0]))}`}>
                         {message.release_date.split('-')[0]}
                     </td>
+                    <td className={message.isCorrect.name}>{message.name}</td>
                 </tr>
             ))}
         </tbody>

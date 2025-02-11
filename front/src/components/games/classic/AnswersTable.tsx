@@ -16,7 +16,7 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
     return (
         <div>
             <table>
-                <TableTitle titles={['Titre','Artistes','Album','Genres','Popularité','Année']} />
+                <TableTitle titles={['Artistes','Album','Genres','Popularité','Année','Titre']} />
                 <TableBody guess={messages} randomItem={randomTrack} />
             </table>
         </div>

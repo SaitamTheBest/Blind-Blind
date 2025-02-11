@@ -4,9 +4,10 @@ import "../../../styles/games/classic/GuessInput.css";
 type GuessInputProps = {
     onGuessSubmit: (track: any) => void;
     tracks: any[];
+    disabled: boolean;
 };
 
-const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks }) => {
+const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled }) => {
     const [guess, setGuess] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredTracks, setFilteredTracks] = useState<any[]>([]);
@@ -63,8 +64,9 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks }) => {
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Mettez le titre d'une chanson ici..."
+                disabled={disabled}
             />
-            <button type="submit" className="guess-submit">
+            <button type="submit" className="guess-submit" disabled={disabled}>
                 Envoyer
             </button>
             {searchTerm && (
