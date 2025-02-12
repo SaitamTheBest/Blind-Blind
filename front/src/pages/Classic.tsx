@@ -63,9 +63,8 @@ const ClassicMode: React.FC = () => {
         } else if (itemArray.some(i => correctArray.includes(i))) {
             return CategoryGuessResponse.MidCorrect;
         }
-    
         return CategoryGuessResponse.Incorrect;
-    };    
+    };
 
     const handleGuessSubmit = (track: any) => {
         if (gameEnded || !track || !track.name) return;
@@ -127,7 +126,7 @@ const ClassicMode: React.FC = () => {
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
         }
-    };    
+    };
 
     const clearCache = () => {
         localStorage.removeItem('lastWinDate');
