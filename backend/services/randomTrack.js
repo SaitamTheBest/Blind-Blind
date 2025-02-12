@@ -6,11 +6,30 @@ let lastUpdateDate = null;
 let allTracksCache = [];
 
 export default async function getRandomTrack(token) {
-    const today = new Date().toISOString().split("T")[13][40];
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
 
-    if (cachedTrack && lastUpdateDate === today) {
+    const currentDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+    const targetTime = "00:00";
+
+    const targetDateToday = `${year}-${month}-${day} ${targetTime}`;
+
+    console.log("Heure actuelle :", currentDate);
+
+    // Vérification si la musique a déjà été récupérée aujourd'hui après l'heure cible
+    if (cachedTrack && lastUpdateDate === targetDateToday) {
         console.log("Utilisation de la musique mise en cache.");
         return cachedTrack;
+    }
+
+    // Si l'heure actuelle est avant 14h25, on ne fait rien
+    if (currentDate < targetDateToday) {
+        console.log(`Ce n'est pas encore l'heure (${targetTime}), attente...`);
+        return null;
     }
 
     console.log("Récupération de la playlist et choix d'un morceau...");
@@ -45,7 +64,7 @@ export default async function getRandomTrack(token) {
             nationality: nationality,
         };
 
-        lastUpdateDate = today;
+        lastUpdateDate = targetDateToday; // On stocke la date exacte pour éviter un nouveau tirage
         return cachedTrack;
     } catch (error) {
         console.error('Erreur dans getRandomTrack :', error.message);

@@ -34,9 +34,6 @@ const ClassicMode: React.FC = () => {
                 ? [item.trim().toLowerCase()] 
                 : [];
     
-        console.log("✅ Correct Item (transformé en tableau) :", correctArray);
-        console.log("✅ Item soumis :", itemArray);
-    
         if (correctArray.length === 0 || itemArray.length === 0) {
             return CategoryGuessResponse.Incorrect;
         }
