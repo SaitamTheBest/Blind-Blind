@@ -1,48 +1,54 @@
-import axios from "axios";
+import getAllTracks from "./getAllTracks.js";
 import getArtistNationality from "./musicbrainz.js";
 
+let cachedTrack = null;
+let lastUpdateDate = null;
+let allTracksCache = [];
 
 export default async function getRandomTrack(token) {
-    const baseUrl = 'https://api.spotify.com/v1/search';
-    let attempts = 0; // Compteur de tentatives
+    const today = new Date().toISOString().split("T")[0];
 
-    while (attempts < 5) { // On limite à 5 tentatives
-        try {
-            const randomChar = String.fromCharCode(97 + Math.floor(Math.random() * 26));
-            const params = { q: randomChar, type: 'track', limit: 1, offset: Math.floor(Math.random() * 1000), market: 'FR' };
-
-            const response = await axios.get(baseUrl, {
-                headers: { Authorization: `Bearer ${token}` },
-                params,
-            });
-
-            const track = response.data.tracks.items[0];
-            if (!track) {
-                console.warn('Aucune track trouvée, nouvelle tentative...');
-                attempts++;
-                continue; // Essaye une nouvelle recherche
-            }
-
-            const artistName = track.artists[0].name;
-            const nationality = await getArtistNationality(artistName);
-
-            return {
-                name: track.name,
-                artists: track.artists.map((artist) => artist.name).join('; '),
-                album: track.album.name,
-                link: track.external_urls.spotify,
-                preview_url: track.preview_url,
-                image: track.album.images,
-                release_date: track.album.release_date,
-                popularity: track.popularity,
-                nationality: nationality,
-            };
-        } catch (error) {
-            console.error('Erreur dans getRandomTrack :', error.message);
-            attempts++;
-            await new Promise(resolve => setTimeout(resolve, 500)); // Petite pause pour éviter le spam d'erreurs
-        }
+    if (cachedTrack && lastUpdateDate === today) {
+        console.log("Utilisation de la musique mise en cache.");
+        return cachedTrack;
     }
 
-    throw new Error("Impossible de récupérer une track après plusieurs tentatives.");
+    console.log("Récupération de la playlist et choix d'un morceau...");
+
+    try {
+        if (allTracksCache.length === 0) {
+            allTracksCache = await getAllTracks(token);
+        }
+
+        if (allTracksCache.length === 0) {
+            throw new Error("Aucune musique disponible dans la playlist.");
+        }
+
+        // Sélectionner un morceau aléatoire
+        const randomIndex = Math.floor(Math.random() * allTracksCache.length);
+        const track = allTracksCache[randomIndex];
+
+        // Récupérer la nationalité de l'artiste principal
+        const nationality = await getArtistNationality(track.artists[0]);
+
+        // Structurer la réponse
+        cachedTrack = {
+            name: track.name,
+            artists: track.artists.join('; '),
+            album: track.album,
+            link: track.link,
+            preview_url: track.preview_url,
+            image: track.image,
+            release_date: track.release_date,
+            popularity: track.popularity,
+            genres: track.genres,
+            nationality: nationality,
+        };
+
+        lastUpdateDate = today;
+        return cachedTrack;
+    } catch (error) {
+        console.error('Erreur dans getRandomTrack :', error.message);
+        throw new Error("Impossible de récupérer une track aléatoire.");
+    }
 }

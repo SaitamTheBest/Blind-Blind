@@ -73,24 +73,22 @@ const ClassicMode: React.FC = () => {
 
     const fetchTracks = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/tracks/all-tracks');
-
-            if (!response.ok) {
-                console.error('Réponse du serveur incorrecte :', response);
-                return;
-            }
-
-            const data = await response.json();
-
-            if (isMounted.current) {
-                setTracks(data);
-                const randomIndex = Math.floor(Math.random() * data.length);
-                setRandomTrack(data[randomIndex]);
+            const response = await fetch('http://localhost:3001/api/tracks/random-track');
+            if (!response.ok) return;
+            
+            const trackData = await response.json();
+            setRandomTrack(trackData);
+    
+            // Charger la liste des musiques pour les suggestions
+            const allTracksResponse = await fetch('http://localhost:3001/api/tracks/all-tracks');
+            if (allTracksResponse.ok) {
+                const allTracksData = await allTracksResponse.json();
+                setTracks(allTracksData);
             }
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
         }
-    };
+    };    
 
     return (
         <div className="classic-container">
