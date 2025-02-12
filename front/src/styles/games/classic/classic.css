@@ -60,11 +60,11 @@ h3 {
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 300px;
+    width: 600px;
 }
 
 .album-image {
-    width: 100%;
+    width: 40%;
     height: auto;
     border-radius: 10px;
     border: 1px solid #000000;
@@ -77,4 +77,22 @@ h3 {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.new-row td {
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: fadeInLeft 0.5s ease forwards;
+}
+
+tr:not(.new-row) td {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@keyframes fadeInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
