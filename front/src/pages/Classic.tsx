@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
-import Popup from '../components/games/classic/Popup';  // Import du popup
+import Popup from '../components/games/classic/Popup';
 import '../styles/games/classic/classic.css';
 
 enum CategoryGuessResponse {
@@ -17,11 +17,31 @@ const ClassicMode: React.FC = () => {
     const [popupOpen, setPopupOpen] = useState(false);
     const isMounted = useRef(false);
     const [gameEnded, setGameEnded] = useState(false);
+    const [attempts, setAttempts] = useState(0);
+
+    // Récupérer la date du jour
+    const getTodayDate = (): string => {
+        return new Date().toISOString().split('T')[0];
+    };
+
+    // Vérifier si l'utilisateur a déjà trouvé la musique aujourd'hui et récupérer les essais
+    useEffect(() => {
+        const lastWinDate = localStorage.getItem('lastWinDate');
+        const storedAttempts = localStorage.getItem('attempts');
+
+        if (lastWinDate === getTodayDate()) {
+            setGameEnded(true);
+            setPopupOpen(true); // Réouvrir le popup si l'utilisateur a déjà gagné
+        }
+
+        if (storedAttempts) {
+            setAttempts(parseInt(storedAttempts, 10)); // Restaurer les essais
+        }
+    }, []);
 
     const verificateItem = (correctItem: any, item: any): CategoryGuessResponse => {
         if (!correctItem || !item) return CategoryGuessResponse.Incorrect;
     
-        // Vérifie si correctItem est bien une chaîne ou un tableau
         const correctArray = Array.isArray(correctItem)
             ? correctItem.map((artist: string) => artist.trim().toLowerCase()) 
             : typeof correctItem === 'string'
@@ -38,12 +58,9 @@ const ClassicMode: React.FC = () => {
             return CategoryGuessResponse.Incorrect;
         }
     
-        // Vérification stricte : tous les artistes doivent correspondre
         if (itemArray.length === correctArray.length && itemArray.every(i => correctArray.includes(i))) {
             return CategoryGuessResponse.Correct;
-        }
-        // Vérification partielle : au moins un artiste correct
-        else if (itemArray.some(i => correctArray.includes(i))) {
+        } else if (itemArray.some(i => correctArray.includes(i))) {
             return CategoryGuessResponse.MidCorrect;
         }
     
@@ -52,6 +69,11 @@ const ClassicMode: React.FC = () => {
 
     const handleGuessSubmit = (track: any) => {
         if (gameEnded || !track || !track.name) return;
+
+        // Incrémentation des essais
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+        localStorage.setItem('attempts', newAttempts.toString()); // Sauvegarde du nombre d'essais
 
         const guessDetails = {
             name: track.name,
@@ -74,8 +96,9 @@ const ClassicMode: React.FC = () => {
         setTracks(tracks.filter(t => t.name !== track.name));
 
         if (track.name === randomTrack.name) {
-            setPopupOpen(true);  // Ouvre le popup
-            setGameEnded(true);  // Termine le jeu
+            setPopupOpen(true);
+            setGameEnded(true);
+            localStorage.setItem('lastWinDate', getTodayDate()); // Stocker la date de victoire
         }
     };
 
@@ -96,7 +119,6 @@ const ClassicMode: React.FC = () => {
             const trackData = await response.json();
             setRandomTrack(trackData);
     
-            // Charger la liste des musiques pour les suggestions
             const allTracksResponse = await fetch('http://localhost:3001/api/tracks/all-tracks');
             if (allTracksResponse.ok) {
                 const allTracksData = await allTracksResponse.json();
@@ -107,15 +129,26 @@ const ClassicMode: React.FC = () => {
         }
     };    
 
+    const clearCache = () => {
+        localStorage.removeItem('lastWinDate');
+        localStorage.removeItem('attempts');
+        window.location.reload(); // Recharge la page
+    };
+
     return (
         <div className="classic-container">
             <div className="content">
                 <h1>Devinez la chanson !</h1>
-                <div>
-                    <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
-                    <h3>Propositions :</h3>
-                    <AnswersTable messages={messages} randomTrack={randomTrack} />
-                </div>
+                {gameEnded && <p className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</p>}
+                <p>Nombre d'essais : {attempts}</p>
+                <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
+                <h3>Propositions :</h3>
+                <AnswersTable messages={messages} randomTrack={randomTrack} />
+
+                {/* Bouton pour réinitialiser les tests */}
+                <button onClick={clearCache} className="reset-button">
+                    Réinitialiser le jeu
+                </button>
             </div>
 
             <Popup
