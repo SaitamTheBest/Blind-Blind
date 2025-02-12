@@ -18,7 +18,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, trackDetails, onClose }) => {
                 <div className="track-info">
                     <img src={trackDetails.image || ''} alt="Album cover" className="album-image" />
                     <h3>{trackDetails.name}</h3>
-                    <p><strong>Artistes :</strong> {Array.isArray(trackDetails.artists) ? trackDetails.artists.join(', ') : trackDetails.artists || "Inconnu"}</p>
+                    <p><strong>Artistes :</strong> {trackDetails.artists?.join(', ')}</p>
                     <p><strong>Album :</strong> {trackDetails.album}</p>
                     <p><strong>Date de sortie :</strong> {trackDetails.release_date}</p>
                 </div>
