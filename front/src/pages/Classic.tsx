@@ -19,19 +19,39 @@ const ClassicMode: React.FC = () => {
     const [gameEnded, setGameEnded] = useState(false);
 
     const verificateItem = (correctItem: any, item: any): CategoryGuessResponse => {
-        if (item === correctItem) {
-            return CategoryGuessResponse.Correct;
-        } else if (Array.isArray(item) && Array.isArray(correctItem)) {
-            const itemSet = new Set(item);
-            const correctItemSet = new Set(correctItem);
-            if (itemSet.size === correctItemSet.size && [...itemSet].every(i => correctItemSet.has(i))) {
-                return CategoryGuessResponse.Correct;
-            } else if (item.some((i: any) => correctItem.includes(i))) {
-                return CategoryGuessResponse.MidCorrect;
-            }
+        if (!correctItem || !item) return CategoryGuessResponse.Incorrect;
+    
+        // Vérifie si correctItem est bien une chaîne ou un tableau
+        const correctArray = Array.isArray(correctItem)
+            ? correctItem.map((artist: string) => artist.trim().toLowerCase()) 
+            : typeof correctItem === 'string'
+                ? correctItem.split(';').map((artist: string) => artist.trim().toLowerCase()) 
+                : [];
+    
+        const itemArray = Array.isArray(item)
+            ? item.map((artist: string) => artist.trim().toLowerCase()) 
+            : typeof item === 'string'
+                ? [item.trim().toLowerCase()] 
+                : [];
+    
+        console.log("✅ Correct Item (transformé en tableau) :", correctArray);
+        console.log("✅ Item soumis :", itemArray);
+    
+        if (correctArray.length === 0 || itemArray.length === 0) {
+            return CategoryGuessResponse.Incorrect;
         }
+    
+        // Vérification stricte : tous les artistes doivent correspondre
+        if (itemArray.length === correctArray.length && itemArray.every(i => correctArray.includes(i))) {
+            return CategoryGuessResponse.Correct;
+        }
+        // Vérification partielle : au moins un artiste correct
+        else if (itemArray.some(i => correctArray.includes(i))) {
+            return CategoryGuessResponse.MidCorrect;
+        }
+    
         return CategoryGuessResponse.Incorrect;
-    };
+    };    
 
     const handleGuessSubmit = (track: any) => {
         if (gameEnded || !track || !track.name) return;

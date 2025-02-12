@@ -6,7 +6,7 @@ let lastUpdateDate = null;
 let allTracksCache = [];
 
 export default async function getRandomTrack(token) {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[13][40];
 
     if (cachedTrack && lastUpdateDate === today) {
         console.log("Utilisation de la musique mise en cache.");
