@@ -24,18 +24,28 @@ const ClassicMode: React.FC = () => {
         return new Date().toISOString().split('T')[0];
     };
 
-    // Vérifier si l'utilisateur a déjà trouvé la musique aujourd'hui et récupérer les essais
     useEffect(() => {
         const lastWinDate = localStorage.getItem('lastWinDate');
         const storedAttempts = localStorage.getItem('attempts');
+        const lastSavedDate = localStorage.getItem('savedDate'); // Nouvelle clé pour vérifier la date
 
-        if (lastWinDate === getTodayDate()) {
-            setGameEnded(true);
-            setPopupOpen(true); // Réouvrir le popup si l'utilisateur a déjà gagné
-        }
-
-        if (storedAttempts) {
-            setAttempts(parseInt(storedAttempts, 10)); // Restaurer les essais
+        // Si la date enregistrée est différente d'aujourd'hui, on réinitialise tout
+        if (lastSavedDate !== getTodayDate()) {
+            console.log("Nouveau jour détecté, réinitialisation des données...");
+            localStorage.removeItem('lastWinDate');
+            localStorage.removeItem('attempts');
+            localStorage.setItem('savedDate', getTodayDate()); // Stocker la nouvelle date
+            setGameEnded(false);
+            setAttempts(0);
+        } else {
+            // Sinon, on récupère les anciennes valeurs
+            if (lastWinDate === getTodayDate()) {
+                setGameEnded(true);
+                setPopupOpen(true); // Réouvrir le popup si l'utilisateur a déjà gagné
+            }
+            if (storedAttempts) {
+                setAttempts(parseInt(storedAttempts, 10)); // Restaurer les essais
+            }
         }
     }, []);
 
@@ -131,6 +141,7 @@ const ClassicMode: React.FC = () => {
     const clearCache = () => {
         localStorage.removeItem('lastWinDate');
         localStorage.removeItem('attempts');
+        localStorage.removeItem('savedDate');
         window.location.reload(); // Recharge la page
     };
 

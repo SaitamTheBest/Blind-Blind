@@ -9,7 +9,7 @@ const router = express.Router();
 // Route pour récupérer une track/musique aléatoire avec un filtre sur la nationalité
 router.get('/random-track', async (req, res) => {
     try {
-        const filterNationality = req.query.nationality; // Exemple: ?nationality=US
+        const filterNationality = req.query.nationality;
         const tokenResponse = await axios.get(`http://localhost:${PORT}/api/auth/token`);
         const token = tokenResponse.data.access_token;
 

@@ -1,48 +1,37 @@
-import axios from "axios";
-import getArtistNationality from "./musicbrainz.js";
+import getAllTracks from "./getAllTracks.js";
 
+let cachedTrack = null;
+let lastUpdatedDate = null;
 
 export default async function getRandomTrack(token) {
-    const baseUrl = 'https://api.spotify.com/v1/search';
-    let attempts = 0; // Compteur de tentatives
+    const today = new Date().toISOString().split('T')[0];
 
-    while (attempts < 5) { // On limite à 5 tentatives
-        try {
-            const randomChar = String.fromCharCode(97 + Math.floor(Math.random() * 26));
-            const params = { q: randomChar, type: 'track', limit: 1, offset: Math.floor(Math.random() * 1000), market: 'FR' };
-
-            const response = await axios.get(baseUrl, {
-                headers: { Authorization: `Bearer ${token}` },
-                params,
-            });
-
-            const track = response.data.tracks.items[0];
-            if (!track) {
-                console.warn('Aucune track trouvée, nouvelle tentative...');
-                attempts++;
-                continue; // Essaye une nouvelle recherche
-            }
-
-            const artistName = track.artists[0].name;
-            const nationality = await getArtistNationality(artistName);
-
-            return {
-                name: track.name,
-                artists: track.artists.map((artist) => artist.name).join('; '),
-                album: track.album.name,
-                link: track.external_urls.spotify,
-                preview_url: track.preview_url,
-                image: track.album.images,
-                release_date: track.album.release_date,
-                popularity: track.popularity,
-                nationality: nationality,
-            };
-        } catch (error) {
-            console.error('Erreur dans getRandomTrack :', error.message);
-            attempts++;
-            await new Promise(resolve => setTimeout(resolve, 500)); // Petite pause pour éviter le spam d'erreurs
-        }
+    // Vérifie si la musique du jour est déjà stockée
+    if (lastUpdatedDate === today && cachedTrack) {
+        console.log("Utilisation de la musique du cache :", cachedTrack.name);
+        return cachedTrack;
     }
 
-    throw new Error("Impossible de récupérer une track après plusieurs tentatives.");
+    console.log("Sélection d'une nouvelle musique depuis la playlist...");
+
+    try {
+        // Récupère toutes les musiques de la playlist
+        const allTracks = await getAllTracks(token);
+
+        if (!allTracks || allTracks.length === 0) {
+            throw new Error("Aucune musique trouvée dans la playlist.");
+        }
+
+        // Sélectionne une musique aléatoire
+        const randomTrack = allTracks[Math.floor(Math.random() * allTracks.length)];
+
+        // Stocke la musique du jour
+        cachedTrack = randomTrack;
+        lastUpdatedDate = today;
+
+        return cachedTrack;
+    } catch (error) {
+        console.error("Erreur lors de la sélection de la musique du jour :", error.message);
+        throw new Error("Impossible de sélectionner une musique.");
+    }
 }
