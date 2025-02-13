@@ -3,7 +3,7 @@ import getGenresByArtistId from "./getGenresByArtistId.js";
 
 const MAX_RETRIES = 5;
 
-async function fetchWithRetry(url, options, retries = 0) {
+export async function fetchWithRetry(url, options, retries = 0) {
     try {
         return await axios.get(url, options);
     } catch (error) {
@@ -17,7 +17,8 @@ async function fetchWithRetry(url, options, retries = 0) {
 }
 
 export default async function getAllTracks(token) {
-    const baseUrl = 'https://api.spotify.com/v1/playlists/25Gf2Vy0p0jMxZvbsTGXEz';
+    const ID_PLAYLIST = process.env.ID_PLAYLIST;
+    const baseUrl = `https://api.spotify.com/v1/playlists/${ID_PLAYLIST}`;
     try {
         const response = await fetchWithRetry(baseUrl, {
             headers: {

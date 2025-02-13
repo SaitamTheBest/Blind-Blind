@@ -50,28 +50,17 @@ const ClassicMode: React.FC = () => {
     }, []);
 
     const verificateItem = (correctItem: any, item: any): CategoryGuessResponse => {
-        if (!correctItem || !item) return CategoryGuessResponse.Incorrect;
-    
-        const correctArray = Array.isArray(correctItem)
-            ? correctItem.map((artist: string) => artist.trim().toLowerCase()) 
-            : typeof correctItem === 'string'
-                ? correctItem.split(';').map((artist: string) => artist.trim().toLowerCase()) 
-                : [];
-    
-        const itemArray = Array.isArray(item)
-            ? item.map((artist: string) => artist.trim().toLowerCase()) 
-            : typeof item === 'string'
-                ? [item.trim().toLowerCase()] 
-                : [];
-    
-        if (correctArray.length === 0 || itemArray.length === 0) {
-            return CategoryGuessResponse.Incorrect;
-        }
-    
-        if (itemArray.length === correctArray.length && itemArray.every(i => correctArray.includes(i))) {
+        if (item === correctItem) {
             return CategoryGuessResponse.Correct;
-        } else if (itemArray.some(i => correctArray.includes(i))) {
-            return CategoryGuessResponse.MidCorrect;
+        } else if (Array.isArray(item) && Array.isArray(correctItem)) {
+            const itemSet = new Set(item);
+            const correctItemSet = new Set(correctItem);
+            // @ts-ignore
+            if (itemSet.size === correctItemSet.size && [...itemSet].every(i => correctItemSet.has(i))) {
+                return CategoryGuessResponse.Correct;
+            } else if (item.some((i: any) => correctItem.includes(i))) {
+                return CategoryGuessResponse.MidCorrect;
+            }
         }
         return CategoryGuessResponse.Incorrect;
     };
@@ -122,16 +111,19 @@ const ClassicMode: React.FC = () => {
 
     const fetchTracks = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/tracks/random-track');
-            if (!response.ok) return;
-            
-            const trackData = await response.json();
-            setRandomTrack(trackData);
-    
-            const allTracksResponse = await fetch('http://localhost:3001/api/tracks/all-tracks');
-            if (allTracksResponse.ok) {
-                const allTracksData = await allTracksResponse.json();
-                setTracks(allTracksData);
+            const response = await fetch('http://localhost:3001/api/tracks/all-tracks');
+
+            if (!response.ok) {
+                console.error('Réponse du serveur incorrecte :', response);
+                return;
+            }
+
+            const data = await response.json();
+
+            if (isMounted.current) {
+                setTracks(data);
+                const randomIndex = Math.floor(Math.random() * data.length);
+                setRandomTrack(data[randomIndex]);
             }
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
