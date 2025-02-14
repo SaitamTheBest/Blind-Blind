@@ -31,20 +31,17 @@ export default async function getAllTracks(token) {
 
         return await Promise.all(response.data.tracks.items.map(async item => {
             const track = item.track;
-            if (!Array.isArray(track.artists)) {
-                throw new Error('track.artists is not an array');
-            }
 
             const artistGenres = [];
             for (const artist of track.artists) {
                 const artistId = artist.id;
                 const genres = await getGenresByArtistId(token, artistId);
-                if (genres.length > 0) {
+                if (genres.length > 0){
                     genres.forEach(genre => artistGenres.push(genre));
                 }
             }
             if (artistGenres.length === 0) {
-                artistGenres.push('No data 😔');
+                artistGenres.push('Non renseigné');
             }
 
             return {
@@ -60,7 +57,11 @@ export default async function getAllTracks(token) {
             };
         }));
     } catch (error) {
-        console.error('Erreur dans getAllTracks :', error.message);
+        if (error.response) {
+            console.error('Erreur dans getAllTracks :', error.response.data);
+        } else {
+            console.error('Erreur dans getAllTracks :', error.message);
+        }
         throw new Error('Impossible de récupérer les tracks.');
     }
 }
