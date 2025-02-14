@@ -28,6 +28,8 @@ const ClassicMode: React.FC = () => {
         const lastWinDate = localStorage.getItem('lastWinDate');
         const storedAttempts = localStorage.getItem('attempts');
         const lastSavedDate = localStorage.getItem('savedDate');
+        document.title = "Classic - Blind-Blind";
+
 
         if (lastSavedDate !== getTodayDate()) {
             console.log("Nouveau jour détecté, réinitialisation des données...");

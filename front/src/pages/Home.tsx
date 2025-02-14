@@ -1,9 +1,13 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/home/home.css";
 
 export default function Home() {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = "Accueil - Blind-Blind";
+    }, []);
 
     const handlePlayButtonClick = () => {
         navigate("/classic");
