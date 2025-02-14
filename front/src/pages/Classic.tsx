@@ -18,8 +18,8 @@ const ClassicMode: React.FC = () => {
     const isMounted = useRef(false);
     const [gameEnded, setGameEnded] = useState(false);
     const [attempts, setAttempts] = useState(0);
+    const [isLoading, setIsLoading] = useState(true); // Ajout de l'état de chargement
 
-    // Récupérer la date du jour
     const getTodayDate = (): string => {
         return new Date().toISOString().split('T')[0];
     };
@@ -27,24 +27,22 @@ const ClassicMode: React.FC = () => {
     useEffect(() => {
         const lastWinDate = localStorage.getItem('lastWinDate');
         const storedAttempts = localStorage.getItem('attempts');
-        const lastSavedDate = localStorage.getItem('savedDate'); // Nouvelle clé pour vérifier la date
+        const lastSavedDate = localStorage.getItem('savedDate');
 
-        // Si la date enregistrée est différente d'aujourd'hui, on réinitialise tout
         if (lastSavedDate !== getTodayDate()) {
             console.log("Nouveau jour détecté, réinitialisation des données...");
             localStorage.removeItem('lastWinDate');
             localStorage.removeItem('attempts');
-            localStorage.setItem('savedDate', getTodayDate()); // Stocker la nouvelle date
+            localStorage.setItem('savedDate', getTodayDate());
             setGameEnded(false);
             setAttempts(0);
         } else {
-            // Sinon, on récupère les anciennes valeurs
             if (lastWinDate === getTodayDate()) {
                 setGameEnded(true);
-                setPopupOpen(true); // Réouvrir le popup si l'utilisateur a déjà gagné
+                setPopupOpen(true);
             }
             if (storedAttempts) {
-                setAttempts(parseInt(storedAttempts, 10)); // Restaurer les essais
+                setAttempts(parseInt(storedAttempts, 10));
             }
         }
     }, []);
@@ -55,7 +53,6 @@ const ClassicMode: React.FC = () => {
         } else if (Array.isArray(item) && Array.isArray(correctItem)) {
             const itemSet = new Set(item);
             const correctItemSet = new Set(correctItem);
-            // @ts-ignore
             if (itemSet.size === correctItemSet.size && [...itemSet].every(i => correctItemSet.has(i))) {
                 return CategoryGuessResponse.Correct;
             } else if (item.some((i: any) => correctItem.includes(i))) {
@@ -68,10 +65,9 @@ const ClassicMode: React.FC = () => {
     const handleGuessSubmit = (track: any) => {
         if (gameEnded || !track || !track.name) return;
 
-        // Incrémentation des essais
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
-        localStorage.setItem('attempts', newAttempts.toString()); // Sauvegarde du nombre d'essais
+        localStorage.setItem('attempts', newAttempts.toString());
 
         const guessDetails = {
             name: track.name,
@@ -96,7 +92,7 @@ const ClassicMode: React.FC = () => {
         if (track.name === randomTrack.name) {
             setPopupOpen(true);
             setGameEnded(true);
-            localStorage.setItem('lastWinDate', getTodayDate()); // Stocker la date de victoire
+            localStorage.setItem('lastWinDate', getTodayDate());
         }
     };
 
@@ -111,6 +107,7 @@ const ClassicMode: React.FC = () => {
 
     const fetchTracks = async () => {
         try {
+            setIsLoading(true);
             const response = await fetch('http://localhost:3001/api/tracks/all-tracks');
 
             if (!response.ok) {
@@ -127,6 +124,8 @@ const ClassicMode: React.FC = () => {
             }
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
+        } finally {
+            setIsLoading(false); // Fin du chargement
         }
     };
 
@@ -134,24 +133,29 @@ const ClassicMode: React.FC = () => {
         localStorage.removeItem('lastWinDate');
         localStorage.removeItem('attempts');
         localStorage.removeItem('savedDate');
-        window.location.reload(); // Recharge la page
+        window.location.reload();
     };
 
     return (
         <div className="classic-container">
-            <div className="content">
-                <h1>Devinez la chanson !</h1>
-                {gameEnded && <p className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</p>}
-                <p>Nombre d'essais : {attempts}</p>
-                <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
-                <h3>Propositions :</h3>
-                <AnswersTable messages={messages} randomTrack={randomTrack} />
-
-                {/* Bouton pour réinitialiser les tests */}
-                <button onClick={clearCache} className="reset-button">
-                    Réinitialiser le jeu
-                </button>
-            </div>
+            {isLoading ? (
+                <div className="loading">
+                    <div className="spinner"></div>
+                    <p className="loading-message">Chargement en cours...</p>
+                </div>
+            ) : (
+                <div className="content">
+                    <h1>Devinez la chanson !</h1>
+                    {gameEnded && <p className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</p>}
+                    <p>Nombre d'essais : {attempts}</p>
+                    <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
+                    <h3>Propositions :</h3>
+                    <AnswersTable messages={messages} randomTrack={randomTrack} />
+                    <button onClick={clearCache} className="reset-button">
+                        Réinitialiser le jeu
+                    </button>
+                </div>
+            )}
 
             <Popup
                 isOpen={popupOpen}
