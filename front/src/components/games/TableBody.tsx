@@ -24,7 +24,7 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
     return (
         <tbody>
         {guess.map((message, rowIndex) => {
-            const isNewRow = rowIndex === 0; // Toujours la première ligne du tableau (nouvelle réponse ajoutée)
+            const isNewRow = rowIndex === 0;
 
             return (
                 <tr key={`${message.name}-${rowIndex}`} className={isNewRow ? 'new-row' : ''}>
@@ -37,8 +37,8 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
                             className: `${message.isCorrect.popularity} ${getArrowClass(message.popularity, randomItem.popularity)}`
                         },
                         {
-                            value: message.release_date.split('-')[0],
-                            className: `${message.isCorrect.release_date} ${getArrowClass(parseInt(message.release_date.split('-')[0]), parseInt(randomItem.release_date.split('-')[0]))}`
+                            value: message.release_year,
+                            className: `${message.isCorrect.release_year} ${getArrowClass(parseInt(message.release_year), parseInt(randomItem.release_year))}`
                         },
                         { value: message.name, className: message.isCorrect.name }
                     ].map((cell, colIndex) => (

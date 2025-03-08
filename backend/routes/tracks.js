@@ -24,10 +24,8 @@ router.get('/random-track', async (req, res) => {
 // Route pour récupérer toutes les tracks/musiques
 router.get('/all-tracks', async (req, res) => {
     try {
-        const tokenResponse = await axios.get(`http://localhost:${PORT}/api/auth/token`);
-        const token = tokenResponse.data.access_token;
+        const tracks = await getAllTracks();
 
-        const tracks = await getAllTracks(token);
         res.json(tracks);
     } catch (error) {
         console.error('Problème rencontré dans /api/all-tracks :', error);

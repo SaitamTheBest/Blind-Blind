@@ -77,14 +77,14 @@ const ClassicMode: React.FC = () => {
             album: track.album,
             genres: track.genres,
             popularity: track.popularity,
-            release_date: track.release_date,
+            release_year: track.release_year,
             isCorrect: {
                 name: verificateItem(randomTrack.name, track.name),
                 artists: verificateItem(randomTrack.artists, track.artists),
                 genres: verificateItem(randomTrack.genres, track.genres),
                 album: verificateItem(randomTrack.album, track.album),
                 popularity: verificateItem(randomTrack.popularity, track.popularity),
-                release_date: verificateItem(randomTrack.release_date, track.release_date)
+                release_date: verificateItem(randomTrack.release_year, track.release_year)
             }
         };
 

@@ -3,8 +3,7 @@ import { open } from 'sqlite';
 import fs from 'fs';
 import path from 'path';
 
-
-const DATABASE_PATH = path.join('./music.db');
+const DATABASE_PATH = './db/music.db';
 
 async function setupDatabase() {
     console.log("📂 Création de la base SQLite...");
