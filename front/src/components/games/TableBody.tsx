@@ -13,11 +13,11 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
 
     const getArrowClass = (value: number, reference: number): string => {
         if (value > reference) {
-            return 'td-arrow-up';
+            return 'td-arrow-up incorrect';
         } else if (value < reference) {
-            return 'td-arrow-down';
+            return 'td-arrow-down incorrect';
         } else {
-            return '';
+            return 'correct';
         }
     };
 

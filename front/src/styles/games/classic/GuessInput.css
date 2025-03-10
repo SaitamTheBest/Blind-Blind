@@ -4,31 +4,22 @@
     align-items: center;
     margin: 20px 0;
     gap: 10px;
-    min-width: 600px;
-    position: relative; /* Ajouté pour positionner la liste des propositions */
+    width: 700px; /* Fixe une largeur maximale */
+    position: relative;
 }
 
 .guess-form input {
-    width: 100%;
+    width: 90%;
+    max-width: 700px;
     padding: 12px;
     font-size: 1.2rem;
     border: 1px solid #aaa;
     border-radius: 8px;
-    background-color: #3a3a3a; /* Gris */
+    background-color: #3a3a3a;
     color: #fff;
     outline: none;
     transition: all 0.3s ease;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-.guess-form input::placeholder {
-    color: #bbb;
-}
-
-.guess-form input:focus {
-    border-color: #fff;
-    background-color: #4a4a4a; /* Gris plus clair au focus */
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .guess-form button {
@@ -54,30 +45,44 @@
 }
 
 .autocomplete-list {
-    position: absolute; /* Position absolue pour aligner sous la barre de recherche */
-    top: 100%; /* Positionner juste en dessous de l'input */
-    left: 0;
-    right: 0;
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    width: 80%;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background: white;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.autocomplete-list li {
+.autocomplete-item {
+    display: flex;
+    align-items: center;
     padding: 10px;
+    gap: 15px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
+    transition: background 0.2s ease-in-out;
 }
 
-.autocomplete-list li:hover {
-    background-color: #f0f0f0;
+.autocomplete-item:hover {
+    background: #f0f0f0;
 }
 
-.autocomplete-list li:active {
-    background-color: #e0e0e0;
+.track-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.track-info {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+
+.track-image:hover {
+    transform: scale(1.1);
 }

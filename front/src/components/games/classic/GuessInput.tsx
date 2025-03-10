@@ -21,7 +21,6 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled
         setGuess(e.target.value);
         setSearchTerm(term);
 
-
         if (term.length > 0) {
             setFilteredTracks(tracks.filter(track =>
                 track.name.toLowerCase().includes(term) ||
@@ -78,8 +77,9 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled
             {searchTerm && filteredTracks.length > 0 && (
                 <ul className="autocomplete-list">
                     {filteredTracks.map((track, index) => (
-                        <li key={index} onClick={() => handleTrackSelect(track)}>
-                            {track.name} - {(track.artists).join(', ')}
+                        <li key={index} className="autocomplete-item" onClick={() => handleTrackSelect(track)}>
+                            <img src={track.image} alt={track.name} className="track-image" />
+                            <span className="track-info">{track.name} - {(track.artists).join(', ')}</span>
                         </li>
                     ))}
                 </ul>
