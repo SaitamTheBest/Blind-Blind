@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
 import Popup from '../components/games/classic/Popup';
 import '../styles/games/classic/classic.css';
+import { GameContext } from "../components/games/context/GameContext";
 
 enum CategoryGuessResponse {
     Correct = 'correct',
@@ -11,14 +12,18 @@ enum CategoryGuessResponse {
 }
 
 const ClassicMode: React.FC = () => {
-    const [messages, setMessages] = useState<any[]>([]);
     const [tracks, setTracks] = useState<any[]>([]);
-    const [randomTrack, setRandomTrack] = useState<any>(null);
     const [popupOpen, setPopupOpen] = useState(false);
     const isMounted = useRef(false);
     const [gameEnded, setGameEnded] = useState(false);
-    const [attempts, setAttempts] = useState(0);
-    const [isLoading, setIsLoading] = useState(true); // Ajout de l'état de chargement
+    const [isLoading, setIsLoading] = useState(true);
+    const gameContext = useContext(GameContext);
+    if (!gameContext) {
+        throw new Error("GameContext must be used within a GameProvider");
+    }
+
+    const { messages, setMessages, attempts, setAttempts, randomTrack, setRandomTrack } = gameContext;
+
 
     const getTodayDate = (): string => {
         return new Date().toISOString().split('T')[0];
@@ -64,6 +69,13 @@ const ClassicMode: React.FC = () => {
         return CategoryGuessResponse.Incorrect;
     };
 
+    useEffect(() => {
+        const savedMessages = localStorage.getItem("messages");
+        if (savedMessages) {
+            setMessages(JSON.parse(savedMessages));
+        }
+    }, []);
+
     const handleGuessSubmit = (track: any) => {
         if (gameEnded || !track || !track.name) return;
 
@@ -88,8 +100,15 @@ const ClassicMode: React.FC = () => {
             }
         };
 
-        setMessages([guessDetails, ...messages]);
-        setTracks(tracks.filter(t => t.name !== track.name));
+        const updatedMessages = [guessDetails, ...messages];
+        setMessages(updatedMessages);
+        localStorage.setItem("messages", JSON.stringify(updatedMessages));
+
+        const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
+        const updatedGuesses = [...previousGuesses, track.name];
+        localStorage.setItem("previousGuesses", JSON.stringify(updatedGuesses));
+
+        setTracks((prevTracks) => prevTracks.filter(t => t.name !== track.name));
 
         if (track.name === randomTrack.name) {
             setPopupOpen(true);
@@ -120,14 +139,30 @@ const ClassicMode: React.FC = () => {
             const data = await response.json();
 
             if (isMounted.current) {
-                setTracks(data);
-                const randomIndex = Math.floor(Math.random() * data.length);
-                setRandomTrack(data[randomIndex]);
+                const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
+
+                const filteredTracks = data.filter((track: { name: any; }) => !previousGuesses.includes(track.name));
+
+                setTracks(filteredTracks);
+
+                const savedTrack = localStorage.getItem('randomTrack');
+                const lastTrackDate = localStorage.getItem('trackDate');
+
+                if (savedTrack && lastTrackDate === getTodayDate()) {
+                    setRandomTrack(JSON.parse(savedTrack));
+                } else {
+                    const randomIndex = Math.floor(Math.random() * filteredTracks.length);
+                    const chosenTrack = filteredTracks[randomIndex];
+
+                    setRandomTrack(chosenTrack);
+                    localStorage.setItem('randomTrack', JSON.stringify(chosenTrack));
+                    localStorage.setItem('trackDate', getTodayDate());
+                }
             }
         } catch (error) {
             console.error('Erreur lors de la récupération de la musique :', error);
         } finally {
-            setIsLoading(false); // Fin du chargement
+            setIsLoading(false);
         }
     };
 
@@ -135,6 +170,10 @@ const ClassicMode: React.FC = () => {
         localStorage.removeItem('lastWinDate');
         localStorage.removeItem('attempts');
         localStorage.removeItem('savedDate');
+        localStorage.removeItem('previousGuesses');
+        localStorage.removeItem('randomTrack');
+        localStorage.removeItem('trackDate');
+        localStorage.removeItem('messages');
         window.location.reload();
     };
 
