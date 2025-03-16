@@ -17,7 +17,9 @@ async function getAllTracks() {
                 t.spotify_url, 
                 t.preview_url, 
                 t.image_url AS image, 
-                t.popularity, 
+                t.popularity,
+                a.followers,
+                a.image_url,
                 GROUP_CONCAT(a.name, ', ') AS artists,
                 GROUP_CONCAT(a.genres, ', ') AS genres
             FROM tracks t

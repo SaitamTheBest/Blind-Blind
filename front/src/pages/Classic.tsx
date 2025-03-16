@@ -1,9 +1,11 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
 import Popup from '../components/games/classic/Popup';
 import '../styles/games/classic/classic.css';
 import { GameContext } from "../components/games/context/GameContext";
+import HintText from "../components/games/HintText";
+import HintImage from "../components/games/HintImage";
 
 enum CategoryGuessResponse {
     Correct = 'correct',
@@ -14,6 +16,7 @@ enum CategoryGuessResponse {
 const ClassicMode: React.FC = () => {
     const [tracks, setTracks] = useState<any[]>([]);
     const [popupOpen, setPopupOpen] = useState(false);
+    const [hintOpen, setHintOpen] = useState(false);
     const isMounted = useRef(false);
     const [gameEnded, setGameEnded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +26,6 @@ const ClassicMode: React.FC = () => {
     }
 
     const { messages, setMessages, attempts, setAttempts, randomTrack, setRandomTrack } = gameContext;
-
 
     const getTodayDate = (): string => {
         return new Date().toISOString().split('T')[0];
@@ -35,9 +37,7 @@ const ClassicMode: React.FC = () => {
         const lastSavedDate = localStorage.getItem('savedDate');
         document.title = "Classic - Blind-Blind";
 
-
         if (lastSavedDate !== getTodayDate()) {
-            console.log("Nouveau jour détecté, réinitialisation des données...");
             localStorage.removeItem('lastWinDate');
             localStorage.removeItem('attempts');
             localStorage.setItem('savedDate', getTodayDate());
@@ -88,6 +88,7 @@ const ClassicMode: React.FC = () => {
             artists: track.artists,
             album: track.album,
             genres: track.genres,
+            followers: track.followers,
             popularity: track.popularity,
             release_year: track.release_year,
             isCorrect: {
@@ -95,6 +96,7 @@ const ClassicMode: React.FC = () => {
                 artists: verificateItem(randomTrack.artists, track.artists),
                 genres: verificateItem(randomTrack.genres, track.genres),
                 album: verificateItem(randomTrack.album, track.album),
+                followers: verificateItem(randomTrack.followers, track.followers),
                 popularity: verificateItem(randomTrack.popularity, track.popularity),
                 release_date: verificateItem(randomTrack.release_year, track.release_year)
             }
@@ -120,7 +122,6 @@ const ClassicMode: React.FC = () => {
     useEffect(() => {
         isMounted.current = true;
         fetchTracks();
-
         return () => {
             isMounted.current = false;
         };
@@ -137,12 +138,10 @@ const ClassicMode: React.FC = () => {
             }
 
             const data = await response.json();
-
             if (isMounted.current) {
                 const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
 
                 const filteredTracks = data.filter((track: { name: any; }) => !previousGuesses.includes(track.name));
-
                 setTracks(filteredTracks);
 
                 const savedTrack = localStorage.getItem('randomTrack');
@@ -190,6 +189,12 @@ const ClassicMode: React.FC = () => {
                     {gameEnded && <p className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</p>}
                     <p>Nombre d'essais : {attempts}</p>
                     <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
+
+                    {attempts >= 5 && (
+                        <button className="hint-button" onClick={() => setHintOpen(true)}>Voir l'indice 💡</button>
+                    )}
+                    <HintImage isOpen={hintOpen} hint={`${randomTrack.image_url}`} onClose={() => setHintOpen(false)} />
+
                     <h3>Propositions :</h3>
                     <AnswersTable messages={messages} randomTrack={randomTrack} />
                     <button onClick={clearCache} className="reset-button">
