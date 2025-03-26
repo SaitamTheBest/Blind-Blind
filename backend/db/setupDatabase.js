@@ -19,7 +19,8 @@ async function setupDatabase() {
             name TEXT NOT NULL UNIQUE,
             genres TEXT,
             followers INTEGER,
-            image_url TEXT
+            image_url TEXT,
+            Nationality TEXT
         );
         
         CREATE TABLE IF NOT EXISTS tracks (

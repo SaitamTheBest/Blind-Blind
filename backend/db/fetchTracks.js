@@ -17,7 +17,7 @@ if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET) {
 
 const DATABASE_PATH = 'music.db';
 const SPOTIFY_API_URL = 'https://api.spotify.com/v1';
-const OFFSET = 400; // constante pour récupérer les morceaux de x+1 à x+100
+const OFFSET = 100; // constante pour récupérer les morceaux de x+1 à x+100
 
 /**
  * Récupère un token d'accès à l'API Spotify
