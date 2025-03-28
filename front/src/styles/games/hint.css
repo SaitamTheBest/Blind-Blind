@@ -1,52 +1,58 @@
-.hint-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+.hint-buttons {
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    gap: 60px;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
-.hint-popup {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    max-width: 300px;
-}
-
-.hint-popup h2 {
-    margin: 0 0 10px;
-    font-size: 20px;
-}
-
-.hint-popup p {
+.hint-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-weight: bold;
     font-size: 16px;
-    margin-bottom: 15px;
-}
-
-.hint-popup img {
-    width: 100%;
-    height: auto;
-    padding: 10px;
-}
-
-
-.hint-close-btn {
-    background: #ff4757;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
+    color: black;
     cursor: pointer;
+    border : 1px solid black;
+    background-color: #c5c5c5;
+    transition: width 0.1s, height 0.1s, background-color 0.1s;
 }
 
-.hint-close-btn:hover {
-    background: #e84118;
+.hint-button.unlocked {
+    border: 1px solid #8e1212;
+    cursor: pointer;
+    color: #851111;
+}
+
+.hint-button:hover.unlocked {
+    background-color: #8989a1;
+    width: 40px;
+    height: 40px;
+}
+
+.hint-button.locked {
+    position: relative;
+}
+
+.hint-button.locked::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #222;
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 100;
+}
+
+.hint-button.locked:hover::after {
+    opacity: 1;
 }

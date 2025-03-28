@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import {open} from 'sqlite';
+import { open } from 'sqlite';
 
 async function getAllTracks() {
     const db = await open({
@@ -9,22 +9,23 @@ async function getAllTracks() {
 
     try {
         const tracks = await db.all(`
-            SELECT 
-                t.id AS track_id, 
-                t.name, 
+            SELECT
+                t.id AS track_id,
+                t.name,
                 t.album,
-                t.release_year, 
-                t.spotify_url, 
-                t.preview_url, 
-                t.image_url AS image, 
+                t.release_year,
+                t.spotify_url,
+                t.preview_url,
+                t.image_url AS image,
                 t.popularity,
                 a.followers,
                 a.image_url,
+                a.Nationality as nationality,
                 GROUP_CONCAT(a.name, ', ') AS artists,
                 GROUP_CONCAT(a.genres, ', ') AS genres
             FROM tracks t
-            LEFT JOIN track_artists ta ON t.id = ta.track_id
-            LEFT JOIN artists a ON ta.artist_id = a.id
+                     LEFT JOIN track_artists ta ON t.id = ta.track_id
+                     LEFT JOIN artists a ON ta.artist_id = a.id
             GROUP BY t.id
             ORDER BY t.popularity DESC;
         `);
@@ -45,7 +46,8 @@ async function getAllTracks() {
             return {
                 ...track,
                 artists,
-                genres
+                genres,
+                nationality: track.nationality || "Inconnue"
             };
         });
     } catch (error) {

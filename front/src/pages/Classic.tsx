@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import GuessInput from '../components/games/classic/GuessInput';
 import AnswersTable from '../components/games/classic/AnswersTable';
-import Popup from '../components/games/classic/Popup';
+import Popup from '../components/games/classic/SuccessPopup';
 import '../styles/games/classic/classic.css';
 import { GameContext } from "../components/games/context/GameContext";
-import HintText from "../components/games/HintText";
-import HintImage from "../components/games/HintImage";
+import HintImage from "../components/games/hint/HintImage";
+import HintNationality from "../components/games/hint/HintNationality";
+import '../styles/games/hint.css';
 
 enum CategoryGuessResponse {
     Correct = 'correct',
@@ -16,10 +17,12 @@ enum CategoryGuessResponse {
 const ClassicMode: React.FC = () => {
     const [tracks, setTracks] = useState<any[]>([]);
     const [popupOpen, setPopupOpen] = useState(false);
-    const [hintOpen, setHintOpen] = useState(false);
+    const [hintNatOpen, setHintNatOpen] = useState(false);
+    const [hintImgOpen, setHintImgOpen] = useState(false);
     const isMounted = useRef(false);
     const [gameEnded, setGameEnded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
     const gameContext = useContext(GameContext);
     if (!gameContext) {
         throw new Error("GameContext must be used within a GameProvider");
@@ -27,9 +30,7 @@ const ClassicMode: React.FC = () => {
 
     const { messages, setMessages, attempts, setAttempts, randomTrack, setRandomTrack } = gameContext;
 
-    const getTodayDate = (): string => {
-        return new Date().toISOString().split('T')[0];
-    };
+    const getTodayDate = (): string => new Date().toISOString().split('T')[0];
 
     useEffect(() => {
         const lastWinDate = localStorage.getItem('lastWinDate');
@@ -131,16 +132,13 @@ const ClassicMode: React.FC = () => {
         try {
             setIsLoading(true);
             const response = await fetch('http://localhost:3001/api/tracks/all-tracks');
-
             if (!response.ok) {
                 console.error('Réponse du serveur incorrecte :', response);
                 return;
             }
-
             const data = await response.json();
             if (isMounted.current) {
                 const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
-
                 const filteredTracks = data.filter((track: { name: any; }) => !previousGuesses.includes(track.name));
                 setTracks(filteredTracks);
 
@@ -152,7 +150,6 @@ const ClassicMode: React.FC = () => {
                 } else {
                     const randomIndex = Math.floor(Math.random() * filteredTracks.length);
                     const chosenTrack = filteredTracks[randomIndex];
-
                     setRandomTrack(chosenTrack);
                     localStorage.setItem('randomTrack', JSON.stringify(chosenTrack));
                     localStorage.setItem('trackDate', getTodayDate());
@@ -166,13 +163,7 @@ const ClassicMode: React.FC = () => {
     };
 
     const clearCache = () => {
-        localStorage.removeItem('lastWinDate');
-        localStorage.removeItem('attempts');
-        localStorage.removeItem('savedDate');
-        localStorage.removeItem('previousGuesses');
-        localStorage.removeItem('randomTrack');
-        localStorage.removeItem('trackDate');
-        localStorage.removeItem('messages');
+        localStorage.clear();
         window.location.reload();
     };
 
@@ -186,17 +177,43 @@ const ClassicMode: React.FC = () => {
             ) : (
                 <div className="content">
                     <h1>Devinez la chanson !</h1>
-                    {gameEnded && <p className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</p>}
+                    {gameEnded && <h4 className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</h4>}
                     <p>Nombre d'essais : {attempts}</p>
-                    <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
 
-                    {attempts >= 5 && (
-                        <button className="hint-button" onClick={() => setHintOpen(true)}>Voir l'indice 💡</button>
-                    )}
-                    <HintImage isOpen={hintOpen} hint={`${randomTrack.image_url}`} onClose={() => setHintOpen(false)} />
+
+                    
+                    <div className="hint-buttons">
+                        <button
+                            className={`hint-button ${attempts >= 5 ? 'unlocked' : 'locked'}`}
+                            onClick={() => {
+                                if (attempts >= 5) {
+                                    setHintNatOpen(true);
+                                }
+                            }}
+                            data-tooltip="Débloqué après 5 essais"
+                        >
+                            1
+                        </button>
+
+                        <button
+                            className={`hint-button ${attempts >= 10 ? 'unlocked' : 'locked'}`}
+                            onClick={() => {
+                                if (attempts >= 10) {
+                                    setHintImgOpen(true);
+                                }
+                            }}
+                            data-tooltip="Débloqué après 10 essais"
+                        >
+                            2
+                        </button>
+                    </div>
+
+
+                    <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
 
                     <h3>Propositions :</h3>
                     <AnswersTable messages={messages} randomTrack={randomTrack} />
+
                     <button onClick={clearCache} className="reset-button">
                         Réinitialiser le jeu
                     </button>
@@ -208,6 +225,18 @@ const ClassicMode: React.FC = () => {
                 trackDetails={randomTrack}
                 onClose={() => setPopupOpen(false)}
             />
+            <HintNationality
+                isOpen={hintNatOpen}
+                nationality={randomTrack?.nationality}
+                onClose={() => setHintNatOpen(false)}
+            />
+
+            <HintImage
+                isOpen={hintImgOpen}
+                imageUrl={randomTrack?.image_url}
+                onClose={() => setHintImgOpen(false)}
+            />
+
         </div>
     );
 };

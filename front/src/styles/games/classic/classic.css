@@ -27,6 +27,10 @@
     margin-bottom: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1 {
@@ -134,4 +138,28 @@ tr:not(.new-row) td {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.hint-trigger {
+    display: inline-block;
+    margin: 1rem;
+    cursor: pointer;
+}
+
+.hint-circle {
+    width: 35px;
+    height: 35px;
+    background-color: #cce5ff;
+    color: #007bff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+
+.hint-circle:hover {
+    background-color: #a3d0ff;
 }
