@@ -181,7 +181,7 @@ const ClassicMode: React.FC = () => {
                     <p>Nombre d'essais : {attempts}</p>
 
 
-                    
+
                     <div className="hint-buttons">
                         <button
                             className={`hint-button ${attempts >= 5 ? 'unlocked' : 'locked'}`}
