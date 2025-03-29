@@ -5,7 +5,7 @@ import Popup from '../components/games/classic/SuccessPopup';
 import '../styles/games/classic/classic.css';
 import { GameContext } from "../components/games/context/GameContext";
 import HintImage from "../components/games/hint/HintImage";
-import HintNationality from "../components/games/hint/HintNationality";
+import HintPerformer from "../components/games/hint/HintPerformer";
 import '../styles/games/hint.css';
 
 enum CategoryGuessResponse {
@@ -99,7 +99,7 @@ const ClassicMode: React.FC = () => {
                 album: verificateItem(randomTrack.album, track.album),
                 followers: verificateItem(randomTrack.followers, track.followers),
                 popularity: verificateItem(randomTrack.popularity, track.popularity),
-                release_date: verificateItem(randomTrack.release_year, track.release_year)
+                release_date: verificateItem(randomTrack.release_year, track.release_year),
             }
         };
 
@@ -184,25 +184,25 @@ const ClassicMode: React.FC = () => {
 
                     <div className="hint-buttons">
                         <button
-                            className={`hint-button ${attempts >= 5 ? 'unlocked' : 'locked'}`}
+                            className={`hint-button ${attempts >= 3 ? 'unlocked' : 'locked'}`}
                             onClick={() => {
-                                if (attempts >= 5) {
+                                if (attempts >= 3) {
                                     setHintNatOpen(true);
                                 }
                             }}
-                            data-tooltip="Débloqué après 5 essais"
+                            data-tooltip="Débloqué après 3 essais"
                         >
                             1
                         </button>
 
                         <button
-                            className={`hint-button ${attempts >= 10 ? 'unlocked' : 'locked'}`}
+                            className={`hint-button ${attempts >= 8 ? 'unlocked' : 'locked'}`}
                             onClick={() => {
-                                if (attempts >= 10) {
+                                if (attempts >= 8) {
                                     setHintImgOpen(true);
                                 }
                             }}
-                            data-tooltip="Débloqué après 10 essais"
+                            data-tooltip="Débloqué après 8 essais"
                         >
                             2
                         </button>
@@ -225,9 +225,9 @@ const ClassicMode: React.FC = () => {
                 trackDetails={randomTrack}
                 onClose={() => setPopupOpen(false)}
             />
-            <HintNationality
+            <HintPerformer
                 isOpen={hintNatOpen}
-                nationality={randomTrack?.nationality}
+                performer_type={randomTrack?.performer_type}
                 onClose={() => setHintNatOpen(false)}
             />
 

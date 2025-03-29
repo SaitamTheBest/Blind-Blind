@@ -21,6 +21,7 @@ async function getAllTracks() {
                 a.followers,
                 a.image_url,
                 a.Nationality as nationality,
+                t.performer_type,
                 GROUP_CONCAT(a.name, ', ') AS artists,
                 GROUP_CONCAT(a.genres, ', ') AS genres
             FROM tracks t
