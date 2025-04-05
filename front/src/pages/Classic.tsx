@@ -88,6 +88,7 @@ const ClassicMode: React.FC = () => {
             name: track.name,
             artists: track.artists,
             album: track.album,
+            nationality: track.nationality,
             genres: track.genres,
             followers: track.followers,
             popularity: track.popularity,
@@ -95,6 +96,7 @@ const ClassicMode: React.FC = () => {
             isCorrect: {
                 name: verificateItem(randomTrack.name, track.name),
                 artists: verificateItem(randomTrack.artists, track.artists),
+                nationality: verificateItem(randomTrack.nationality, track.nationality),
                 genres: verificateItem(randomTrack.genres, track.genres),
                 album: verificateItem(randomTrack.album, track.album),
                 followers: verificateItem(randomTrack.followers, track.followers),

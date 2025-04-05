@@ -31,6 +31,7 @@ const TableBody: React.FC<TableBodyProps> = ({ guess, randomItem }) => {
                     {[
                         { value: message.artists.join(', '), className: message.isCorrect.artists },
                         { value: message.album, className: message.isCorrect.album },
+                        { value: message.nationality, className: message.isCorrect.nationality},
                         { value: message.genres.join(', '), className: message.isCorrect.genres },
                         {
                             value: message.followers.toLocaleString('fr-FR'),
