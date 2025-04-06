@@ -72,7 +72,7 @@ const GuessInput: React.FC<GuessInputProps> = ({ onGuessSubmit, tracks, disabled
                 disabled={disabled}
             />
             <button type="submit" className="guess-submit" disabled={disabled || guess.length === 0}>
-                Envoyer
+                <img src="/Blind-Blind-logo-blanc.png" alt="Submit" className="guess-submit-icon" />
             </button>
             {searchTerm && filteredTracks.length > 0 && (
                 <ul className="autocomplete-list">
