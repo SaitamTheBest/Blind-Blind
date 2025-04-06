@@ -1,0 +1,35 @@
+footer {
+    background: black;
+    color: white;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 20px 0;
+    height: 30px;
+    width: 100%;
+    bottom: 0;
+    margin: auto;
+}
+
+p {
+    text-align: center;
+    margin: 10px;
+    font-size: 14px;
+}
+
+.social-media {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-media a {
+    color: white;
+    text-decoration: none;
+}
+
+.social-media a img {
+    width: 24px;
+    height: 24px;
+}

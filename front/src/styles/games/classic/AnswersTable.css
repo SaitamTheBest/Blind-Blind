@@ -1,0 +1,76 @@
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: separate;
+    border-spacing: 10px 15px;
+    font-family: Arial, sans-serif;
+}
+
+thead {
+    background-color: #f0f0f0;
+}
+
+th {
+    padding: 20px 5px;
+    text-align: center;
+    border-radius: 8px;
+    width: 80px;
+
+}
+
+td {
+    padding: 10px;
+    text-align: center;
+    border-radius: 2px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    font-weight: bold;
+    height: 60px;
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: fadeInLeft 0.5s ease forwards;
+}
+
+.correct {
+    background-color: #39ff3d;
+}
+
+.incorrect {
+    background-color: #f64a57;
+}
+
+.mid-correct {
+    background-color: #ff9e3d;
+}
+
+/* Arrière-plan pour les flèches vers le haut et le bas */
+.td-arrow-up {
+    background-image: url('../../../res/fond.png');
+}
+
+.td-arrow-down {
+    background-image: url('../../../res/fond_haut.png');
+}
+
+
+/* Applique l'animation uniquement à la première ligne */
+tr:first-child td {
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: fadeInLeft 0.5s ease forwards;
+}
+
+/* Les anciennes lignes restent visibles sans animation */
+tr:not(:first-child) td {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@keyframes fadeInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
