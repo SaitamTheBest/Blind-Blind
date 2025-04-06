@@ -33,22 +33,34 @@ async function getAllTracks() {
 
         return tracks.map(track => {
             const artists = track.artists ? track.artists.split(',').map(a => a.trim()) : [];
+
             let genres = track.genres
-                ? track.genres
-                    .split(',')
-                    .map(g => g.trim())
-                    .filter(g => g !== '')
+                ? [...new Set(
+                    track.genres
+                        .split(',')
+                        .map(g => g.trim())
+                        .filter(g => g !== '')
+                )]
                 : [];
 
             if (genres.length === 0) {
                 genres = ["Aucune donnée"];
             }
 
+            let nationalities = track.nationality
+                ? [...new Set(
+                    track.nationality
+                        .split(',')
+                        .map(n => n.trim())
+                        .filter(n => n !== '')
+                )]
+                : [];
+
             return {
                 ...track,
                 artists,
                 genres,
-                nationality: track.nationality || "Inconnue"
+                nationality: nationalities
             };
         });
     } catch (error) {
