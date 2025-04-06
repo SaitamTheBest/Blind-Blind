@@ -4,19 +4,20 @@ import Home from "./pages/Home";
 import Footer from "./components/footer/Footer";
 import Header from "./components/header/Header";
 import ClassicMode from "./pages/Classic";
+import { GameProvider } from "./components/games/context/GameContext";
 
 function App() {
     return (
-        <Router>
-            <div>
+        <GameProvider>
+            <Router>
                 <Header />
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/classic" element={<ClassicMode />} />
                 </Routes>
                 <Footer />
-            </div>
-        </Router>
+            </Router>
+        </GameProvider>
     );
 }
 

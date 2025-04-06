@@ -1,7 +1,7 @@
-const axios = require('axios');
+import axios from "axios";
 
 // Fonction pour récupérer la nationalité d'un artiste depuis l'API MusicBrainz
-async function getArtistNationality(artistName) {
+export default async function getArtistNationality(artistName) {
     const baseUrl = 'https://musicbrainz.org/ws/2/artist/';
     try {
         //On récupère la nationalité de l'artiste
@@ -26,6 +26,3 @@ async function getArtistNationality(artistName) {
         return 'Erreur';
     }
 }
-
-//Export de la fonction pour l'utiliser plus tard dans randomTrack.js
-module.exports = { getArtistNationality };

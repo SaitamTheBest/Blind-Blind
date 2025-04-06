@@ -1,64 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../../styles/games/classic/AnswersTable.css';
+import TableTitle from "../TableTitle";
+import TableBody from "../TableBody";
 
 type AnswersTableProps = {
-    messages: string[];
+    messages: any[];
+    randomTrack: any;
 };
 
-// Exemple des données correctes (à remplacer par le JSON plus tard)
-const correctData = {
-    titre: "That's What I Like",
-    artiste: 'Bruno Mars',
-    album: '24K Magic',
-    genre: 'R&B',
-    popularite: 92,
-    annee: 2017,
-};
+const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) => {
+    const [storedMessages, setStoredMessages] = useState<any[]>([]);
+    const [storedRandomTrack, setStoredRandomTrack] = useState<any>(null);
 
-// Fonction pour déterminer la classe CSS de la cellule numérique
-const getNumericCellClass = (proposition: number, correcte: number) => {
-    if (proposition === correcte) {
-        return 'correct';
-    }
-    return proposition > correcte ? 'td-arrow-up' : 'td-arrow-down';
-};
+    useEffect(() => {
+        const savedMessages = localStorage.getItem("messages");
+        const savedRandomTrack = localStorage.getItem("randomTrack");
 
-const AnswersTable: React.FC<AnswersTableProps> = ({ messages }) => {
-    if (messages.length === 0) {
+        if (savedMessages) {
+            setStoredMessages(JSON.parse(savedMessages));
+        }
+
+        if (savedRandomTrack) {
+            setStoredRandomTrack(JSON.parse(savedRandomTrack));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            localStorage.setItem("messages", JSON.stringify(messages));
+            setStoredMessages(messages);
+        }
+
+        if (randomTrack) {
+            localStorage.setItem("randomTrack", JSON.stringify(randomTrack));
+            setStoredRandomTrack(randomTrack);
+        }
+    }, [messages, randomTrack]);
+
+    if (storedMessages.length === 0) {
         return null;
     }
 
     return (
-        <table>
-            <thead>
-            <tr>
-                <th>Titre</th>
-                <th>Artiste</th>
-                <th>Album</th>
-                <th>Genre</th>
-                <th>Popularité</th>
-                <th>Année</th>
-            </tr>
-            </thead>
-            <tbody>
-            {messages.map((message, index) => (
-                <tr key={index}>
-                    <td className={message === correctData.titre ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === correctData.artiste ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === correctData.album ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={message === correctData.genre ? 'correct' : 'incorrect'}>{message}</td>
-                    <td className={getNumericCellClass(parseInt(message), correctData.popularite)}>
-                        {message}
-                    </td>
-                    <td className={getNumericCellClass(parseInt(message), correctData.annee)}>
-                        {message}
-                    </td>
-                </tr>
-            ))}
-            </tbody>
-        </table>
+        <div>
+            <table>
+                <TableTitle titles={['Artistes', 'Album', 'Nationalité', 'Genres', 'Followers', 'Popularité', 'Année', 'Titre']} />
+                <TableBody guess={storedMessages} randomItem={storedRandomTrack} />
+            </table>
+        </div>
     );
 };
 
 export default AnswersTable;
-
