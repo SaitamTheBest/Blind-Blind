@@ -64,4 +64,6 @@ jobs:
             
             npm install -g pm2
             cd /home/${{ secrets.VPS_USERNAME }}/apps/blindblind/backend
-            pm2 restart blindblind
+            pm2 describe blindblind > /dev/null \
+            && pm2 restart blindblind \
+            || pm2 start app.js --name blindblind
