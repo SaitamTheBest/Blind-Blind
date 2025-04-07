@@ -25,7 +25,7 @@ jobs:
         working-directory: ./front
         env:
           CI: false
-          PORT: ${{ secrets.PORT }}
+          REACT_APP_PORT: ${{ secrets.PORT }}
         run: |
           npm install --legacy-peer-deps
           npm run build
