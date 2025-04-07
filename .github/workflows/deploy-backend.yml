@@ -33,15 +33,35 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "backend/*"
-          target: "/home/${{ secrets.VPS_USERNAME }}/apps/blindblind/backend"
-
-      - name: 🔁 Restart PM2 backend
+          target: "/home/${{ secrets.VPS_USERNAME }}/apps/blindblind"
+          
+      - name: Inject env file
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            cat <<EOF > /home/${{ secrets.VPS_USERNAME }}/apps/blindblind/backend/.env
+            SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
+            SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
+            ID_PLAYLIST=${{ secrets.ID_PLAYLIST }}
+            GENIUS_CLIENT_SECRET=${{ secrets.GENIUS_CLIENT_SECRET }}
+            GENIUS_CLIENT_ID=${{ secrets.GENIUS_CLIENT_ID }}
+            PORT=${{ secrets.PORT }}
+            EOF
+
+      - name: Restart PM2 backend
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            
             npm install -g pm2
             cd /home/${{ secrets.VPS_USERNAME }}/apps/blindblind/backend
             pm2 restart blindblind
