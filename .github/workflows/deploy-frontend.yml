@@ -25,9 +25,11 @@ jobs:
         working-directory: ./front
         env:
           CI: false
-          REACT_APP_PORT: ${{ secrets.PORT }}
         run: |
           npm install --legacy-peer-deps
+          cat <<EOF > .env
+          REACT_APP_URL_API=${{ secrets.REACT_APP_URL_API }}
+          EOF
           npm run build
 
       - name: Upload React build
