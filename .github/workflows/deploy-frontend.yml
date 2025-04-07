@@ -23,6 +23,8 @@ jobs:
 
       - name: Build React
         working-directory: ./front
+        env:
+          CI: false
         run: |
           npm install --legacy-peer-deps
           npm run build
