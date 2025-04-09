@@ -44,6 +44,7 @@ jobs:
           script: |
             cat <<EOF > /home/${{ secrets.VPS_USERNAME }}/apps/blindblind/backend/.env
             SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
             SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
             ID_PLAYLIST=${{ secrets.ID_PLAYLIST }}
             GENIUS_CLIENT_SECRET=${{ secrets.GENIUS_CLIENT_SECRET }}
