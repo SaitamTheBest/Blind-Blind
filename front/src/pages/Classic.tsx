@@ -7,7 +7,6 @@ import { GameContext } from "../components/games/context/GameContext";
 import HintImage from "../components/games/hint/HintImage";
 import HintPerformer from "../components/games/hint/HintPerformer";
 import '../styles/games/hint.css';
-import '../types/env';
 
 enum CategoryGuessResponse {
     Correct = 'correct',
