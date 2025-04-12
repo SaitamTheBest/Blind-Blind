@@ -30,7 +30,14 @@ jobs:
           cat <<EOF > .env
           REACT_APP_URL_API=${{ secrets.REACT_APP_URL_API }}
           EOF
+
+          cat <<EOF > public/env.js
+          window._env_ = {
+            REACT_APP_URL_API: "${{ secrets.REACT_APP_URL_API }}"
+          };
+          EOF
           npm run build
+          
 
       - name: Upload React build
         uses: appleboy/scp-action@v0.1.4
