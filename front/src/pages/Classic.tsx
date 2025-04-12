@@ -133,6 +133,7 @@ const ClassicMode: React.FC = () => {
     const fetchTracks = async () => {
         try {
             const apiUrl = window._env_?.REACT_APP_URL_API ?? process.env.REACT_APP_URL_API;
+            console.log(apiUrl);
             setIsLoading(true);
             const response = await fetch(`${apiUrl}/tracks/all-tracks`);
             if (!response.ok) {
