@@ -7,6 +7,7 @@ import { GameContext } from "../components/games/context/GameContext";
 import HintImage from "../components/games/hint/HintImage";
 import HintPerformer from "../components/games/hint/HintPerformer";
 import '../styles/games/hint.css';
+import './types/env';
 
 enum CategoryGuessResponse {
     Correct = 'correct',
@@ -132,8 +133,9 @@ const ClassicMode: React.FC = () => {
 
     const fetchTracks = async () => {
         try {
+            const apiUrl = window._env_?.REACT_APP_URL_API ?? process.env.REACT_APP_URL_API;
             setIsLoading(true);
-            const response = await fetch(`${process.env.REACT_APP_URL_API}/tracks/all-tracks`);
+            const response = await fetch(`${apiUrl}/tracks/all-tracks`);
             if (!response.ok) {
                 console.error('Réponse du serveur incorrecte :', response);
                 return;
