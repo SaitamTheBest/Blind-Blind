@@ -132,8 +132,10 @@ const ClassicMode: React.FC = () => {
 
     const fetchTracks = async () => {
         try {
+            const apiUrl = window._env_?.REACT_APP_URL_API ?? process.env.REACT_APP_URL_API;
+
             setIsLoading(true);
-            const response = await fetch('http://localhost:3001/api/tracks/all-tracks');
+            const response = await fetch(`${apiUrl}/api/tracks/all-tracks`);
             if (!response.ok) {
                 console.error('Réponse du serveur incorrecte :', response);
                 return;

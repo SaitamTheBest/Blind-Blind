@@ -17,7 +17,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [randomTrack, setRandomTrack] = useState<any>(null);
 
     useEffect(() => {
-        console.log("Game State Updated:", { messages, attempts, randomTrack });
     }, [messages, attempts, randomTrack]);
 
     return (

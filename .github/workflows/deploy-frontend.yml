@@ -1,0 +1,58 @@
+name: Deploy React Frontend
+
+on:
+  push:
+    paths:
+      - 'front/**'
+      - '.github/workflows/deploy-frontend.yml'
+    branches:
+      - main
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Build React
+        working-directory: ./front
+        env:
+          CI: false
+        run: |
+          npm install --legacy-peer-deps
+          cat <<EOF > .env
+          REACT_APP_URL_API=${{ secrets.REACT_APP_URL_API }}
+          EOF
+
+          cat <<EOF > public/env.js
+          window._env_ = {
+            REACT_APP_URL_API: "${{ secrets.REACT_APP_URL_API }}"
+          };
+          EOF
+          npm run build
+          
+
+      - name: Upload React build
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "front/build/*"
+          target: "/home/${{ secrets.VPS_USERNAME }}/apps/blindblind"
+          overwrite: true
+
+      - name: Reload NGINX
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: sudo systemctl reload nginx
