@@ -6,7 +6,24 @@ import getAllTracks from "../services/getAllTracks.js";
 
 const router = express.Router();
 
-// Route pour récupérer une track/musique aléatoire avec un filtre sur la nationalité
+/**
+ * @swagger
+ * tags:
+ *   name: Tracks
+ *   description: Gestion des musiques
+ */
+
+
+/**
+ * @swagger
+ * /api/tracks/random-track:
+ *   get:
+ *     summary: Récupère une musique aléatoire
+ *     tags: [Tracks]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
 router.get('/random-track', async (req, res) => {
     try {
         const filterNationality = req.query.nationality;
@@ -21,7 +38,16 @@ router.get('/random-track', async (req, res) => {
     }
 });
 
-// Route pour récupérer toutes les tracks/musiques
+/**
+ * @swagger
+ * /api/tracks/all-tracks:
+ *   get:
+ *     summary: Récupère la liste des tracks
+ *     tags: [Tracks]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
 router.get('/all-tracks', async (req, res) => {
     try {
         const tracks = await getAllTracks();
