@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import authRoutes from './routes/spotify/auth.js';
 import tracksRoutes from './routes/tracks.js';
+import {currentConfig} from "./config/config.js";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'API Blind-Blind',
+            title: currentConfig.swaggerTitle,
             version: '1.0.0',
             description: 'Documentation de l’API Blind-Blind',
         },
@@ -30,7 +31,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['./routes/**/*.js'], // Tous les fichiers routes
+    apis: ['./routes/**/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
