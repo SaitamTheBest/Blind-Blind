@@ -36,14 +36,19 @@ const ClassicMode: React.FC = () => {
         const lastWinDate = localStorage.getItem('lastWinDate');
         const storedAttempts = localStorage.getItem('attempts');
         const lastSavedDate = localStorage.getItem('savedDate');
+        const savedSongOfTheDay = localStorage.getItem('songOfTheDay');
+
         document.title = "Classic - Blind-Blind";
 
-        if (lastSavedDate !== getTodayDate()) {
+        if (lastSavedDate !== getTodayDate() || savedSongOfTheDay !== JSON.stringify(randomTrack)) {
             localStorage.removeItem('lastWinDate');
             localStorage.removeItem('attempts');
             localStorage.setItem('savedDate', getTodayDate());
             setGameEnded(false);
             setAttempts(0);
+
+            localStorage.removeItem('randomTrack');
+            localStorage.removeItem('trackDate');
         } else {
             if (lastWinDate === getTodayDate()) {
                 setGameEnded(true);
@@ -53,7 +58,10 @@ const ClassicMode: React.FC = () => {
                 setAttempts(parseInt(storedAttempts, 10));
             }
         }
-    }, []);
+
+        localStorage.setItem('songOfTheDay', JSON.stringify(randomTrack));
+
+    }, [randomTrack]);
 
     const verificateItem = (correctItem: any, item: any): CategoryGuessResponse => {
         if (item === correctItem) {
@@ -124,11 +132,31 @@ const ClassicMode: React.FC = () => {
 
     useEffect(() => {
         isMounted.current = true;
+        fetchSongOfTheDay();
         fetchTracks();
         return () => {
             isMounted.current = false;
         };
     }, []);
+
+    const fetchSongOfTheDay = async () => {
+        try {
+            const apiUrl = window._env_?.REACT_APP_URL_API ?? process.env.REACT_APP_URL_API;
+
+            const response = await fetch(`${apiUrl}/api/tracks/song-of-the-day`);
+            if (!response.ok) {
+                console.error('Erreur lors de la récupération de la chanson du jour', response);
+                return;
+            }
+            const songOfTheDay = await response.json();
+
+            setRandomTrack(songOfTheDay);
+            localStorage.setItem('randomTrack', JSON.stringify(songOfTheDay));
+            localStorage.setItem('trackDate', getTodayDate());
+        } catch (error) {
+            console.error('Erreur lors de la récupération de la chanson du jour', error);
+        }
+    };
 
     const fetchTracks = async () => {
         try {
@@ -141,34 +169,17 @@ const ClassicMode: React.FC = () => {
                 return;
             }
             const data = await response.json();
+
             if (isMounted.current) {
                 const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
                 const filteredTracks = data.filter((track: { name: any; }) => !previousGuesses.includes(track.name));
                 setTracks(filteredTracks);
-
-                const savedTrack = localStorage.getItem('randomTrack');
-                const lastTrackDate = localStorage.getItem('trackDate');
-
-                if (savedTrack && lastTrackDate === getTodayDate()) {
-                    setRandomTrack(JSON.parse(savedTrack));
-                } else {
-                    const randomIndex = Math.floor(Math.random() * filteredTracks.length);
-                    const chosenTrack = filteredTracks[randomIndex];
-                    setRandomTrack(chosenTrack);
-                    localStorage.setItem('randomTrack', JSON.stringify(chosenTrack));
-                    localStorage.setItem('trackDate', getTodayDate());
-                }
             }
         } catch (error) {
-            console.error('Erreur lors de la récupération de la musique :', error);
+            console.error('Erreur lors de la récupération des musiques :', error);
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const clearCache = () => {
-        localStorage.clear();
-        window.location.reload();
     };
 
     return (
@@ -183,8 +194,6 @@ const ClassicMode: React.FC = () => {
                     <h1>Devinez la chanson !</h1>
                     {gameEnded && <h4 className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</h4>}
                     <p>Nombre d'essais : {attempts}</p>
-
-
 
                     <div className="hint-buttons">
                         <button
@@ -212,15 +221,10 @@ const ClassicMode: React.FC = () => {
                         </button>
                     </div>
 
-
                     <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
 
                     <h3>Propositions :</h3>
                     <AnswersTable messages={messages} randomTrack={randomTrack} />
-
-                    <button onClick={clearCache} className="reset-button">
-                        Réinitialiser le jeu
-                    </button>
                 </div>
             )}
 
@@ -240,7 +244,6 @@ const ClassicMode: React.FC = () => {
                 imageUrl={randomTrack?.image_url}
                 onClose={() => setHintImgOpen(false)}
             />
-
         </div>
     );
 };
