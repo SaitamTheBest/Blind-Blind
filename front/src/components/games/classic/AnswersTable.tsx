@@ -38,7 +38,7 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
     }, [messages, randomTrack]);
 
     if (storedMessages.length === 0) {
-        return null;
+        return <p className="no-guess-message">Aucune proposition pour le moment.</p>;
     }
 
     return (
