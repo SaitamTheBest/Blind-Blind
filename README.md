@@ -1,6 +1,6 @@
 # 🎵 BlindBlind
 
-[![Latest Release](https://img.shields.io/github/v/tag/SaitamTheBest/Blind-Blind?label=version&style=flat-square)](https://github.com/<USERNAME>/<REPO>/releases)
+[![Latest Release](https://img.shields.io/github/v/tag/SaitamTheBest/Blind-Blind?label=version&style=flat-square)](https://github.com/SaitamTheBest/Blind-Blind/releases)
 [![Backend Workflow](https://img.shields.io/github/actions/workflow/status/SaitamTheBest/Blind-Blind/deploy-backend.yml?branch=main&label=backend%20build&style=flat-square)](https://github.com/<USERNAME>/Blind-Blind/actions/workflows/deploy-backend.yml)
 [![Frontend Workflow](https://img.shields.io/github/actions/workflow/status/SaitamTheBest/Blind-Blind/deploy-frontend.yml?branch=main&label=frontend%20build&style=flat-square)](https://github.com/<USERNAME>/Blind-Blind/actions/workflows/deploy-frontend.yml)
 
