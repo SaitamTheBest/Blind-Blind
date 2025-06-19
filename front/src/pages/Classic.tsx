@@ -34,28 +34,17 @@ const ClassicMode: React.FC = () => {
 
     useEffect(() => {
         const lastWinDate = localStorage.getItem('lastWinDate');
-        const storedAttempts = localStorage.getItem('attempts');
         const lastSavedDate = localStorage.getItem('savedDate');
-        const savedSongOfTheDay = localStorage.getItem('songOfTheDay');
 
         document.title = "Classic - Blind-Blind";
 
-        if (lastSavedDate !== getTodayDate() || savedSongOfTheDay !== JSON.stringify(randomTrack)) {
+        if (lastSavedDate !== getTodayDate()) {
             localStorage.removeItem('lastWinDate');
-            localStorage.removeItem('attempts');
             localStorage.setItem('savedDate', getTodayDate());
-            setGameEnded(false);
-            setAttempts(0);
-
-            localStorage.removeItem('randomTrack');
-            localStorage.removeItem('trackDate');
         } else {
             if (lastWinDate === getTodayDate()) {
                 setGameEnded(true);
                 setPopupOpen(true);
-            }
-            if (storedAttempts) {
-                setAttempts(parseInt(storedAttempts, 10));
             }
         }
 

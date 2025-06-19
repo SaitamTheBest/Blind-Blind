@@ -24,21 +24,24 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const savedRandomTrack = localStorage.getItem("randomTrack");
         const savedDate = localStorage.getItem("trackDate");
 
-        if (savedMessages) {
-            setMessages(JSON.parse(savedMessages));
-        }
+        const today = getTodayDate();
 
-        if (savedAttempts) {
-            setAttempts(parseInt(savedAttempts, 10));
-        }
-
-        if (savedRandomTrack && savedDate === getTodayDate()) {
+        if (savedRandomTrack && savedDate === today) {
             setRandomTrack(JSON.parse(savedRandomTrack));
+            if (savedMessages) {
+                setMessages(JSON.parse(savedMessages));
+            }
+            if (savedAttempts) {
+                setAttempts(parseInt(savedAttempts, 10));
+            }
         } else {
             localStorage.removeItem("messages");
             localStorage.removeItem("attempts");
             localStorage.removeItem("randomTrack");
             localStorage.removeItem("trackDate");
+            setMessages([]);
+            setAttempts(0);
+            setRandomTrack(null);
         }
     }, []);
 
