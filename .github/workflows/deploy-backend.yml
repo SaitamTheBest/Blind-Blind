@@ -50,6 +50,16 @@ jobs:
             GENIUS_CLIENT_SECRET=${{ secrets.GENIUS_CLIENT_SECRET }}
             GENIUS_CLIENT_ID=${{ secrets.GENIUS_CLIENT_ID }}
             PORT=${{ secrets.PORT }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_USER_PASSWORD=${{ secrets.DB_USER_PASSWORD }}
+            SRC_PORT=${{ secrets.SRC_PORT }}
+            DST_PORT=${{ secrets.DST_PORT }}
+            SERVER_PORT=${{ secrets.SERVER_PORT }}
+            SSH_HOST=${{ secrets.SSH_HOST }}
+            SSH_PORT=${{ secrets.SSH_PORT }}
+            SSH_USER=${{ secrets.SSH_USER }}
+            SSH_PASSWORD=${{ secrets.SSH_PASSWORD }}
             EOF
 
       - name: Restart PM2 backend

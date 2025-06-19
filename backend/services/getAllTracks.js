@@ -1,73 +1,51 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { getDbConnection } from '../database/connection.js';
 
 async function getAllTracks() {
-    const db = await open({
-        filename: './db/music.db',
-        driver: sqlite3.Database
-    });
-
+    let connection;
     try {
-        const tracks = await db.all(`
-            SELECT
-                t.id AS track_id,
-                t.name,
-                t.album,
-                t.release_year,
-                t.spotify_url,
-                t.preview_url,
-                t.image_url AS image,
-                t.popularity,
-                a.followers,
-                a.image_url,
-                GROUP_CONCAT(a.Nationality, ', ') as nationality,
-                t.performer_type,
-                GROUP_CONCAT(a.name, ', ') AS artists,
-                GROUP_CONCAT(a.genres, ', ') AS genres
-            FROM tracks t
-                     LEFT JOIN track_artists ta ON t.id = ta.track_id
-                     LEFT JOIN artists a ON ta.artist_id = a.id
-            GROUP BY t.id
-            ORDER BY t.popularity DESC;
-        `);
+        connection = await getDbConnection();
 
-        return tracks.map(track => {
-            const artists = track.artists ? track.artists.split(',').map(a => a.trim()) : [];
+        const [rows] = await connection.execute(`
+        SELECT
+            t.id AS track_id,
+            t.name,
+            t.album,
+            t.release_year,
+            t.spotify_url,
+            t.preview_url,
+            t.image_url AS image,
+            t.popularity,
+            a.followers,
+            a.image_url,
+            GROUP_CONCAT(a.Nationality) as nationality,
+            t.performer_type,
+            GROUP_CONCAT(a.name) AS artists,
+            GROUP_CONCAT(a.genres) AS genres
+        FROM tracks t
+            LEFT JOIN track_artists ta ON t.id = ta.track_id
+            LEFT JOIN artists a ON ta.artist_id = a.id
+        GROUP BY t.id, t.name, t.album, t.release_year, t.spotify_url, t.preview_url, t.image_url, t.popularity, a.followers, a.image_url, t.performer_type
+        ORDER BY t.popularity DESC;
 
-            let genres = track.genres
-                ? [...new Set(
-                    track.genres
-                        .split(',')
-                        .map(g => g.trim())
-                        .filter(g => g !== '')
-                )]
-                : [];
+    `);
 
-            if (genres.length === 0) {
-                genres = ["Aucune donnée"];
-            }
-
-            let nationalities = track.nationality
-                ? [...new Set(
-                    track.nationality
-                        .split(',')
-                        .map(n => n.trim())
-                        .filter(n => n !== '')
-                )]
-                : [];
+        return rows.map(track => {
+            const artists = track.artists?.split(',').map(a => a.trim()) || [];
+            const genres = [...new Set(track.genres?.split(',').map(g => g.trim()).filter(Boolean))] || ["Aucune donnée"];
+            const nationalities = [...new Set(track.nationality?.split(',').map(n => n.trim()).filter(Boolean))] || [];
 
             return {
                 ...track,
                 artists,
                 genres,
-                nationality: nationalities
+                nationality: nationalities,
             };
         });
     } catch (error) {
-        console.error('Erreur lors de la récupération des tracks :', error);
-        return { error: 'Impossible de récupérer les tracks.' };
+        console.error('Erreur MySQL :', error);
+        return { error: 'Erreur lors de la récupération des données' };
     } finally {
-        await db.close();
+        if (connection) await connection.release();
     }
 }
 
