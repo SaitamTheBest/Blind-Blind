@@ -11,6 +11,7 @@ on:
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
+    environment: Backend
 
     steps:
       - name: Checkout code
@@ -37,48 +38,30 @@ jobs:
           
       - name: Inject env file
         uses: appleboy/ssh-action@v1.0.0
-        env:
-          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          ID_PLAYLIST: ${{ secrets.ID_PLAYLIST }}
-          GENIUS_CLIENT_SECRET: ${{ secrets.GENIUS_CLIENT_SECRET }}
-          GENIUS_CLIENT_ID: ${{ secrets.GENIUS_CLIENT_ID }}
-          PORT: ${{ secrets.PORT }}
-          NODE_ENV: ${{ secrets.NODE_ENV }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_USER_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
-          SRC_PORT: ${{ secrets.SRC_PORT }}
-          DST_PORT: ${{ secrets.DST_PORT }}
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            ENV_PATH="/home/${VPS_USERNAME}/apps/blindblind/backend/.env"
-            echo "SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}" > $ENV_PATH
-            echo "FRONTEND_URL=${FRONTEND_URL}" >> $ENV_PATH
-            echo "SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}" >> $ENV_PATH
-            echo "ID_PLAYLIST=${ID_PLAYLIST}" >> $ENV_PATH
-            echo "GENIUS_CLIENT_SECRET=${GENIUS_CLIENT_SECRET}" >> $ENV_PATH
-            echo "GENIUS_CLIENT_ID=${GENIUS_CLIENT_ID}" >> $ENV_PATH
-            echo "PORT=${PORT}" >> $ENV_PATH
-            echo "NODE_ENV=${NODE_ENV}" >> $ENV_PATH
-            echo "DB_USER=${DB_USER}" >> $ENV_PATH
-            echo "DB_USER_PASSWORD=${DB_USER_PASSWORD}" >> $ENV_PATH
-            echo "SRC_PORT=${SRC_PORT}" >> $ENV_PATH
-            echo "DST_PORT=${DST_PORT}" >> $ENV_PATH
-            echo "SERVER_PORT=${SERVER_PORT}" >> $ENV_PATH
-            echo "SSH_HOST=${SSH_HOST}" >> $ENV_PATH
-            echo "SSH_PORT=${SSH_PORT}" >> $ENV_PATH
-            echo "SSH_USER=${SSH_USER}" >> $ENV_PATH
-            echo "SSH_PASSWORD=${SSH_PASSWORD}" >> $ENV_PATH
+            cat <<EOF > /home/${{ secrets.VPS_USERNAME }}/apps/blindblind/backend/.env
+            SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
+            ID_PLAYLIST=${{ secrets.ID_PLAYLIST }}
+            GENIUS_CLIENT_SECRET=${{ secrets.GENIUS_CLIENT_SECRET }}
+            GENIUS_CLIENT_ID=${{ secrets.GENIUS_CLIENT_ID }}
+            PORT=${{ secrets.PORT }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_USER_PASSWORD=${{ secrets.DB_USER_PASSWORD }}
+            SRC_PORT=${{ secrets.SRC_PORT }}
+            DST_PORT=${{ secrets.DST_PORT }}
+            SERVER_PORT=${{ secrets.SERVER_PORT }}
+            SSH_HOST=${{ secrets.SSH_HOST }}
+            SSH_PORT=${{ secrets.SSH_PORT }}
+            SSH_USER=${{ secrets.SSH_USER }}
+            SSH_PASSWORD=${{ secrets.SSH_PASSWORD }}
+            EOF
 
       - name: Restart PM2 backend
         uses: appleboy/ssh-action@v1.0.0
