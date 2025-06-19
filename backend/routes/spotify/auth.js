@@ -3,7 +3,23 @@ import axios from "axios";
 
 const router = express.Router();
 
-// Route pour récupérer un token d'accès Spotify
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentification Spotify
+ */
+
+/**
+ * @swagger
+ * /api/auth/token:
+ *   get:
+ *     summary: Récupère un token d'authentification Spotify
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
 router.get('/token', async (req, res) => {
     try {
         const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = process.env;

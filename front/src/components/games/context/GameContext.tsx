@@ -13,10 +13,46 @@ export const GameContext = createContext<GameContextType | undefined>(undefined)
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [messages, setMessages] = useState<any[]>([]);
-    const [attempts, setAttempts] = useState(0);
+    const [attempts, setAttempts] = useState<number>(0);
     const [randomTrack, setRandomTrack] = useState<any>(null);
 
+    const getTodayDate = (): string => new Date().toISOString().split('T')[0];
+
     useEffect(() => {
+        const savedMessages = localStorage.getItem("messages");
+        const savedAttempts = localStorage.getItem("attempts");
+        const savedRandomTrack = localStorage.getItem("randomTrack");
+        const savedDate = localStorage.getItem("trackDate");
+
+        const today = getTodayDate();
+
+        if (savedRandomTrack && savedDate === today) {
+            setRandomTrack(JSON.parse(savedRandomTrack));
+            if (savedMessages) {
+                setMessages(JSON.parse(savedMessages));
+            }
+            if (savedAttempts) {
+                setAttempts(parseInt(savedAttempts, 10));
+            }
+        } else {
+            localStorage.removeItem("messages");
+            localStorage.removeItem("attempts");
+            localStorage.removeItem("randomTrack");
+            localStorage.removeItem("trackDate");
+            setMessages([]);
+            setAttempts(0);
+            setRandomTrack(null);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (randomTrack) {
+            localStorage.setItem("randomTrack", JSON.stringify(randomTrack));
+            localStorage.setItem("trackDate", getTodayDate());
+        }
+
+        localStorage.setItem("messages", JSON.stringify(messages));
+        localStorage.setItem("attempts", attempts.toString());
     }, [messages, attempts, randomTrack]);
 
     return (
