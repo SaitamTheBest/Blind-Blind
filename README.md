@@ -84,12 +84,12 @@ Le site est déployé automatiquement grâce à **GitHub Actions** :
 Chaque **push** sur la branche `main` déclenche un déploiement automatique vers le serveur.
 
 --- 
+
 ## 📜 Licence
 
-Ce projet est protégé par la mention **Tous droits réservés**.  
-Aucune reproduction, modification ou distribution n’est autorisée sans accord explicite de l’auteur.
+Ce projet est distribué sous la [**Apache License 2.0**](./LICENSE.md).
 
-© 2025 Blind Blind. Tous droits réservés.
+© 2025 Blind Blind.
 
 ---
 
