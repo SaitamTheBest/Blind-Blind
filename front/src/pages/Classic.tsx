@@ -132,7 +132,7 @@ const ClassicMode: React.FC = () => {
         try {
             const apiUrl = window._env_?.REACT_APP_URL_API ?? process.env.REACT_APP_URL_API;
 
-            const response = await fetch(`${apiUrl}/api/tracks/song-of-the-day`);
+            const response = await fetch(`${apiUrl}/tracks/song-of-the-day`);
             if (!response.ok) {
                 console.error('Erreur lors de la récupération de la chanson du jour', response);
                 return;
