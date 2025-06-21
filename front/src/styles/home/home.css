@@ -14,7 +14,7 @@
     text-align: center;
     align-items: center;
     flex-direction: column;
-    height: calc(100vh - 140px);
+    min-height: calc(100dvh - 140px);
 }
 
 .home-title {
@@ -67,4 +67,46 @@
 .play-button:active {
   box-shadow: none;
   transform: translateY(0);
+}
+
+/* Style pour tablette */
+@media screen and (max-width: 1150px) {
+    .play-button {
+        width: 30%;
+        font-size: 15px;
+        min-height: 55px;
+    }
+
+    .description {
+        font-size: 16px;
+        padding: 0 20px;
+    }
+
+    .home-title {
+        font-size: 26px;
+    }
+}
+
+/* Style poour téléphone en mode portrait */
+@media screen and (max-width: 800px) {
+    .play-button {
+        width: 80%;
+        font-size: 14px;
+        min-height: 50px;
+        padding: 14px 20px;
+    }
+
+    .description {
+        font-size: 14px;
+        padding: 0 15px;
+    }
+
+    .home-title {
+        font-size: 24px;
+    }
+
+    .home {
+        padding: 20px 10px;
+        min-height: calc(100dvh - 190px);
+    }
 }

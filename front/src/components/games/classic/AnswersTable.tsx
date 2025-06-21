@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../../../styles/games/classic/AnswersTable.css';
 import TableTitle from "../TableTitle";
 import TableBody from "../TableBody";
@@ -11,6 +11,8 @@ type AnswersTableProps = {
 const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) => {
     const [storedMessages, setStoredMessages] = useState<any[]>([]);
     const [storedRandomTrack, setStoredRandomTrack] = useState<any>(null);
+
+    const tableWrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const savedMessages = localStorage.getItem("messages");
@@ -29,6 +31,11 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
         if (messages.length > 0) {
             localStorage.setItem("messages", JSON.stringify(messages));
             setStoredMessages(messages);
+
+            // Scroll automatique vers la droite
+            if (tableWrapperRef.current) {
+                tableWrapperRef.current.scrollLeft = tableWrapperRef.current.scrollWidth;
+            }
         }
 
         if (randomTrack) {
@@ -42,7 +49,7 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
     }
 
     return (
-        <div>
+        <div className="table-wrapper" ref={tableWrapperRef}>
             <table>
                 <TableTitle titles={['Artistes', 'Album', 'Nationalité', 'Genres', 'Followers', 'Popularité', 'Année', 'Titre']} />
                 <TableBody guess={storedMessages} randomItem={storedRandomTrack} />
