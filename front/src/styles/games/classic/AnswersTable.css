@@ -41,7 +41,8 @@ td {
     opacity: 0;
     transform: translateX(-30px);
     animation: fadeInLeft 0.5s ease forwards;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .correct {
@@ -98,19 +99,32 @@ tr:not(:first-child) td {
     table {
         width: 100%;
         font-size: 14px;
+        table-layout: fixed;
     }
 
     th {
         padding: 12px 3px;
         font-size: 13px;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 90px;
     }
 
     td {
         padding: 8px;
         height: 50px;
         font-size: 13px;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 90px;
+    }
+
+    .no-guess-message {
+        font-size: 0.95rem;
+        margin-top: 0.75rem;
     }
 }
+
 
 /* Style poour téléphone en mode portrait */
 @media screen and (max-width: 800px) {

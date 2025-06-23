@@ -33,7 +33,7 @@ const Header = () => {
             <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
                 <button className="close-btn" onClick={() => setIsMenuOpen(false)}>✕</button>
                 <Link to="/" className="mobile-link" onClick={() => setIsMenuOpen(false)}>Accueil</Link>
-                <Link to="/classic" className="mobile-link" onClick={() => setIsMenuOpen(false)}>Mini-jeux</Link>
+                <Link to="/classic" className="mobile-link" onClick={() => setIsMenuOpen(false)}>Classic</Link>
             </div>
         </>
     );

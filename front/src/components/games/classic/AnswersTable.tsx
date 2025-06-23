@@ -32,9 +32,29 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
             localStorage.setItem("messages", JSON.stringify(messages));
             setStoredMessages(messages);
 
-            // Scroll automatique vers la droite
-            if (tableWrapperRef.current) {
-                tableWrapperRef.current.scrollLeft = tableWrapperRef.current.scrollWidth;
+            const wrapper = tableWrapperRef.current;
+            if (!wrapper) return;
+
+            const firstCell = wrapper.querySelector("td");
+            if (!firstCell) return;
+
+            const cellWidth = (firstCell as HTMLElement).offsetWidth;
+
+            // simulate scroll step by step (e.g. 7 cells)
+            const scrollSteps = 7;
+            const scrollDelay = 500; // ms entre chaque scroll
+
+            // Reset scroll position to the start
+            wrapper.scrollLeft = 0;
+
+
+            for (let i = 1; i <= scrollSteps; i++) {
+                setTimeout(() => {
+                    wrapper.scrollBy({
+                        left: cellWidth,
+                        behavior: "smooth"
+                    });
+                }, i * scrollDelay);
             }
         }
 

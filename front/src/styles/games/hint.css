@@ -27,10 +27,12 @@
 }
 
 .hint-button:hover.unlocked {
-    background-color: #8d9a8d;
+    background-color: #cdeac0; /* vert clair pastel */
     width: 40px;
     height: 40px;
+    transition: background-color 0.2s ease, width 0.1s ease, height 0.1s ease;
 }
+
 
 .hint-button.locked {
     position: relative;
