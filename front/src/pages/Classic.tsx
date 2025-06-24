@@ -237,7 +237,7 @@ const ClassicMode: React.FC = () => {
 
             <HintImage
                 isOpen={hintImgOpen}
-                imageUrl={randomTrack?.image_url}
+                imageUrl={randomTrack?.image_artist}
                 onClose={() => setHintImgOpen(false)}
             />
         </div>

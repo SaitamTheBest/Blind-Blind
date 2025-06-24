@@ -17,12 +17,10 @@ async function getAllTracks() {
                 t.popularity,
                 t.performer_type,
                 (
-                    SELECT a2.followers
+                    SELECT SUM(a2.followers)
                     FROM track_artists ta2
                              JOIN artists a2 ON ta2.artist_id = a2.id
                     WHERE ta2.track_id = t.id
-                    ORDER BY ta2.artist_id
-                    LIMIT 1
                 ) AS followers,
                 (
                     SELECT a3.image_url
@@ -49,6 +47,7 @@ async function getAllTracks() {
 
             return {
                 ...track,
+                followers: Number(track.followers),
                 artists,
                 genres,
                 nationality: nationalities,
