@@ -15,6 +15,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, trackDetails, onClose }) => {
             <div className="popup-content">
                 <h2>Félicitations 🎉</h2>
                 <p>Vous avez trouvé la bonne chanson !</p>
+                <h4>Revenez demain pour une nouvelle partie ! 📀</h4>
                 <div className="track-info">
                     <img src={trackDetails.image || ''} alt="Album cover" className="album-image" />
                     <h3>{trackDetails.name}</h3>

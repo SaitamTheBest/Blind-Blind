@@ -39,6 +39,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             localStorage.removeItem("attempts");
             localStorage.removeItem("randomTrack");
             localStorage.removeItem("trackDate");
+            localStorage.removeItem("previousGuesses");
             setMessages([]);
             setAttempts(0);
             setRandomTrack(null);
