@@ -113,9 +113,16 @@ const ClassicMode: React.FC = () => {
         setTracks((prevTracks) => prevTracks.filter(t => t.name !== track.name));
 
         if (track.name === randomTrack.name) {
-            setPopupOpen(true);
+            const columns = 7; // nb de colonnes dans ta table
+            const delayPerCell = 500; // durée d'apparition d'une cellule (ms)
+            const delayBeforePopup = columns * delayPerCell + 300; // petit offset de sécurité
+
             setGameEnded(true);
             localStorage.setItem('lastWinDate', getTodayDate());
+
+            setTimeout(() => {
+                setPopupOpen(true);
+            }, delayBeforePopup);
         }
     };
 
@@ -230,7 +237,7 @@ const ClassicMode: React.FC = () => {
 
             <HintImage
                 isOpen={hintImgOpen}
-                imageUrl={randomTrack?.image_url}
+                imageUrl={randomTrack?.image_artist}
                 onClose={() => setHintImgOpen(false)}
             />
         </div>

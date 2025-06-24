@@ -1,5 +1,14 @@
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
 table {
     width: 90%;
+    min-width: 90%;
     margin: 20px auto;
     border-collapse: separate;
     border-spacing: 10px 15px;
@@ -15,6 +24,7 @@ th {
     text-align: center;
     border-radius: 8px;
     width: 80px;
+    white-space: nowrap;
 
 }
 
@@ -31,6 +41,8 @@ td {
     opacity: 0;
     transform: translateX(-30px);
     animation: fadeInLeft 0.5s ease forwards;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .correct {
@@ -82,3 +94,59 @@ tr:not(:first-child) td {
     margin-top: 1rem;
 }
 
+/* Style pour tablette */
+@media screen and (max-width: 1150px) {
+    table {
+        width: 100%;
+        font-size: 14px;
+        table-layout: fixed;
+    }
+
+    th {
+        padding: 12px 3px;
+        font-size: 13px;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 90px;
+    }
+
+    td {
+        padding: 8px;
+        height: 50px;
+        font-size: 13px;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 90px;
+    }
+
+    .no-guess-message {
+        font-size: 0.95rem;
+        margin-top: 0.75rem;
+    }
+}
+
+
+/* Style poour téléphone en mode portrait */
+@media screen and (max-width: 800px) {
+    table {
+        width: 100%;
+        font-size: 12px;
+        border-spacing: 5px 10px;
+    }
+
+    th {
+        padding: 10px 2px;
+        font-size: 11px;
+    }
+
+    td {
+        padding: 6px;
+        height: 45px;
+        font-size: 11px;
+    }
+
+    .no-guess-message {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+}
