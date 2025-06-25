@@ -225,6 +225,18 @@ tr:not(.new-row) td {
         font-size: 1.2rem;
     }
 
+    .loading {
+        flex-direction: column;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        min-width: 25px;
+        min-height: 25px;
+        aspect-ratio: 1/1;
+    }
+
     .loading-message {
         font-size: 1rem;
     }
