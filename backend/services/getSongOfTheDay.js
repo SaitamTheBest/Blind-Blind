@@ -49,7 +49,7 @@ async function getSongOfTheDay() {
         return {
             track_id: track.track_id,
             name: track.name,
-            artists: track.artists?.split(',').map(a => a.trim()) || [],
+            artists: [...new Set(track.artists?.split(',').map(a => a.trim()))] || [],
             album: track.album,
             release_year: track.release_year,
             spotify_url: track.spotify_url,
