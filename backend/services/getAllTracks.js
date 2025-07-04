@@ -41,7 +41,7 @@ async function getAllTracks() {
         `);
 
         return rows.map(track => {
-            const artists = track.artists?.split(',').map(a => a.trim()) || [];
+            const artists = [...new Set(track.artists?.split(',').map(a => a.trim()))] || [];
             const genres = [...new Set(track.genres?.split(',').map(g => g.trim()).filter(Boolean))] || ["Aucune donnée"];
             const nationalities = [...new Set(track.nationality?.split(',').map(n => n.trim()).filter(Boolean))] || [];
 
