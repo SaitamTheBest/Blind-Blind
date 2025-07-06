@@ -3,17 +3,17 @@
   "name": "Blind-Blind",
   "icons": [
     {
-      "src": "Blind-Blind-logo-blanc.png",
+      "src": "Blind-Blind-logo-noir-fond-blanc.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "Blind-Blind-logo-blanc.png",
+      "src": "Blind-Blind-logo-noir-fond-blanc.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "Blind-Blind-logo-blanc.png",
+      "src": "Blind-Blind-logo-noir-fond-blanc.png",
       "type": "image/png",
       "sizes": "512x512"
     }
