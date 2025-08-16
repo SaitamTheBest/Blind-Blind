@@ -1,0 +1,24 @@
+/* Scrollbar moderne */
+::-webkit-scrollbar {
+    width: 8px; /* fine et élégante */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* pas de fond */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.25); /* gris sombre transparent */
+    border-radius: 20px; /* arrondi doux */
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #22c55e; /* vert (comme ton bouton "Jouer") au hover */
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.25) transparent;
+}

@@ -9,6 +9,7 @@ import { GameProvider } from "./components/games/context/GameContext";
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
+import "./styles/global.css";
 
 function App() {
     return (

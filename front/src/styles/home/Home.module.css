@@ -4,62 +4,23 @@
     background-position: left 2% center, right 2% center;
     background-size: 120px, 120px;
 
-    display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
     min-height: calc(100dvh - 140px);
     padding: 2rem;
-    text-align: center;
 }
 
-.part1 {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+.title {
+    font-size: 60px;
+    font-weight: bold;
     text-align: center;
-}
-
-.home-title {
-    text-align: center;
-    color: white;
+    color: var(--mantine-color-black);
+    margin: 0;
+    @media (max-width: 768px) {
+        font-size: 40px;
+    }
 }
 
 .games-title {
     font-weight: bold;
-}
-
-.description {
-    text-align: center;
-    color: #d8d8d8;
-}
-
-/* Style pour tablette */
-@media screen and (max-width: 1150px) {
-    .description {
-        font-size: 16px;
-        padding: 0 20px;
-    }
-
-    .home-title {
-        font-size: 26px;
-    }
-}
-
-/* Style poour téléphone en mode portrait */
-@media screen and (max-width: 800px) {
-    .description {
-        font-size: 14px;
-        padding: 0 15px;
-    }
-
-    .home-title {
-        font-size: 24px;
-    }
-
-    .home {
-        padding: 20px 10px;
-        min-height: calc(100dvh - 190px);
-    }
 }
