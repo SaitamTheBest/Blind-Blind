@@ -21,6 +21,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Carousel } from "@mantine/carousel";
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
+import { useMediaQuery } from "@mantine/hooks";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -28,6 +29,8 @@ export default function Home() {
     const [badgeColor, setBadgeColor] = useState<"green" | "yellow" | "red">("green");
 
     const getTodayDate = (): string => new Date().toISOString().split("T")[0];
+
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     useEffect(() => {
         const savedMessages = localStorage.getItem("messages");
@@ -63,9 +66,9 @@ export default function Home() {
             case "En cours":
                 return "Reprendre";
             case "Jeu terminé":
-                return "Observer";
+                return "Regarder";
             default:
-                return "";
+                return "Indisponible";
         }
     };
 
@@ -101,8 +104,8 @@ export default function Home() {
                                         slideSize="100%"
                                         slideGap="md"
                                         height="auto"
-                                        withControls={false}
-                                        withIndicators={true}
+                                        withControls={!isMobile}
+                                        withIndicators={false}
                                         controlSize={30}
                                         emblaOptions={{ loop: true }}
                                         plugins={[autoplay.current]}
