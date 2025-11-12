@@ -19,10 +19,12 @@ function App() {
                 <GameProvider>
                     <Router>
                         <Header />
+                        <div style={{ minHeight: 'calc(100vh - 118px)' }}>
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/classic" element={<ClassicMode />} />
                         </Routes>
+                        </div>
                         <Footer />
                     </Router>
                 </GameProvider>

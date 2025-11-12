@@ -205,7 +205,7 @@ export default function Home() {
                                                 style={{
                                                     backgroundColor: "#ffffff",
                                                     cursor: "pointer",
-                                                    maxWidth: 400,
+                                                    maxWidth: 350,
                                                     margin: "auto",
                                                     marginTop: "25px",
                                                     marginBottom: "25px",
