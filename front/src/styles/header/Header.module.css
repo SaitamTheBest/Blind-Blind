@@ -1,0 +1,113 @@
+.header {
+    background-color: #000000;
+    padding: 0 var(--mantine-spacing-md);
+}
+
+.inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.logoGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.logoGroup img {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+.siteName {
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.links {
+    display: flex;
+    gap: 8px;
+}
+
+/* Desktop link style */
+.link {
+    display: block;
+    line-height: 1;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mantine-color-white);
+    text-decoration: none;
+    @media (max-width: 768px) {
+        color: var(--mantine-color-black);
+    }
+}
+
+/* Drawer link style */
+.drawerLink {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--mantine-color-black);
+    text-decoration: none;
+}
+
+/* Style for sub-links (mini-jeux) */
+.subLink {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: left;
+    color: var(--mantine-color-black);
+    background-color: transparent;
+}
+
+.subLink:hover {
+    background-color: #efefef;
+}
+
+.link:hover {
+    background-color: #2c2e33;
+    @media (max-width: 768px) {
+        background-color: #efefef;
+    }
+}
+
+.link[data-active] {
+    background-color: #2c2e33;
+    @media (max-width: 768px) {
+        background-color: #efefef;
+    }
+}
+
+@media (max-width: 768px) {
+    .links {
+        display: none; /* on cache le menu desktop */
+    }
+}
+
+.mobileLink {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: white;
+    font-size: var(--mantine-font-size-sm);
+    border-radius: var(--mantine-radius-sm);
+    transition: background-color 0.2s;
+}
+
+.mobileLink:hover {
+    background-color: #2c2e33;
+}

@@ -17,7 +17,7 @@ async function getAllTracks() {
                 t.popularity,
                 t.performer_type,
                 (
-                    SELECT SUM(a2.followers)
+                    SELECT SUM(DISTINCT a2.followers)
                     FROM track_artists ta2
                              JOIN artists a2 ON ta2.artist_id = a2.id
                     WHERE ta2.track_id = t.id
@@ -41,9 +41,15 @@ async function getAllTracks() {
         `);
 
         return rows.map(track => {
-            const artists = [...new Set(track.artists?.split(',').map(a => a.trim()))] || [];
-            const genres = [...new Set(track.genres?.split(',').map(g => g.trim()).filter(Boolean))] || ["Aucune donnée"];
-            const nationalities = [...new Set(track.nationality?.split(',').map(n => n.trim()).filter(Boolean))] || [];
+            const uniqueList = (value, defaultValue = []) => {
+                if (!value) return defaultValue;
+                return [...new Set(value.split(',')
+                    .map(v => v.trim())
+                    .filter(Boolean))];
+            };
+            const artists = uniqueList(track.artists);
+            const genres = uniqueList(track.genres, ["Aucune donnée"]);
+            const nationalities = uniqueList(track.nationality);
 
             return {
                 ...track,
