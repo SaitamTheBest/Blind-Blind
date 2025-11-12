@@ -1,0 +1,26 @@
+.home-container {
+    background-color: #ffffff;
+    background-repeat: no-repeat, no-repeat;
+    background-position: left 2% center, right 2% center;
+    background-size: 120px, 120px;
+
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100dvh - 140px);
+    padding: 2rem;
+}
+
+.title {
+    font-size: 60px;
+    font-weight: bold;
+    text-align: center;
+    color: var(--mantine-color-black);
+    margin: 0;
+    @media (max-width: 768px) {
+        font-size: 40px;
+    }
+}
+
+.games-title {
+    font-weight: bold;
+}

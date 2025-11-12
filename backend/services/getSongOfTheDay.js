@@ -28,7 +28,7 @@ async function getSongOfTheDay() {
              GROUP_CONCAT(DISTINCT a.genres) AS genres,
              GROUP_CONCAT(DISTINCT a.Nationality) AS nationality,
              (
-                SELECT SUM(a2.followers)
+                SELECT SUM(DISTINCT a2.followers)
                 FROM track_artists ta2
                          JOIN artists a2 ON ta2.artist_id = a2.id
                 WHERE ta2.track_id = t.id
@@ -46,10 +46,20 @@ async function getSongOfTheDay() {
 
         const track = rows[0];
 
+        const uniqueList = (value, defaultValue = []) => {
+            if (!value) return defaultValue;
+            return [...new Set(value.split(',')
+                .map(v => v.trim())
+                .filter(Boolean))];
+        };
+        const artists = uniqueList(track.artists);
+        const genres = uniqueList(track.genres, ["Aucune donnée"]);
+        const nationalities = uniqueList(track.nationality);
+
         return {
             track_id: track.track_id,
             name: track.name,
-            artists: [...new Set(track.artists?.split(',').map(a => a.trim()))] || [],
+            artists: artists,
             album: track.album,
             release_year: track.release_year,
             spotify_url: track.spotify_url,
@@ -58,8 +68,8 @@ async function getSongOfTheDay() {
             image_artist: track.image_artist,
             popularity: track.popularity,
             followers: Number(track.followers),
-            nationality: [...new Set(track.nationality?.split(',').map(n => n.trim()).filter(Boolean))] || [],
-            genres: [...new Set(track.genres?.split(',').map(g => g.trim()).filter(Boolean))] || ["Aucune donnée"],
+            nationality: nationalities,
+            genres: genres,
             performer_type: track.performer_type || "",
         };
     } catch (error) {

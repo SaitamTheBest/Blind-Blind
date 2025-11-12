@@ -1,0 +1,24 @@
+.footer {
+    background-color: #000000;
+    color: white;
+}
+
+.inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+.links {
+    display: flex;
+    gap: var(--mantine-spacing-sm);
+    @media (max-width: 768px) {
+        margin-top: var(--mantine-spacing-md);
+    }
+}
