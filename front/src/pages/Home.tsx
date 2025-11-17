@@ -22,6 +22,7 @@ import { Carousel } from "@mantine/carousel";
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
 import { useMediaQuery } from "@mantine/hooks";
+import { Helmet } from "react-helmet";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -75,6 +76,14 @@ export default function Home() {
     const autoplay = useRef(Autoplay({ delay: 3000 }));
 
     return (
+        <>
+        <Helmet>
+            <title>Blind-Blind</title>
+            <meta 
+            name="description" 
+            content="Jouez gratuitement au blind test musical le plus fun : Blind-Blind ! Devinez la chanson, affrontez vos amis et découvrez de nouveaux titres."
+            />
+        </Helmet>
         <div className={classes.homeContainer}>
             <Container size="lg" py="xl">
                 <Grid gutter={60} align="center">
@@ -271,5 +280,6 @@ export default function Home() {
                 </Grid>
             </Container>
         </div>
+        </>
     );
 }
