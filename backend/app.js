@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import authRoutes from './routes/spotify/auth.js';
 import tracksRoutes from './routes/tracks.js';
+import artistsRoutes from './routes/artists.js';
 import {currentConfig} from "./config/config.js";
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tracks', tracksRoutes);
+app.use('/api/artists', artistsRoutes);
 
 // Lancement du serveur
 app.listen(PORT, () => {

@@ -26,8 +26,10 @@ import { Helmet } from "react-helmet";
 
 export default function Home() {
     const navigate = useNavigate();
-    const [status, setStatus] = useState<"Disponible" | "En cours" | "Jeu terminé">("Disponible");
-    const [badgeColor, setBadgeColor] = useState<"green" | "yellow" | "red">("green");
+    const [classicStatus, setClassicStatus] = useState<"Disponible" | "En cours" | "Jeu terminé">("Disponible");
+    const [classicBadgeColor, setClassicBadgeColor] = useState<"green" | "yellow" | "red">("green");
+    const [artistStatus, setArtistStatus] = useState<"Disponible" | "En cours" | "Jeu terminé">("Disponible");
+    const [artistBadgeColor, setArtistBadgeColor] = useState<"green" | "yellow" | "red">("green");
 
     const getTodayDate = (): string => new Date().toISOString().split("T")[0];
 
@@ -44,15 +46,33 @@ export default function Home() {
 
         if (savedRandomTrack && savedDate === today) {
             if (lastWinDate === today) {
-                setStatus("Jeu terminé");
-                setBadgeColor("red");
+                setClassicStatus("Jeu terminé");
+                setClassicBadgeColor("red");
             } else if (savedMessages || savedAttempts) {
-                setStatus("En cours");
-                setBadgeColor("yellow");
+                setClassicStatus("En cours");
+                setClassicBadgeColor("yellow");
             }
         } else {
-            setStatus("Disponible");
-            setBadgeColor("green");
+            setClassicStatus("Disponible");
+            setClassicBadgeColor("green");
+        }
+
+        const artistMessages = localStorage.getItem("messages");
+        const artistAttempts = localStorage.getItem("attempts");
+        const artistDate = localStorage.getItem("artistDate");
+        const artistLastWinDate = localStorage.getItem("lastWinDate");
+
+        if (artistDate === today) {
+            if (artistLastWinDate === today) {
+                setArtistStatus("Jeu terminé");
+                setArtistBadgeColor("red");
+            } else if (artistMessages || artistAttempts) {
+                setArtistStatus("En cours");
+                setArtistBadgeColor("yellow");
+            }
+        } else {
+            setArtistStatus("Disponible");
+            setArtistBadgeColor("green");
         }
     }, []);
 
@@ -61,7 +81,7 @@ export default function Home() {
     }, []);
 
     const getButtonLabel = () => {
-        switch (status) {
+        switch (classicStatus) {
             case "Disponible":
                 return "Jouer maintenant";
             case "En cours":
@@ -183,7 +203,7 @@ export default function Home() {
                                                     <Text fw={700} c="black">
                                                         Jouer au mode Classic !
                                                     </Text>
-                                                    <Badge color={badgeColor}>{status}</Badge>
+                                                    <Badge color={classicBadgeColor}>{classicStatus}</Badge>
                                                 </Group>
 
                                                 <Text size="sm" c="dimmed" ta="left" mb="md">
@@ -193,7 +213,7 @@ export default function Home() {
 
                                                 <Button
                                                     fullWidth
-                                                    color={badgeColor}
+                                                    color={classicBadgeColor}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         navigate("/classic");
@@ -211,6 +231,7 @@ export default function Home() {
                                                 padding="md"
                                                 radius="md"
                                                 withBorder
+                                                onClick={() => navigate("/artists")}
                                                 style={{
                                                     backgroundColor: "#ffffff",
                                                     cursor: "pointer",
@@ -242,15 +263,13 @@ export default function Home() {
                                                 >
                                                     <Image
                                                         src={artistImage}
-                                                        alt="Blind test"
+                                                        alt="Blind test artistes"
                                                         height={130}
                                                         fit="contain"
                                                         style={{
-                                                            objectPosition: "center",
                                                             backgroundColor: "white",
                                                             boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)",
                                                             borderRadius: "8px",
-                                                            transition: "transform 0.3s ease, box-shadow 0.3s ease",
                                                         }}
                                                     />
                                                 </CardSection>
@@ -259,19 +278,30 @@ export default function Home() {
                                                     <Text fw={700} c="black">
                                                         Jouer au mode Artistes !
                                                     </Text>
-                                                    <Badge color="gray">En développement</Badge>
+                                                    <Badge color={artistBadgeColor}>{artistStatus}</Badge>
                                                 </Group>
 
                                                 <Text size="sm" c="dimmed" ta="left" mb="md">
-                                                    Proche du classic, tentez de deviner le bon artiste parmi plus de 100 artistes disponibles.
-                                                    Vous aurez des propositions pour chaque recherche.
+                                                    Devinez l’artiste du jour grâce à une image pixelisée et des indices progressifs.
                                                 </Text>
 
-                                                <Button fullWidth disabled color={"gray"}>
-                                                    Prochainement
+                                                <Button
+                                                    fullWidth
+                                                    color={artistBadgeColor}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate("/artists");
+                                                    }}
+                                                >
+                                                    {artistStatus === "Disponible"
+                                                        ? "Jouer maintenant"
+                                                        : artistStatus === "En cours"
+                                                        ? "Reprendre"
+                                                        : "Regarder"}
                                                 </Button>
                                             </Card>
                                         </Carousel.Slide>
+
                                     </Carousel>
                                 </div>
                             </Paper>
