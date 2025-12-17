@@ -4,33 +4,33 @@ import TableTitle from "../TableTitle";
 import TableBody from "../TableBody";
 
 type AnswersTableProps = {
-    messages: any[];
-    randomTrack: any;
+    messagesClassic: any[];
+    randomTrackClassic: any;
 };
 
-const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) => {
-    const [storedMessages, setStoredMessages] = useState<any[]>([]);
-    const [storedRandomTrack, setStoredRandomTrack] = useState<any>(null);
+const AnswersTable: React.FC<AnswersTableProps> = ({ messagesClassic, randomTrackClassic }) => {
+    const [storedMessagesClassic, setStoredMessagesClassic] = useState<any[]>([]);
+    const [storedRandomTrackClassic, setStoredRandomTrackClassic] = useState<any>(null);
 
     const tableWrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("messages");
-        const savedRandomTrack = localStorage.getItem("randomTrack");
+        const savedMessagesClassic = localStorage.getItem("messagesClassic");
+        const savedRandomTrackClassic = localStorage.getItem("randomTrackClassic");
 
-        if (savedMessages) {
-            setStoredMessages(JSON.parse(savedMessages));
+        if (savedMessagesClassic) {
+            setStoredMessagesClassic(JSON.parse(savedMessagesClassic));
         }
 
-        if (savedRandomTrack) {
-            setStoredRandomTrack(JSON.parse(savedRandomTrack));
+        if (savedRandomTrackClassic) {
+            setStoredRandomTrackClassic(JSON.parse(savedRandomTrackClassic));
         }
     }, []);
 
     useEffect(() => {
-        if (messages.length > 0) {
-            localStorage.setItem("messages", JSON.stringify(messages));
-            setStoredMessages(messages);
+        if (messagesClassic.length > 0) {
+            localStorage.setItem("messagesClassic", JSON.stringify(messagesClassic));
+            setStoredMessagesClassic(messagesClassic);
 
             const wrapper = tableWrapperRef.current;
             if (!wrapper) return;
@@ -58,13 +58,13 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
             }
         }
 
-        if (randomTrack) {
-            localStorage.setItem("randomTrack", JSON.stringify(randomTrack));
-            setStoredRandomTrack(randomTrack);
+        if (randomTrackClassic) {
+            localStorage.setItem("randomTrackClassic", JSON.stringify(randomTrackClassic));
+            setStoredRandomTrackClassic(randomTrackClassic);
         }
-    }, [messages, randomTrack]);
+    }, [messagesClassic, randomTrackClassic]);
 
-    if (storedMessages.length === 0) {
+    if (storedMessagesClassic.length === 0) {
         return <p className="no-guess-message">Aucune proposition pour le moment.</p>;
     }
 
@@ -72,7 +72,7 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomTrack }) =>
         <div className="table-wrapper" ref={tableWrapperRef}>
             <table>
                 <TableTitle titles={['Artistes', 'Album', 'Nationalité', 'Genres', 'Followers', 'Popularité', 'Année', 'Titre']} />
-                <TableBody guess={storedMessages} randomItem={storedRandomTrack} />
+                <TableBody guess={storedMessagesClassic} randomItem={storedRandomTrackClassic} />
             </table>
         </div>
     );

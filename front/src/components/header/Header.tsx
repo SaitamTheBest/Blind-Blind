@@ -30,6 +30,12 @@ const miniJeux = [
         icon: IconDeviceGamepad3,
         to: '/classic',
     },
+    {
+        label: 'Artistes',
+        description: 'Jouez au mode artistes de Blind-Blind ',
+        icon: IconDeviceGamepad3,
+        to: '/artists',
+    },
 ];
 
 export default function Header() {

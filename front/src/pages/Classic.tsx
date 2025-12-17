@@ -28,29 +28,28 @@ const ClassicMode: React.FC = () => {
         throw new Error("GameContext must be used within a GameProvider");
     }
 
-    const { messages, setMessages, attempts, setAttempts, randomTrack, setRandomTrack } = gameContext;
+    const { messagesClassic, setMessagesClassic, attemptsClassic, setAttemptsClassic, randomTrackClassic, setRandomTrackClassic } = gameContext;
 
     const getTodayDate = (): string => new Date().toISOString().split('T')[0];
 
     useEffect(() => {
-        const lastWinDate = localStorage.getItem('lastWinDate');
-        const lastSavedDate = localStorage.getItem('savedDate');
+        const lastWinClassicDate = localStorage.getItem('lastWinClassicDate');
+        const lastSavedDateClassic = localStorage.getItem('savedDateClassic');
 
         document.title = "Classic - Blind-Blind";
 
-        if (lastSavedDate !== getTodayDate()) {
-            localStorage.removeItem('lastWinDate');
-            localStorage.setItem('savedDate', getTodayDate());
+        if (lastSavedDateClassic !== getTodayDate()) {
+            localStorage.removeItem('lastWinClassicDate');
+            localStorage.setItem('savedDateClassic', getTodayDate());
         } else {
-            if (lastWinDate === getTodayDate()) {
+            if (lastWinClassicDate === getTodayDate()) {
                 setGameEnded(true);
                 setPopupOpen(true);
             }
         }
 
-        localStorage.setItem('songOfTheDay', JSON.stringify(randomTrack));
-
-    }, [randomTrack]);
+        localStorage.setItem('songOfTheDay', JSON.stringify(randomTrackClassic));
+    }, [randomTrackClassic]);
 
     const verificateItem = (correctItem: any, item: any): CategoryGuessResponse => {
         if (item === correctItem) {
@@ -68,18 +67,18 @@ const ClassicMode: React.FC = () => {
     };
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("messages");
-        if (savedMessages) {
-            setMessages(JSON.parse(savedMessages));
+        const savedMessagesClassic = localStorage.getItem("messagesClassic");
+        if (savedMessagesClassic) {
+            setMessagesClassic(JSON.parse(savedMessagesClassic));
         }
     }, []);
 
     const handleGuessSubmit = (track: any) => {
         if (gameEnded || !track || !track.name) return;
 
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-        localStorage.setItem('attempts', newAttempts.toString());
+        const newAttempts = attemptsClassic + 1;
+        setAttemptsClassic(newAttempts);
+        localStorage.setItem('attemptsClassic', newAttempts.toString());
 
         const guessDetails = {
             name: track.name,
@@ -91,34 +90,34 @@ const ClassicMode: React.FC = () => {
             popularity: track.popularity,
             release_year: track.release_year,
             isCorrect: {
-                name: verificateItem(randomTrack.name, track.name),
-                artists: verificateItem(randomTrack.artists, track.artists),
-                nationality: verificateItem(randomTrack.nationality, track.nationality),
-                genres: verificateItem(randomTrack.genres, track.genres),
-                album: verificateItem(randomTrack.album, track.album),
-                followers: verificateItem(randomTrack.followers, track.followers),
-                popularity: verificateItem(randomTrack.popularity, track.popularity),
-                release_date: verificateItem(randomTrack.release_year, track.release_year),
+                name: verificateItem(randomTrackClassic.name, track.name),
+                artists: verificateItem(randomTrackClassic.artists, track.artists),
+                nationality: verificateItem(randomTrackClassic.nationality, track.nationality),
+                genres: verificateItem(randomTrackClassic.genres, track.genres),
+                album: verificateItem(randomTrackClassic.album, track.album),
+                followers: verificateItem(randomTrackClassic.followers, track.followers),
+                popularity: verificateItem(randomTrackClassic.popularity, track.popularity),
+                release_date: verificateItem(randomTrackClassic.release_year, track.release_year),
             }
         };
 
-        const updatedMessages = [guessDetails, ...messages];
-        setMessages(updatedMessages);
-        localStorage.setItem("messages", JSON.stringify(updatedMessages));
+        const updatedMessages = [guessDetails, ...messagesClassic];
+        setMessagesClassic(updatedMessages);
+        localStorage.setItem("messagesClassic", JSON.stringify(updatedMessages));
 
-        const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
+        const previousGuesses = JSON.parse(localStorage.getItem("previousGuessesClassic") || "[]");
         const updatedGuesses = [...previousGuesses, track.name];
-        localStorage.setItem("previousGuesses", JSON.stringify(updatedGuesses));
+        localStorage.setItem("previousGuessesClassic", JSON.stringify(updatedGuesses));
 
         setTracks((prevTracks) => prevTracks.filter(t => t.name !== track.name));
 
-        if (track.name === randomTrack.name) {
+        if (track.name === randomTrackClassic.name) {
             const columns = 7; // nb de colonnes dans ta table
             const delayPerCell = 500; // durée d'apparition d'une cellule (ms)
             const delayBeforePopup = columns * delayPerCell + 300; // petit offset de sécurité
 
             setGameEnded(true);
-            localStorage.setItem('lastWinDate', getTodayDate());
+            localStorage.setItem('lastWinClassicDate', getTodayDate());
 
             setTimeout(() => {
                 setPopupOpen(true);
@@ -146,9 +145,9 @@ const ClassicMode: React.FC = () => {
             }
             const songOfTheDay = await response.json();
 
-            setRandomTrack(songOfTheDay);
-            localStorage.setItem('randomTrack', JSON.stringify(songOfTheDay));
-            localStorage.setItem('trackDate', getTodayDate());
+            setRandomTrackClassic(songOfTheDay);
+            localStorage.setItem('randomTrackClassic', JSON.stringify(songOfTheDay));
+            localStorage.setItem('trackDateClassic', getTodayDate());
         } catch (error) {
             console.error('Erreur lors de la récupération de la chanson du jour', error);
         }
@@ -167,7 +166,7 @@ const ClassicMode: React.FC = () => {
             const data = await response.json();
 
             if (isMounted.current) {
-                const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
+                const previousGuesses = JSON.parse(localStorage.getItem("previousGuessesClassic") || "[]");
                 const filteredTracks = data.filter((track: { name: any; }) => !previousGuesses.includes(track.name));
                 setTracks(filteredTracks);
             }
@@ -188,14 +187,14 @@ const ClassicMode: React.FC = () => {
             ) : (
                 <div className="content">
                     <h1>Devinez la chanson !</h1>
-                    {gameEnded && <h4 className="blocked-message">Tu as déjà trouvé la chanson du jour en {attempts} essais. Reviens demain ! 🎵</h4>}
-                    <p>Nombre d'essais : {attempts}</p>
+                    {gameEnded && <h4 className="blocked-message">Tu as déjà trouvé la chanson du jour en {attemptsClassic} essais. Reviens demain ! 🎵</h4>}
+                    <p>Nombre d'essais : {attemptsClassic}</p>
 
                     <div className="hint-buttons">
                         <button
-                            className={`hint-button ${attempts >= 3 ? 'unlocked' : 'locked'}`}
+                            className={`hint-button ${attemptsClassic >= 3 ? 'unlocked' : 'locked'}`}
                             onClick={() => {
-                                if (attempts >= 3) {
+                                if (attemptsClassic >= 3) {
                                     setHintNatOpen(true);
                                 }
                             }}
@@ -205,9 +204,9 @@ const ClassicMode: React.FC = () => {
                         </button>
 
                         <button
-                            className={`hint-button ${attempts >= 8 ? 'unlocked' : 'locked'}`}
+                            className={`hint-button ${attemptsClassic >= 8 ? 'unlocked' : 'locked'}`}
                             onClick={() => {
-                                if (attempts >= 8) {
+                                if (attemptsClassic >= 8) {
                                     setHintImgOpen(true);
                                 }
                             }}
@@ -220,24 +219,24 @@ const ClassicMode: React.FC = () => {
                     <GuessInput onGuessSubmit={handleGuessSubmit} tracks={tracks} disabled={gameEnded} />
 
                     <h3>Propositions :</h3>
-                    <AnswersTable messages={messages} randomTrack={randomTrack} />
+                    <AnswersTable messagesClassic={messagesClassic} randomTrackClassic={randomTrackClassic} />
                 </div>
             )}
 
             <Popup
                 isOpen={popupOpen}
-                trackDetails={randomTrack}
+                trackDetails={randomTrackClassic}
                 onClose={() => setPopupOpen(false)}
             />
             <HintPerformer
                 isOpen={hintNatOpen}
-                performer_type={randomTrack?.performer_type}
+                performer_type={randomTrackClassic?.performer_type}
                 onClose={() => setHintNatOpen(false)}
             />
 
             <HintImage
                 isOpen={hintImgOpen}
-                imageUrl={randomTrack?.image_artist}
+                imageUrl={randomTrackClassic?.image_artist}
                 onClose={() => setHintImgOpen(false)}
             />
         </div>

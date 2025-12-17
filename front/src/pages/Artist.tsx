@@ -8,6 +8,7 @@ import { ArtistGameContext } from "../components/games/context/ArtistGameContext
 import HintImage from "../components/games/hint/HintImage";
 import HintPerformer from "../components/games/hint/HintPerformer";
 import '../styles/games/hint.css';
+import HintText from '../components/games/HintText';
 
 enum CategoryGuessResponse {
     Correct = 'correct',
@@ -30,19 +31,19 @@ const ArtistMode: React.FC = () => {
 
     const { messagesArtist, setMessagesArtist, attemptsArtist, setAttemptsArtist, randomArtist, setRandomArtist } = gameContext;
 
-    const getTodayDate = (): string => new Date().toISOString().split('T')[0];
+    const getTodayDateArtist = (): string => new Date().toISOString().split('T')[0];
 
     useEffect(() => {
-        const lastWinDate = localStorage.getItem('lastWinDate');
-        const lastSavedDate = localStorage.getItem('savedDate');
+        const lastWinArtistDate = localStorage.getItem('lastWinArtistDate');
+        const lastSavedDateArtist = localStorage.getItem('savedDateArtist');
 
         document.title = "Artistes - Blind-Blind";
 
-        if (lastSavedDate !== getTodayDate()) {
-            localStorage.removeItem('lastWinDate');
-            localStorage.setItem('savedDate', getTodayDate());
+        if (lastSavedDateArtist !== getTodayDateArtist()) {
+            localStorage.removeItem('lastWinArtistDate');
+            localStorage.setItem('savedDateArtist', getTodayDateArtist());
         } else {
-            if (lastWinDate === getTodayDate()) {
+            if (lastWinArtistDate === getTodayDateArtist()) {
                 setGameEnded(true);
                 setPopupOpen(true);
             }
@@ -66,9 +67,9 @@ const ArtistMode: React.FC = () => {
     };
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("messages");
-        if (savedMessages) {
-            setMessagesArtist(JSON.parse(savedMessages));
+        const savedMessagesArtist = localStorage.getItem("messagesArtist");
+        if (savedMessagesArtist) {
+            setMessagesArtist(JSON.parse(savedMessagesArtist));
         }
     }, []);
 
@@ -77,7 +78,7 @@ const ArtistMode: React.FC = () => {
 
         const newAttempts = attemptsArtist + 1;
         setAttemptsArtist(newAttempts);
-        localStorage.setItem('attempts', newAttempts.toString());
+        localStorage.setItem('attemptsArtist', newAttempts.toString());
 
         const guessDetails = {
             name: artist.name,
@@ -88,12 +89,11 @@ const ArtistMode: React.FC = () => {
 
         const updatedMessages = [guessDetails, ...messagesArtist];
         setMessagesArtist(updatedMessages);
-        localStorage.setItem("messages", JSON.stringify(updatedMessages));
+        localStorage.setItem("messagesArtist", JSON.stringify(updatedMessages));
 
-        const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
+        const previousGuesses = JSON.parse(localStorage.getItem("previousGuessesArtist") || "[]");
         const updatedGuesses = [...previousGuesses, artist.name];
-        localStorage.setItem("previousGuesses", JSON.stringify(updatedGuesses));
-
+        localStorage.setItem("previousGuessesArtist", JSON.stringify(updatedGuesses));
         setArtists((prevArtists) => prevArtists.filter(a => a.name !== artist.name));
 
         if (artist.name === randomArtist.name) {
@@ -102,7 +102,7 @@ const ArtistMode: React.FC = () => {
             const delayBeforePopup = columns * delayPerCell + 300; // petit offset de sécurité
 
             setGameEnded(true);
-            localStorage.setItem('lastWinDate', getTodayDate());
+            localStorage.setItem('lastWinArtistDate', getTodayDateArtist());
 
             setTimeout(() => {
                 setPopupOpen(true);
@@ -132,7 +132,7 @@ const ArtistMode: React.FC = () => {
 
             setRandomArtist(artistOfTheDay);
             localStorage.setItem('randomArtist', JSON.stringify(artistOfTheDay));
-            localStorage.setItem('artistDate', getTodayDate());
+            localStorage.setItem('artistDate', getTodayDateArtist());
         } catch (error) {
             console.error('Erreur lors de la récupération de la chanson du jour', error);
         }
@@ -151,7 +151,7 @@ const ArtistMode: React.FC = () => {
             const data = await response.json();
 
             if (isMounted.current) {
-                const previousGuesses = JSON.parse(localStorage.getItem("previousGuesses") || "[]");
+                const previousGuesses = JSON.parse(localStorage.getItem("previousGuessesArtist") || "[]");
                 const filteredArtists = data.filter((artist: { name: any; }) => !previousGuesses.includes(artist.name));
                 setArtists(filteredArtists);
             }
@@ -212,7 +212,7 @@ const ArtistMode: React.FC = () => {
                     <GuessInput onGuessSubmit={handleGuessSubmit} artists={artists} disabled={gameEnded} />
 
                     <h3>Propositions :</h3>
-                    <AnswersTable messages={messagesArtist} randomArtist={randomArtist} />
+                    <AnswersTable messagesArtist={messagesArtist} randomArtist={randomArtist} />
                 </div>
             )}
 
@@ -221,15 +221,15 @@ const ArtistMode: React.FC = () => {
                 artistDetails={randomArtist}
                 onClose={() => setPopupOpen(false)}
             />
-            <HintPerformer
+            <HintText
                 isOpen={hintNatOpen}
-                performer_type={randomArtist?.performer_type}
+                hint={`L'artiste vient de ce pays : ${randomArtist?.nationality}`}
                 onClose={() => setHintNatOpen(false)}
             />
 
-            <HintImage
+            <HintText
                 isOpen={hintBestTrack}
-                imageUrl={randomArtist?.image_artist}
+                hint={`L'artiste a pour meilleure chanson : ${randomArtist?.best_track}`}
                 onClose={() => setHintBestTrack(false)}
             />
         </div>

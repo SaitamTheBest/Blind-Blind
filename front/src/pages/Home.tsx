@@ -40,12 +40,12 @@ export default function Home() {
         const savedAttempts = localStorage.getItem("attempts");
         const savedRandomTrack = localStorage.getItem("randomTrack");
         const savedDate = localStorage.getItem("trackDate");
-        const lastWinDate = localStorage.getItem("lastWinDate");
+        const lastWinClassicDate = localStorage.getItem("lastWinClassicDate");
 
         const today = getTodayDate();
 
         if (savedRandomTrack && savedDate === today) {
-            if (lastWinDate === today) {
+            if (lastWinClassicDate === today) {
                 setClassicStatus("Jeu terminé");
                 setClassicBadgeColor("red");
             } else if (savedMessages || savedAttempts) {
@@ -60,10 +60,10 @@ export default function Home() {
         const artistMessages = localStorage.getItem("messages");
         const artistAttempts = localStorage.getItem("attempts");
         const artistDate = localStorage.getItem("artistDate");
-        const artistLastWinDate = localStorage.getItem("lastWinDate");
+        const artistLastWinArtistDate = localStorage.getItem("lastWinArtistDate");
 
         if (artistDate === today) {
-            if (artistLastWinDate === today) {
+            if (artistLastWinArtistDate === today) {
                 setArtistStatus("Jeu terminé");
                 setArtistBadgeColor("red");
             } else if (artistMessages || artistAttempts) {

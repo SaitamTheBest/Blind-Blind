@@ -19,27 +19,27 @@ export const ArtistGameProvider: React.FC<{ children: ReactNode }> = ({ children
     const getTodayDate = (): string => new Date().toISOString().split('T')[0];
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("messages");
-        const savedAttempts = localStorage.getItem("attempts");
+        const savedMessagesArtist = localStorage.getItem("messagesArtist");
+        const savedAttemptsArtist = localStorage.getItem("attemptsArtist");
         const savedRandomArtist = localStorage.getItem("randomArtist");
-        const savedDate = localStorage.getItem("trackDate");
+        const savedDateArtist = localStorage.getItem("artistDate");
 
         const today = getTodayDate();
 
-        if (savedRandomArtist && savedDate === today) {
+        if (savedRandomArtist && savedDateArtist === today) {
             setRandomArtist(JSON.parse(savedRandomArtist));
-            if (savedMessages) {
-                setMessagesArtist(JSON.parse(savedMessages));
+            if (savedMessagesArtist) {
+                setMessagesArtist(JSON.parse(savedMessagesArtist));
             }
-            if (savedAttempts) {
-                setAttemptsArtist(parseInt(savedAttempts, 10));
+            if (savedAttemptsArtist) {
+                setAttemptsArtist(parseInt(savedAttemptsArtist, 10));
             }
         } else {
-            localStorage.removeItem("messages");
-            localStorage.removeItem("attempts");
-            localStorage.removeItem("randomTrack");
-            localStorage.removeItem("trackDate");
-            localStorage.removeItem("previousGuesses");
+            localStorage.removeItem("messagesArtist");
+            localStorage.removeItem("attemptsArtist");
+            localStorage.removeItem("randomArtist");
+            localStorage.removeItem("artistDate");
+            localStorage.removeItem("previousGuessesArtist");
             setMessagesArtist([]);
             setAttemptsArtist(0);
             setRandomArtist(null);
@@ -49,11 +49,11 @@ export const ArtistGameProvider: React.FC<{ children: ReactNode }> = ({ children
     useEffect(() => {
         if (randomArtist) {
             localStorage.setItem("randomArtist", JSON.stringify(randomArtist));
-            localStorage.setItem("trackDate", getTodayDate());
+            localStorage.setItem("artistDate", getTodayDate());
         }
 
-        localStorage.setItem("messages", JSON.stringify(messagesArtist));
-        localStorage.setItem("attempts", attemptsArtist.toString());
+        localStorage.setItem("messagesArtist", JSON.stringify(messagesArtist));
+        localStorage.setItem("attemptsArtist", attemptsArtist.toString());
     }, [messagesArtist, attemptsArtist, randomArtist]);
 
     return (

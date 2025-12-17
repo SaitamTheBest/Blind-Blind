@@ -4,22 +4,22 @@ import TableTitle from "../TableTitle";
 import TableBody from "./TableBody";
 
 type AnswersTableProps = {
-    messages: any[];
+    messagesArtist: any[];
     randomArtist: any;
 };
 
-const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomArtist }) => {
-    const [storedMessages, setStoredMessages] = useState<any[]>([]);
+const AnswersTable: React.FC<AnswersTableProps> = ({ messagesArtist, randomArtist }) => {
+    const [storedMessagesArtist, setStoredMessagesArtist] = useState<any[]>([]);
     const [storedRandomArtist, setStoredRandomArtist] = useState<any>(null);
 
     const tableWrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("messages");
+        const savedMessagesArtist = localStorage.getItem("messagesArtist");
         const savedRandomArtist = localStorage.getItem("randomArtist");
 
-        if (savedMessages) {
-            setStoredMessages(JSON.parse(savedMessages));
+        if (savedMessagesArtist) {
+            setStoredMessagesArtist(JSON.parse(savedMessagesArtist));
         }
 
         if (savedRandomArtist) {
@@ -28,9 +28,9 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomArtist }) =
     }, []);
 
     useEffect(() => {
-        if (messages.length > 0) {
-            localStorage.setItem("messages", JSON.stringify(messages));
-            setStoredMessages(messages);
+        if (messagesArtist.length > 0) {
+            localStorage.setItem("messagesArtist", JSON.stringify(messagesArtist));
+            setStoredMessagesArtist(messagesArtist);
 
             const wrapper = tableWrapperRef.current;
             if (!wrapper) return;
@@ -62,9 +62,9 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomArtist }) =
             localStorage.setItem("randomArtist", JSON.stringify(randomArtist));
             setStoredRandomArtist(randomArtist);
         }
-    }, [messages, randomArtist]);
+    }, [messagesArtist, randomArtist]);
 
-    if (storedMessages.length === 0) {
+    if (storedMessagesArtist.length === 0) {
         return <p className="no-guess-message">Aucune proposition pour le moment.</p>;
     }
 
@@ -72,7 +72,7 @@ const AnswersTable: React.FC<AnswersTableProps> = ({ messages, randomArtist }) =
         <div className="table-wrapper" ref={tableWrapperRef}>
             <table>
                 <TableTitle titles={['Nom de l\'artiste']} />
-                <TableBody guess={storedMessages} randomItem={storedRandomArtist} />
+                <TableBody guess={storedMessagesArtist} randomItem={storedRandomArtist} />
             </table>
         </div>
     );

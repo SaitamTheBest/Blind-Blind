@@ -1,63 +1,63 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 
 type GameContextType = {
-    messages: any[];
-    setMessages: (messages: any[]) => void;
-    attempts: number;
-    setAttempts: (attempts: number) => void;
-    randomTrack: any;
-    setRandomTrack: (track: any) => void;
+    messagesClassic: any[];
+    setMessagesClassic: (messages: any[]) => void;
+    attemptsClassic: number;
+    setAttemptsClassic: (attempts: number) => void;
+    randomTrackClassic: any;
+    setRandomTrackClassic: (track: any) => void;
 };
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [messages, setMessages] = useState<any[]>([]);
-    const [attempts, setAttempts] = useState<number>(0);
-    const [randomTrack, setRandomTrack] = useState<any>(null);
+    const [messagesClassic, setMessagesClassic] = useState<any[]>([]);
+    const [attemptsClassic, setAttemptsClassic] = useState<number>(0);
+    const [randomTrackClassic, setRandomTrackClassic] = useState<any>(null);
 
     const getTodayDate = (): string => new Date().toISOString().split('T')[0];
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("messages");
-        const savedAttempts = localStorage.getItem("attempts");
-        const savedRandomTrack = localStorage.getItem("randomTrack");
-        const savedDate = localStorage.getItem("trackDate");
+        const savedMessagesClassic = localStorage.getItem("messagesClassic");
+        const savedAttemptsClassic = localStorage.getItem("attemptsClassic");
+        const savedRandomTrackClassic = localStorage.getItem("randomTrackClassic");
+        const savedDateClassic = localStorage.getItem("trackDateClassic");
 
         const today = getTodayDate();
 
-        if (savedRandomTrack && savedDate === today) {
-            setRandomTrack(JSON.parse(savedRandomTrack));
-            if (savedMessages) {
-                setMessages(JSON.parse(savedMessages));
+        if (savedRandomTrackClassic && savedDateClassic === today) {
+            setRandomTrackClassic(JSON.parse(savedRandomTrackClassic));
+            if (savedMessagesClassic) {
+                setMessagesClassic(JSON.parse(savedMessagesClassic));
             }
-            if (savedAttempts) {
-                setAttempts(parseInt(savedAttempts, 10));
+            if (savedAttemptsClassic) {
+                setAttemptsClassic(parseInt(savedAttemptsClassic, 10));
             }
         } else {
-            localStorage.removeItem("messages");
-            localStorage.removeItem("attempts");
-            localStorage.removeItem("randomTrack");
-            localStorage.removeItem("trackDate");
-            localStorage.removeItem("previousGuesses");
-            setMessages([]);
-            setAttempts(0);
-            setRandomTrack(null);
+            localStorage.removeItem("messagesClassic");
+            localStorage.removeItem("attemptsClassic");
+            localStorage.removeItem("randomTrackClassic");
+            localStorage.removeItem("trackDateClassic");
+            localStorage.removeItem("previousGuessesClassic");
+            setMessagesClassic([]);
+            setAttemptsClassic(0);
+            setRandomTrackClassic(null);
         }
     }, []);
 
     useEffect(() => {
-        if (randomTrack) {
-            localStorage.setItem("randomTrack", JSON.stringify(randomTrack));
-            localStorage.setItem("trackDate", getTodayDate());
+        if (randomTrackClassic) {
+            localStorage.setItem("randomTrackClassic", JSON.stringify(randomTrackClassic));
+            localStorage.setItem("trackDateClassic", getTodayDate());
         }
 
-        localStorage.setItem("messages", JSON.stringify(messages));
-        localStorage.setItem("attempts", attempts.toString());
-    }, [messages, attempts, randomTrack]);
+        localStorage.setItem("messagesClassic", JSON.stringify(messagesClassic));
+        localStorage.setItem("attemptsClassic", attemptsClassic.toString());
+    }, [messagesClassic, attemptsClassic, randomTrackClassic]);
 
     return (
-        <GameContext.Provider value={{ messages, setMessages, attempts, setAttempts, randomTrack, setRandomTrack }}>
+        <GameContext.Provider value={{ messagesClassic, setMessagesClassic, attemptsClassic, setAttemptsClassic, randomTrackClassic, setRandomTrackClassic }}>
             {children}
         </GameContext.Provider>
     );
