@@ -1,9 +1,8 @@
 import express from 'express';
 import axios from "axios";
-import getRandomTrack from '../services/randomTrack.js';
 import { PORT } from '../app.js';
-import getAllTracks from "../services/getAllTracks.js";
-import getSongOfTheDay from "../services/getSongOfTheDay.js";
+import getAllTracks from "../services/tracks/getAllTracks.js";
+import getSongOfTheDay from "../services/tracks/getSongOfTheDay.js";
 import incrementFoundCount from "../services/incrementFoundCount.js";
 
 const router = express.Router();
@@ -14,31 +13,6 @@ const router = express.Router();
  *   name: Tracks
  *   description: Gestion des musiques
  */
-
-
-/**
- * @swagger
- * /api/tracks/random-track:
- *   get:
- *     summary: Récupère une musique aléatoire
- *     tags: [Tracks]
- *     responses:
- *       200:
- *         description: Succès
- */
-router.get('/random-track', async (req, res) => {
-    try {
-        const filterNationality = req.query.nationality;
-        const tokenResponse = await axios.get(`http://localhost:${PORT}/api/auth/token`);
-        const token = tokenResponse.data.access_token;
-
-        const track = await getRandomTrack(token, filterNationality);
-        res.json(track);
-    } catch (error) {
-        console.error('Problème rencontré dans /api/random-track :', error);
-        res.status(500).json({ error: 'Impossible de récupérer une track/musique aléatoire.' });
-    }
-});
 
 /**
  * @swagger

@@ -1,4 +1,4 @@
-import { getDbConnection } from '../database/connection.js';
+import { getDbConnection } from '../../database/connection.js';
 
 async function getAllTracks() {
     let connection;
