@@ -19,7 +19,7 @@ const ArtistMode: React.FC = () => {
     const [artists, setArtists] = useState<any[]>([]);
     const [popupOpen, setPopupOpen] = useState(false);
     const [hintNatOpen, setHintNatOpen] = useState(false);
-    const [hintBestTrack, setHintBestTrack] = useState(false);
+    const [hintTopTrack, setHintTopTrack] = useState(false);
     const isMounted = useRef(false);
     const [gameEnded, setGameEnded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -200,7 +200,7 @@ const ArtistMode: React.FC = () => {
                             className={`hint-button ${attemptsArtist >= 8 ? 'unlocked' : 'locked'}`}
                             onClick={() => {
                                 if (attemptsArtist >= 8) {
-                                    setHintBestTrack(true);
+                                    setHintTopTrack(true);
                                 }
                             }}
                             data-tooltip="Débloqué après 6 essais"
@@ -228,9 +228,9 @@ const ArtistMode: React.FC = () => {
             />
 
             <HintText
-                isOpen={hintBestTrack}
-                hint={`L'artiste a pour meilleure chanson : ${randomArtist?.best_track}`}
-                onClose={() => setHintBestTrack(false)}
+                isOpen={hintTopTrack}
+                hint={`L'artiste a pour meilleure chanson : ${randomArtist?.top_track.name}`}
+                onClose={() => setHintTopTrack(false)}
             />
         </div>
     );
