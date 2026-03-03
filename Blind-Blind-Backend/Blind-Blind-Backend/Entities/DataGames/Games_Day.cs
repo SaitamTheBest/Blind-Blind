@@ -1,0 +1,43 @@
+﻿using Blind_Blind_Backend.Entities.DataGames;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Blind_Blind_Backend.Entities.DataGames {
+    [Table("games_day", Schema = "blindblindv1_datagames")]
+    public class Games_Day
+    {
+        [Key]
+        [Column("id_games_day")]
+        public string Id_Games_Day { get; set; }
+
+        [Column("id_tracks")]
+        public string Id_Tracks { get; set; }
+
+        [ForeignKey(nameof(Id_Tracks))]
+        public Tracks Tracks { get; set; }
+
+        [Column("id_lyrics")]
+        public string Id_Lyrics { get; set; }
+
+        [ForeignKey(nameof(Id_Lyrics))]
+        public Lyrics Lyrics { get; set; }
+
+        [Column("id_album")]
+        public string Id_Album { get; set; }
+
+        [ForeignKey(nameof(Id_Album))]
+        public Album Album { get; set; }
+
+        [Column("id_artist")]
+        public string Id_Artist { get; set; }
+
+        [ForeignKey(nameof(Id_Artist))]
+        public Artists Artist { get; set; }
+
+        [Column("date_games")]
+        public DateTime Date_Games { get; set; }
+
+        [Column("found")]
+        public int Found { get; set; }
+    }
+}
