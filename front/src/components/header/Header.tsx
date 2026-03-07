@@ -15,46 +15,52 @@ import {
   ScrollArea,
   Divider,
   Collapse,
+  Avatar,
 } from '@mantine/core';
+
 import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
 import { IconDeviceGamepad3, IconChevronDown } from '@tabler/icons-react';
+
 // @ts-ignore
 import classes from '../../styles/header/Header.module.css';
 
 import logo from '../../res/Blind-Blind-logo-blanc.png';
-import accountAvatar from '../../res/account-avatar.svg';
+import defaultProfile from '../../res/default_profil.svg';
 
 const miniJeux = [
   {
     label: 'Classic',
-    description: 'Jouez au mode classique de Blind-Blind ',
+    description: 'Jouez au mode classique de Blind-Blind',
     icon: IconDeviceGamepad3,
     to: '/classic',
   },
   {
     label: 'Artistes',
-    description: 'Jouez au mode artistes de Blind-Blind ',
+    description: 'Jouez au mode artistes de Blind-Blind',
     icon: IconDeviceGamepad3,
     to: '/artists',
   },
 ];
 
 export default function Header() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
+    useDisclosure(false);
+
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
+
   const location = useLocation();
 
   return (
     <header className={classes.header}>
       <Container className={classes.inner} size="xl">
-        {/* Logo + nom */}
+        {/* LOGO */}
         <Box component={Link} to="/" className={classes.logoGroup}>
           <Image src={logo} alt="Blind-Blind" h={32} />
           <span className={classes.siteName}>Blind-Blind</span>
         </Box>
 
-        {/* Desktop links */}
+        {/* DESKTOP LINKS */}
         <Box className={classes.links} visibleFrom="sm">
           <Group gap={20}>
             <Anchor
@@ -66,8 +72,8 @@ export default function Header() {
               Accueil
             </Anchor>
 
-            {/* HoverCard for desktop */}
-            <HoverCard width={300} position="bottom" radius="md" shadow="md" withinPortal>
+            {/* MINI JEUX */}
+            <HoverCard width={300} position="bottom" radius="md" shadow="md">
               <HoverCard.Target>
                 <Box className={classes.link}>
                   <Center inline>
@@ -78,7 +84,8 @@ export default function Header() {
                   </Center>
                 </Box>
               </HoverCard.Target>
-              <HoverCard.Dropdown style={{ overflow: 'hidden' }}>
+
+              <HoverCard.Dropdown>
                 <SimpleGrid cols={1} spacing="sm">
                   {miniJeux.map((game) => (
                     <UnstyledButton
@@ -91,10 +98,12 @@ export default function Header() {
                         <ThemeIcon size={34} variant="default" radius="md">
                           <game.icon size={20} />
                         </ThemeIcon>
+
                         <div>
                           <Text size="sm" fw={500}>
                             {game.label}
                           </Text>
+
                           <Text size="xs" c="dimmed">
                             {game.description}
                           </Text>
@@ -108,23 +117,23 @@ export default function Header() {
           </Group>
         </Box>
 
-        {/* ✅ Account avatar (desktop) */}
+        {/* AVATAR COMPTE */}
         <Box
           component={Link}
           to="/account"
           aria-label="Ouvrir mon compte"
           style={{ display: 'flex', alignItems: 'center' }}
         >
-          <Image
-            src={accountAvatar}
-            alt="Mon compte"
-            h={28}
-            w={28}
+          <Avatar
+            src={defaultProfile}
+            alt="Compte"
+            size={34}
+            radius="xl"
             style={{ cursor: 'pointer' }}
           />
         </Box>
 
-        {/* Burger */}
+        {/* BURGER */}
         <Burger
           opened={drawerOpened}
           onClick={toggleDrawer}
@@ -134,7 +143,7 @@ export default function Header() {
           color="white"
         />
 
-        {/* Drawer mobile */}
+        {/* DRAWER MOBILE */}
         <Drawer
           opened={drawerOpened}
           onClose={closeDrawer}
@@ -142,30 +151,19 @@ export default function Header() {
           padding="md"
           title="Menu"
           hiddenFrom="sm"
-          zIndex={1000000}
         >
           <ScrollArea h="calc(100vh - 80px)" mx="-md">
             <Divider my="sm" />
 
-            {/* ✅ Account link (mobile) */}
-            <UnstyledButton
+            <Anchor
               component={Link}
-              to="/account"
+              to="/"
               className={classes.link}
               onClick={closeDrawer}
-              style={{ display: 'block', width: '100%' }}
             >
-              <Group gap={10}>
-                <Image src={accountAvatar} alt="Mon compte" h={22} w={22} />
-                <Text>Mon compte</Text>
-              </Group>
-            </UnstyledButton>
-
-            <Anchor component={Link} to="/" className={classes.link} onClick={closeDrawer}>
               Accueil
             </Anchor>
 
-            {/* Bouton qui toggle la sous-section Mini jeux */}
             <UnstyledButton
               className={classes.link}
               onClick={toggleLinks}
@@ -179,7 +177,6 @@ export default function Header() {
               </Center>
             </UnstyledButton>
 
-            {/* Sous-liens de Mini jeux */}
             <Collapse in={linksOpened}>
               <SimpleGrid cols={1} spacing={0}>
                 {miniJeux.map((game) => (
@@ -194,10 +191,12 @@ export default function Header() {
                       <ThemeIcon size={34} variant="default" radius="md">
                         <game.icon size={20} />
                       </ThemeIcon>
+
                       <div>
                         <Text size="sm" fw={500}>
                           {game.label}
                         </Text>
+
                         <Text size="xs" c="dimmed">
                           {game.description}
                         </Text>
@@ -207,6 +206,21 @@ export default function Header() {
                 ))}
               </SimpleGrid>
             </Collapse>
+
+            <Divider my="sm" />
+
+            {/* LIEN COMPTE MOBILE */}
+            <UnstyledButton
+              component={Link}
+              to="/account"
+              onClick={closeDrawer}
+              className={classes.link}
+            >
+              <Group>
+                <Avatar src={defaultProfile} size={28} radius="xl" />
+                <Text>Mon compte</Text>
+              </Group>
+            </UnstyledButton>
           </ScrollArea>
         </Drawer>
       </Container>
