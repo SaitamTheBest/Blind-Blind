@@ -22,7 +22,7 @@ type AccountView = "login" | "register" | "forgot-password" | "profile" | "chang
 
 export default function Account() {
   // À remplacer plus tard par la vraie auth
-  const [isLoggedIn, setIsLoggedIn] = useState(true); //false true pour le changement vue
+  const [isLoggedIn, setIsLoggedIn] = useState(false); //false true pour le changement vue
   const [view, setView] = useState<AccountView>("login");
 
   // Login
