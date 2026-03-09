@@ -4,6 +4,6 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
 {
     public interface IAuthRepository
     {
-        Task<ConnectionBlindBlind?> GetByEmailAsync(string email);
+        Task<ConnectionBlindBlind?> GetAuthByEmailAsync(string email);
     }
 }

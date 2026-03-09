@@ -28,7 +28,10 @@ namespace Blind_Blind_Backend.Entities.DataGames
         [Column("image_artists")]
         public string Image_Artists { get; set; }
 
-        [ForeignKey("id_type_artists")]
+        [Column("id_type_artists")]
+        public int Id_Type_Artists { get; set; }
+
+        [ForeignKey(nameof(Id_Type_Artists))]
         public virtual Type_Artists Type_Artists { get; set; }
     }
 }

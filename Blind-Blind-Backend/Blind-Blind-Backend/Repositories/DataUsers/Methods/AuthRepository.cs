@@ -13,7 +13,7 @@ namespace Blind_Blind_Backend.Repositories.DataUsers.Methods
             _context = context;
         }
 
-        public async Task<ConnectionBlindBlind?> GetByEmailAsync(string email)
+        public async Task<ConnectionBlindBlind?> GetAuthByEmailAsync(string email)
         {
             return await _context.Set<ConnectionBlindBlind>()
                 .Include(c => c.User)

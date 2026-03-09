@@ -6,8 +6,8 @@ namespace Blind_Blind_Backend.Services.DataUsers
     public interface IUserService
     {
         Task<UserDTO> GetByIdAsync(string id);
-        Task CreateUserAsync(UserDTO userDTO);
-        Task CreateConnectionBlindBlind(ConnectionBlindBlindDTO connectionBlindDTO);
+        Task<User> CreateUserAsync(UserCreateDTO userDTO);
+        Task CreateConnectionBlindBlind(ConnectionBlindBlindCreateDTO connectionBlindDTO);
     }
 
 }
