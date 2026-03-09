@@ -3,6 +3,11 @@
     public class AuthDTO
     {
         public string Token { get; set; }
-        public ConnectionBlindBlindDTO User { get; set; }
+    }
+
+    public class LoginDTO
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Blind_Blind_Backend.DTOs.DataUsers;
-using Blind_Blind_Backend.Services.DataUsers.Methods;
+using Blind_Blind_Backend.Services.DataUsers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blind_Blind_Backend.Controllers.DataUsers
@@ -8,9 +9,9 @@ namespace Blind_Blind_Backend.Controllers.DataUsers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
 
-        public AuthController(AuthService authService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
@@ -25,7 +26,7 @@ namespace Blind_Blind_Backend.Controllers.DataUsers
         /// <returns>An IActionResult containing the authentication token if authentication is successful; otherwise, an
         /// Unauthorized result indicating invalid credentials.</returns>
         [HttpPost("login")]
-        public async Task<IActionResult> Login(ConnectionBlindBlindDTO login)
+        public async Task<IActionResult> Login(LoginDTO login)
         {
             var result = await _authService.LoginAsync(login);
 

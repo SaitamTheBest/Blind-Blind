@@ -5,7 +5,7 @@ namespace Blind_Blind_Backend.Services.DataUsers
 {
     public interface IAuthService
     {
-        Task<AuthDTO?> LoginAsync(ConnectionBlindBlindDTO login);
+        Task<AuthDTO?> LoginAsync(LoginDTO login);
 
     }
 }

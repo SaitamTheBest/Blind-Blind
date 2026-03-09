@@ -28,10 +28,8 @@ public class UserService : IUserService
         };
     }
 
-    public async Task CreateUserAsync(UserDTO userDTO)
+    public async Task<User> CreateUserAsync(UserCreateDTO userDTO)
     {
-        byte[]? avatarBytes = await _generalService.ConvertImageToBytes(userDTO.Avatar);
-
         var newUser = new User
         {
             Id_User = Guid.NewGuid().ToString(),
@@ -39,13 +37,26 @@ public class UserService : IUserService
             Elo = 0,
             Id_Rank = 1,
             Id_Roles = 1,
-            Avatar = avatarBytes
         };
 
+        if (!string.IsNullOrEmpty(userDTO.Avatar))
+        {
+            try
+            {
+                newUser.Avatar = Convert.FromBase64String(userDTO.Avatar);
+            }
+            catch
+            {
+                throw new ArgumentException("Avatar n'est pas un Base64 valide.");
+            }
+        }
+
         await _userRepository.AddUserAsync(newUser);
+
+        return newUser;
     }
 
-    public async Task CreateConnectionBlindBlind(ConnectionBlindBlindDTO connectionBlindDTO)
+    public async Task CreateConnectionBlindBlind(ConnectionBlindBlindCreateDTO connectionBlindDTO)
     {
         string hashedPassword = _generalService.HashPassword(connectionBlindDTO.Password);
 

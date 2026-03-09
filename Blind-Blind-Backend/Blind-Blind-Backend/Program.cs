@@ -1,5 +1,6 @@
 ﻿using Blind_Blind_Backend.Config;
 using Blind_Blind_Backend.Domain;
+using Blind_Blind_Backend.DTOs.General;
 using Blind_Blind_Backend.Middlewares;
 using Blind_Blind_Backend.Repositories.DataGames;
 using Blind_Blind_Backend.Repositories.DataUsers;
@@ -103,6 +104,13 @@ builder.Services.Scan(scan => scan
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
 var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
 var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
+builder.Services.Configure<JwtOptionsDTO>(options =>
+{
+    options.Key = jwtKey!;
+    options.Issuer = jwtIssuer!;
+    options.Audience = jwtAudience!;
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>

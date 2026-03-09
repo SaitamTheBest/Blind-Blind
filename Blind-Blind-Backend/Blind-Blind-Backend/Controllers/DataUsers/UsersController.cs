@@ -1,5 +1,6 @@
 ﻿using Blind_Blind_Backend.DTOs.DataUsers;
 using Blind_Blind_Backend.Services.DataUsers;
+using Blind_Blind_Backend.Entities.DataUsers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blind_Blind_Backend.Controllers
@@ -37,10 +38,18 @@ namespace Blind_Blind_Backend.Controllers
         /// <param name="userDTO">The user data to create. Must not be null.</param>
         /// <returns>A 201 Created response with a location header pointing to the newly created user resource.</returns>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> Create([FromForm] ConnectionBlindBlindCreateDTO connectionBlindBlindDTO)
         {
-            await _userService.CreateAsync(userDTO);
-            return CreatedAtAction(nameof(GetById), new { id = userDTO.Id_User }, null);
+            
+            User createdUser = await _userService.CreateUserAsync(connectionBlindBlindDTO.User);
+            connectionBlindBlindDTO.Id_User = createdUser.Id_User;
+            await _userService.CreateConnectionBlindBlind(connectionBlindBlindDTO);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdUser.Id_User },
+                createdUser
+            );
         }
     }
 }
