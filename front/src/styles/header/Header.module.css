@@ -33,8 +33,10 @@
 }
 
 .links {
-    display: flex;
-    gap: 8px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 /* Desktop link style */
