@@ -31,6 +31,7 @@ export default function Account() {
 
   // Register
   const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPseudo, setRegisterPseudo] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState("");
 
@@ -174,7 +175,7 @@ export default function Account() {
 
         <Paper withBorder shadow="sm" p={30} mt={30} radius="md">
           <FloatingLabelInput
-            mb={23}
+            mb={25}
             label="Email"
             placeholder="exemple@exemple.com"
             value={registerEmail}
@@ -197,6 +198,15 @@ export default function Account() {
             placeholder="Confirmer le mot de passe"
             value={registerPasswordConfirm}
             onChange={setRegisterPasswordConfirm}
+            required
+          />
+
+          <FloatingLabelInput
+            mt={25}
+            label="Pseudo"
+            placeholder="Votre Pseudo"
+            value={registerPseudo}
+            onChange={setRegisterPseudo}
             required
           />
 
@@ -323,7 +333,7 @@ export default function Account() {
         <FloatingLabelInput
           mt={5}
           label="Email"
-          placeholder="you@mantine.dev"
+          placeholder="exemple@exemple.com"
           value={email}
           onChange={setEmail}
           required
@@ -331,8 +341,8 @@ export default function Account() {
 
         <PasswordBasic
           mt={25}
-          label="Password"
-          placeholder="Your password"
+          label="Mot de passe"
+          placeholder="Mot de passe"
           value={password}
           onChange={setPassword}
           required

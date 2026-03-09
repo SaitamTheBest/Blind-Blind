@@ -1,10 +1,14 @@
 .navbar {
   width: 80px;
-  height: 750px;
-  padding: var(--mantine-spacing-md);
+  min-width: 80px;
+  height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 20px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  align-items: center;
+  border-right: 1px solid #dee2e6;
+  background-color: #ffffff;
 }
 
 .navbarMain {
@@ -15,21 +19,40 @@
 .link {
   width: 50px;
   height: 50px;
-  border-radius: var(--mantine-radius-md);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+  color: #6c757d;
+  margin-bottom: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
 
-  &:hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-5));
-  }
+.link:hover {
+  background-color: #f1f3f5;
+  color: #1c7ed6;
+}
 
-  &[data-active] {
-    &,
-    &:hover {
-      background-color: var(--mantine-color-blue-light);
-      color: var(--mantine-color-blue-light-color);
-    }
-  }
+.link[data-active] {
+  background-color: #e7f5ff;
+  color: #1c7ed6;
+}
+
+/* Tableau admin */
+.mantine-Table-root {
+  background: white;
+}
+
+.mantine-Table-root th,
+.mantine-Table-root td {
+  background: white;
+  color: black;
+}
+
+.mantine-Table-root th {
+  font-weight: 600;
+}
+
+.mantine-Table-root tbody tr:hover td {
+  background: #f8f9fa;
 }
