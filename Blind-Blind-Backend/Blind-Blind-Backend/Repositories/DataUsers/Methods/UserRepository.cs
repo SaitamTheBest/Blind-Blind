@@ -15,21 +15,27 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
 
         public async Task<User?> GetByIdAsync(string id)
         {
-            return await _context.Users
+            return await _context.User
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id_User == id);
         }
 
         public async Task<IReadOnlyList<User>> GetAllAsync()
         {
-            return await _context.Users
+            return await _context.User
                 .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task AddUserAsync(User user)
         {
-            await _context.Users.AddAsync(user);
+            await _context.User.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddConnectionBlindBlindAsync(ConnectionBlindBlind connectionBlindBlind)
+        {
+            await _context.ConnectionBlindBlind.AddAsync(connectionBlindBlind);
             await _context.SaveChangesAsync();
         }
     }

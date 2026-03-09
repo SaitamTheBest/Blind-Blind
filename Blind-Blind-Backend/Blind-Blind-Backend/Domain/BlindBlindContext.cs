@@ -27,7 +27,10 @@ namespace Blind_Blind_Backend.Domain
 
         #region blindblindv1_datausers
 
-        public DbSet<User> Users => Set<User>();
+        public DbSet<ConnectionBlindBlind> ConnectionBlindBlind => Set<ConnectionBlindBlind>();
+        public DbSet<Rank> Rank => Set<Rank>();
+        public DbSet<Roles> Roles => Set<Roles>();
+        public DbSet<User> User => Set<User>();
 
         #endregion
 

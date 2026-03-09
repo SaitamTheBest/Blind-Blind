@@ -5,6 +5,7 @@ using Blind_Blind_Backend.Repositories.DataGames;
 using Blind_Blind_Backend.Repositories.DataUsers;
 using Blind_Blind_Backend.Services.DataGames;
 using Blind_Blind_Backend.Services.DataUsers;
+using Blind_Blind_Backend.Services.General;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +69,12 @@ builder.Services.Scan(scan => scan
 
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IAuthService>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IGeneralService>()
     .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
     .AsImplementedInterfaces()
     .WithScopedLifetime());

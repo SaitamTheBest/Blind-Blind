@@ -17,6 +17,9 @@ namespace Blind_Blind_Backend.Entities.DataUsers
         [Column("id_roles")]
         public int Id_Roles { get; set; }
 
+        [Column("avatar")]
+        public byte[]? Avatar { get; set; }
+
         [Column("elo")]
         public int Elo { get; set; }
 
