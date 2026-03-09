@@ -24,10 +24,10 @@ namespace Blind_Blind_Backend.Entities.DataUsers
         public int Id_Rank { get; set; }
 
         [ForeignKey("id_roles")]
-        public Roles Roles { get; set; }
+        public virtual Roles Roles { get; set; }
 
         [ForeignKey("id_rank")]
-        public Rank Rank { get; set; }
+        public virtual Rank Rank { get; set; }
     }
 
 }

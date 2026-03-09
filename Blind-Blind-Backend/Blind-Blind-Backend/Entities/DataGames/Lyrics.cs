@@ -17,6 +17,6 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public string Id_Tracks { get; set; }
 
         [ForeignKey(nameof(Id_Tracks))] 
-        public Tracks Tracks { get; set; }
+        public virtual Tracks Tracks { get; set; }
     }
 }

@@ -3,15 +3,19 @@ using Blind_Blind_Backend.Domain;
 using Blind_Blind_Backend.Middlewares;
 using Blind_Blind_Backend.Repositories.DataGames;
 using Blind_Blind_Backend.Repositories.DataUsers;
+using Blind_Blind_Backend.Services.DataGames;
 using Blind_Blind_Backend.Services.DataUsers;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 Env.Load(); // charge .env.development ou .env.production
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database config
+#region Database config
 var dbOptions = new DatabaseOptions
 {
     Host = Environment.GetEnvironmentVariable("DB_HOST")!,
@@ -26,8 +30,9 @@ builder.Services.AddSingleton(dbOptions);
 builder.Services.AddDbContext<BlindBlindContext>(options =>
     options.UseNpgsql(dbOptions.GetConnectionString())
 );
+#endregion
 
-// API + Swagger
+#region API + Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -45,10 +50,24 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader();
         });
 });
+#endregion
 
+#region AutoMapper
 // Services
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IUserService>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IGamesService>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IAuthService>()
     .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
     .AsImplementedInterfaces()
     .WithScopedLifetime());
@@ -66,6 +85,36 @@ builder.Services.Scan(scan => scan
     .AsImplementedInterfaces()
     .WithScopedLifetime());
 
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IAuthRepository>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Repository")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+#endregion
+
+#region Auth JWT
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey!)
+        )
+    };
+});
+#endregion
 
 var app = builder.Build();
 
@@ -81,6 +130,7 @@ if (app.Environment.IsDevelopment())
         UseShellExecute = true
     });
 }
+
 app.UseCors("AllowLocalhost");
 app.UseHttpsRedirection();
 app.UseHttpLoggingMiddleware();

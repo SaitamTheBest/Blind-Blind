@@ -17,6 +17,6 @@ namespace Blind_Blind_Backend.Entities.DataUsers
         public string Password { get; set; }
 
         [ForeignKey("id_user")]
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

@@ -16,9 +16,6 @@ namespace Blind_Blind_Backend.Entities.DataGames
         [Column("id_album")]
         public string Id_Album { get; set; }
 
-        [ForeignKey(nameof(Id_Album))] 
-        public Album Album { get; set; }
-
         [Column("release_year")] 
         public int Release_Year { get; set; }
         
@@ -38,6 +35,9 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public int Id_Genre { get; set; }
 
         [ForeignKey(nameof(Id_Genre))]
-        public Genre Genre { get; set; }
+        public virtual Genre Genre { get; set; }
+
+        [ForeignKey(nameof(Id_Album))]
+        public virtual Album Album { get; set; }
     }
 }

@@ -19,9 +19,6 @@ namespace Blind_Blind_Backend.Entities.DataGames
         [Column("last_release")]
         public DateTime Last_Release { get; set; }
 
-        [ForeignKey("id_type_artists")]
-        public Type_Artists Type_Artists { get; set; }
-
         [Column("nationality")]
         public string Nationality { get; set; }
 
@@ -30,5 +27,8 @@ namespace Blind_Blind_Backend.Entities.DataGames
 
         [Column("image_artists")]
         public string Image_Artists { get; set; }
+
+        [ForeignKey("id_type_artists")]
+        public virtual Type_Artists Type_Artists { get; set; }
     }
 }
