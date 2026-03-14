@@ -7,8 +7,8 @@ namespace Blind_Blind_Backend.Entities.DataUsers
     public class Roles
     {
         [Key]
-        [Column("id_role")]
-        public int Id_Role { get; set; }
+        [Column("id_roles")]
+        public int Id_Roles { get; set; }
 
         [Column("role_name")]
         public string Role_Name { get; set; }

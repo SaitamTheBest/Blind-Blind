@@ -13,7 +13,7 @@ namespace Blind_Blind_Backend.Middlewares.Services
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, BlindBlindContext dbContext)
+        public async Task InvokeAsync(HttpContext context, IServiceProvider serviceProvider)
         {
             var stopwatch = Stopwatch.StartNew();
 
@@ -31,8 +31,12 @@ namespace Blind_Blind_Backend.Middlewares.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            dbContext.HttpLog.Add(log);
-            await dbContext.SaveChangesAsync();
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<BlindBlindContext>();
+                dbContext.HttpLog.Add(log);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

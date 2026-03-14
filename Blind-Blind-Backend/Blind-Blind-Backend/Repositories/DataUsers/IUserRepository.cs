@@ -7,6 +7,12 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
         Task<User?> GetByIdAsync(string id);
         Task<IReadOnlyList<User>> GetAllAsync();
         Task AddUserAsync(User user);
+        Task UpdateUserAsync(User user);
+        Task DeleteUserAsync(string id);
         Task AddConnectionBlindBlindAsync(ConnectionBlindBlind connectionBlindBlind);
+        Task UpdateConnectionBlindBlindAsync(ConnectionBlindBlind connectionBlindBlind);
+        Task DeleteConnectionBlindBlindAsync(string id);
+
+
     }
 }

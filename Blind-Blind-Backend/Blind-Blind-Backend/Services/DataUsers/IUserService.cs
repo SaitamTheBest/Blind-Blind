@@ -7,7 +7,11 @@ namespace Blind_Blind_Backend.Services.DataUsers
     {
         Task<UserDTO> GetByIdAsync(string id);
         Task<User> CreateUserAsync(UserCreateDTO userDTO);
+        Task UpdateUserAsync(UserUpdateDTO user);
+        Task DeleteUserAsync(string id);
         Task CreateConnectionBlindBlind(ConnectionBlindBlindCreateDTO connectionBlindDTO);
+        Task UpdateConnectionBlindBlind(ConnectionBlindBlindCreateDTO connectionBlindBlind);
+        Task DeleteConnectionBlindBlind(string id);        
     }
 
 }

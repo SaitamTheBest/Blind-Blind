@@ -25,6 +25,18 @@ public class UserService : IUserService
         {
             Id_User = user.Id_User,
             Username = user.Username,
+            Avatar = user.Avatar != null ? Convert.ToBase64String(user.Avatar) : null,
+            Elo = user.Elo,
+            Rank = user.Rank != null ? new RankDTO
+            {
+                Id_Rank = user.Rank.Id_Rank,
+                Rank_Name = user.Rank.Rank_Name,
+            } : null,
+            Roles = user.Roles != null ? new RolesDTO
+            {
+                Id_Roles = user.Roles.Id_Roles,
+                Role_Name = user.Roles.Role_Name,
+            } : null
         };
     }
 
@@ -37,6 +49,7 @@ public class UserService : IUserService
             Elo = 0,
             Id_Rank = 1,
             Id_Roles = 1,
+            Created_At = DateTime.UtcNow
         };
 
         if (!string.IsNullOrEmpty(userDTO.Avatar))
@@ -56,6 +69,39 @@ public class UserService : IUserService
         return newUser;
     }
 
+    public async Task UpdateUserAsync(UserUpdateDTO user)
+    {
+        if (user.Id_User == null)
+        {
+            throw new ArgumentException("L'ID de l'utilisateur est requis pour la mise à jour.");
+        }
+
+        var existingUser = await _userRepository.GetByIdAsync(user.Id_User);
+        if (existingUser == null)
+        {
+            throw new ArgumentException("L'utilisateur n'existe pas.");
+        }
+
+        existingUser.Username = user.Username;
+        existingUser.Avatar = !string.IsNullOrEmpty(user.Avatar) ? Convert.FromBase64String(user.Avatar) : null;
+        existingUser.Id_Rank = user.Id_Rank;
+        existingUser.Id_Roles = user.Id_Role;
+        existingUser.Updated_At = DateTime.UtcNow;
+
+        await _userRepository.UpdateUserAsync(existingUser);
+    }
+
+    public async Task DeleteUserAsync(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentException("L'ID de l'utilisateur est requis pour la suppression.");
+        }
+
+        await DeleteConnectionBlindBlind(id);
+        await _userRepository.DeleteUserAsync(id);
+    }
+
     public async Task CreateConnectionBlindBlind(ConnectionBlindBlindCreateDTO connectionBlindDTO)
     {
         string hashedPassword = _generalService.HashPassword(connectionBlindDTO.Password);
@@ -68,5 +114,20 @@ public class UserService : IUserService
         };
 
         await _userRepository.AddConnectionBlindBlindAsync(newConnection);
+    }
+
+    public Task UpdateConnectionBlindBlind(ConnectionBlindBlindCreateDTO connectionBlindBlind)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task DeleteConnectionBlindBlind(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentException("L'ID de l'utilisateur est requis pour la suppression.");
+        }
+
+        await _userRepository.DeleteConnectionBlindBlindAsync(id);
     }
 }

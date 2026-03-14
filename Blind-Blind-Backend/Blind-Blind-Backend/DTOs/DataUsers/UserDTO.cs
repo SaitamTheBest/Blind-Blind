@@ -5,7 +5,7 @@
         public string? Id_User { get; set; }
         public string Username { get; set; }
         public string? Avatar { get; set; }
-        public int? Elo { get; set; }
+        public int Elo { get; set; }
         public RankDTO? Rank { get; set; }
         public RolesDTO? Roles { get; set; }
     }
@@ -15,5 +15,15 @@
         public string? Id_User { get; set; }
         public string Username { get; set; }
         public string? Avatar { get; set; }
+    }
+
+    public class UserUpdateDTO
+    {
+        public string? Id_User { get; set; }
+        public string Username { get; set; }
+        public string? Avatar { get; set; }
+        public int Id_Rank { get; set; } = 1;
+        public int Id_Role { get; set; } = 1;
+        public int Elo { get; set; } = 0;
     }
 }

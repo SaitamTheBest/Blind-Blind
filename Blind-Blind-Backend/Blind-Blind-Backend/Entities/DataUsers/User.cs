@@ -26,6 +26,12 @@ namespace Blind_Blind_Backend.Entities.DataUsers
         [Column("id_rank")]
         public int Id_Rank { get; set; } = 1;
 
+        [Column("created_at")]
+        public DateTime Created_At { get; set; } = DateTime.UtcNow;
+
+        [Column("updated_at")]
+        public DateTime? Updated_At { get; set; }
+
         [ForeignKey(nameof(Id_Roles))]
         public virtual Roles Roles { get; set; }
 

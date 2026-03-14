@@ -21,7 +21,7 @@ namespace Blind_Blind_Backend.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the user to retrieve.</param>
         /// <returns>An <see cref="IActionResult"/> containing the user data if found; otherwise, a NotFound result.</returns>
-        [HttpGet("{id}")]
+        [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -37,10 +37,10 @@ namespace Blind_Blind_Backend.Controllers
         /// </summary>
         /// <param name="userDTO">The user data to create. Must not be null.</param>
         /// <returns>A 201 Created response with a location header pointing to the newly created user resource.</returns>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] ConnectionBlindBlindCreateDTO connectionBlindBlindDTO)
         {
-            
+
             User createdUser = await _userService.CreateUserAsync(connectionBlindBlindDTO.User);
             connectionBlindBlindDTO.Id_User = createdUser.Id_User;
             await _userService.CreateConnectionBlindBlind(connectionBlindBlindDTO);
@@ -50,6 +50,45 @@ namespace Blind_Blind_Backend.Controllers
                 new { id = createdUser.Id_User },
                 createdUser
             );
+        }
+
+        /// <summary>
+        /// Updates the user information with the values provided in the specified data transfer object.
+        /// </summary>
+        /// <remarks>This method is asynchronous and may return a BadRequest if validation fails or an
+        /// exception occurs during the update process. Ensure that the input data is properly validated before calling
+        /// this method.</remarks>
+        /// <param name="userUpdateDTO">The data transfer object containing the updated user information. Must include all required fields for the
+        /// update operation and be valid according to the application's user model.</param>
+        /// <returns>An IActionResult that indicates the outcome of the update operation. Returns Ok if the update is successful;
+        /// otherwise, returns BadRequest with an error message.</returns>
+        [HttpPost("update")]
+        public async Task<IActionResult> Update([FromForm] UserUpdateDTO userUpdateDTO)
+        {
+            try
+            {
+                await _userService.UpdateUserAsync(userUpdateDTO);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                await _userService.DeleteUserAsync(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
