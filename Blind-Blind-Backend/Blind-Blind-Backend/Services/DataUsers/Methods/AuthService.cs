@@ -48,7 +48,8 @@ namespace Blind_Blind_Backend.Services.DataUsers.Methods
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id_User),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.User.Roles.Role_Name)
             };
 
             var key = new SymmetricSecurityKey(

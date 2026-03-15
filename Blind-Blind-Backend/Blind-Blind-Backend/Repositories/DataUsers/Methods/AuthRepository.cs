@@ -17,6 +17,7 @@ namespace Blind_Blind_Backend.Repositories.DataUsers.Methods
         {
             return await _context.Set<ConnectionBlindBlind>()
                 .Include(c => c.User)
+                .ThenInclude(u => u.Roles)
                 .FirstOrDefaultAsync(c => c.Email == email);
         }
     }
