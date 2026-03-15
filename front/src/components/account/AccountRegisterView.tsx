@@ -5,6 +5,7 @@ import {
   Paper,
   Text,
   Title,
+  Alert,
 } from "@mantine/core";
 import classes from "../../styles/account/AuthenticationTitle.module.css";
 import FloatingLabelInput from "../inputs/FloatingLabelInput";
@@ -14,10 +15,15 @@ import PasswordStrength from "../inputs/PasswordStrength";
 type AccountRegisterViewProps = {
   registerEmail: string;
   setRegisterEmail: (value: string) => void;
+  registerUsername: string;
+  setRegisterUsername: (value: string) => void;
   registerPassword: string;
   setRegisterPassword: (value: string) => void;
   registerPasswordConfirm: string;
   setRegisterPasswordConfirm: (value: string) => void;
+  registerError: string;
+  registerSuccess: string;
+  isRegisterLoading: boolean;
   onGoToLogin: () => void;
   onRegister: () => void;
 };
@@ -25,10 +31,15 @@ type AccountRegisterViewProps = {
 export default function AccountRegisterView({
   registerEmail,
   setRegisterEmail,
+  registerUsername,
+  setRegisterUsername,
   registerPassword,
   setRegisterPassword,
   registerPasswordConfirm,
   setRegisterPasswordConfirm,
+  registerError,
+  registerSuccess,
+  isRegisterLoading,
   onGoToLogin,
   onRegister,
 }: AccountRegisterViewProps) {
@@ -46,6 +57,18 @@ export default function AccountRegisterView({
       </Text>
 
       <Paper withBorder shadow="sm" p={30} mt={30} radius="md">
+        {registerError && (
+          <Alert color="red" mb="md">
+            {registerError}
+          </Alert>
+        )}
+
+        {registerSuccess && (
+          <Alert color="green" mb="md">
+            {registerSuccess}
+          </Alert>
+        )}
+
         <FloatingLabelInput
           mb={23}
           label="Email"
@@ -76,13 +99,19 @@ export default function AccountRegisterView({
         <FloatingLabelInput
           mt={25}
           label="Pseudo"
-          placeholder="Votre Pseudo"
-          value={registerEmail}
-          onChange={setRegisterEmail}
+          placeholder="Votre pseudo"
+          value={registerUsername}
+          onChange={setRegisterUsername}
           required
         />
 
-        <Button fullWidth mt="xl" radius="md" onClick={onRegister}>
+        <Button
+          fullWidth
+          mt="xl"
+          radius="md"
+          onClick={onRegister}
+          loading={isRegisterLoading}
+        >
           Créer un compte
         </Button>
       </Paper>
