@@ -35,5 +35,23 @@ namespace Blind_Blind_Backend.Controllers.DataUsers
 
             return Ok(result);
         }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenDTO refreshToken)
+        {
+            var auth = await _authService.RefreshTokenAsync(refreshToken.RefreshToken);
+
+            if (auth == null)
+                return Unauthorized();
+
+            return Ok(auth);
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] string refreshToken)
+        {
+            await _authService.RevokeRefreshTokenAsync(refreshToken);
+            return Ok();
+        }
     }
 }
