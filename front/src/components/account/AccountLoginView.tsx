@@ -6,6 +6,7 @@ import {
   Paper,
   Text,
   Title,
+  Alert,
 } from "@mantine/core";
 import classes from "../../styles/account/AuthenticationTitle.module.css";
 import FloatingLabelInput from "../inputs/FloatingLabelInput";
@@ -16,6 +17,8 @@ type AccountLoginViewProps = {
   setEmail: (value: string) => void;
   password: string;
   setPassword: (value: string) => void;
+  loginError: string;
+  isLoginLoading: boolean;
   onGoToRegister: () => void;
   onGoToForgotPassword: () => void;
   onLogin: () => void;
@@ -26,6 +29,8 @@ export default function AccountLoginView({
   setEmail,
   password,
   setPassword,
+  loginError,
+  isLoginLoading,
   onGoToRegister,
   onGoToForgotPassword,
   onLogin,
@@ -44,6 +49,12 @@ export default function AccountLoginView({
       </Text>
 
       <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
+        {loginError && (
+          <Alert color="red" mb="md">
+            {loginError}
+          </Alert>
+        )}
+
         <FloatingLabelInput
           mt={5}
           label="Email"
@@ -68,7 +79,13 @@ export default function AccountLoginView({
           </Anchor>
         </Group>
 
-        <Button fullWidth mt={20} radius={"md"} onClick={onLogin}>
+        <Button
+          fullWidth
+          mt={20}
+          radius="md"
+          onClick={onLogin}
+          loading={isLoginLoading}
+        >
           Se connecter
         </Button>
       </Paper>

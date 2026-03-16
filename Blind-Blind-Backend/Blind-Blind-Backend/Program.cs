@@ -41,16 +41,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost",
-        policy =>
-        {
-            policy.WithOrigins(
-                    "http://localhost:5004",
-                    "https://localhost:7200"
-                )
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:5004",
+                "https://localhost:7200"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 #endregion
 
@@ -147,9 +147,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowLocalhost");
-app.UseHttpsRedirection();
+
+//app.UseHttpsRedirection();
+
 app.UseHttpLoggingMiddleware();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
