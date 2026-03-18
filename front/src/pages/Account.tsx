@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { API_URL } from "../config";
 import AccountLoginView from "../components/account/AccountLoginView";
 import AccountRegisterView from "../components/account/AccountRegisterView";
 import AccountForgotPasswordView from "../components/account/AccountForgotPasswordView";
@@ -15,9 +16,13 @@ export type AccountView =
 
 type JwtPayload = {
   exp?: number;
+  Id_User?: string;
+  Email?: string;
+  Role?: string;
+  Name?: string;
+  nameid?: string;
   email?: string;
   role?: string;
-  nameid?: string;
   unique_name?: string;
   username?: string;
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"?: string;
@@ -27,12 +32,15 @@ type JwtPayload = {
 
 function parseJwt(token: string): JwtPayload | null {
   try {
-    const base64Url = token.split(".")[1];
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+
+    const base64Url = parts[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
         .join("")
     );
 
@@ -52,20 +60,73 @@ function isTokenValid(token: string): boolean {
   return payload.exp > now;
 }
 
-function getClaimEmail(payload: JwtPayload): string {
+function getClaimUserId(payload: JwtPayload): string {
   return (
-    payload.email ||
-    payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] ||
+    payload.nameid ||
+    payload[
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ] ||
     ""
   );
 }
 
-function getClaimUserId(payload: JwtPayload): string {
+function getClaimEmail(payload: JwtPayload): string {
   return (
-    payload.nameid ||
-    payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ||
+    payload.Email ||
+    payload.email ||
+    payload[
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+    ] ||
     ""
   );
+}
+
+function getClaimUsername(payload: JwtPayload): string {
+  return payload.Name || payload.username || payload.unique_name || "";
+}
+
+function getStoredAccessToken(): string | null {
+  return (
+    localStorage.getItem("accessToken") ||
+    sessionStorage.getItem("accessToken")
+  );
+}
+
+function getStoredRefreshToken(): string | null {
+  return (
+    localStorage.getItem("refreshToken") ||
+    sessionStorage.getItem("refreshToken")
+  );
+}
+
+function clearAuthStorage(): void {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("rememberMe");
+
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
+}
+
+function applyProfileFromToken(
+  token: string,
+  setUsername: (value: string) => void,
+  setProfileEmail: (value: string) => void
+): void {
+  const payload = parseJwt(token);
+
+  if (!payload) return;
+
+  const tokenUsername = getClaimUsername(payload);
+  const tokenEmail = getClaimEmail(payload);
+
+  if (tokenUsername) {
+    setUsername(tokenUsername);
+  }
+
+  if (tokenEmail) {
+    setProfileEmail(tokenEmail);
+  }
 }
 
 export default function Account() {
@@ -77,6 +138,7 @@ export default function Account() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   // Register
   const [registerEmail, setRegisterEmail] = useState("");
@@ -103,54 +165,52 @@ export default function Account() {
   const resetRef = useRef<() => void>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const storedRememberMe = localStorage.getItem("rememberMe");
+    const accessToken = getStoredAccessToken();
+    const refreshToken = getStoredRefreshToken();
 
-    if (!token) {
-      setIsLoggedIn(false);
-      setView("login");
+    if (storedRememberMe === "true") {
+      setRememberMe(true);
+    }
+
+    if (accessToken && refreshToken && isTokenValid(accessToken)) {
+      applyProfileFromToken(accessToken, setUsername, setProfileEmail);
+      setIsLoggedIn(true);
+      setView("profile");
       return;
     }
 
-    if (!isTokenValid(token)) {
-      localStorage.removeItem("token");
-      setIsLoggedIn(false);
-      setView("login");
-      return;
+    if (accessToken || refreshToken) {
+      clearAuthStorage();
     }
-
-    const payload = parseJwt(token);
-
-    if (payload) {
-      const tokenEmail = getClaimEmail(payload);
-
-      if (tokenEmail) {
-        setEmail(tokenEmail);
-        setProfileEmail(tokenEmail);
-      }
-    }
-
-    setIsLoggedIn(true);
-    setView("profile");
   }, []);
+
+  const resetProfileState = () => {
+    setUsername("");
+    setProfileEmail("");
+    setProfileImage(defaultProfile);
+  };
+
+  const resetLoginState = () => {
+    setEmail("");
+    setPassword("");
+    setLoginError("");
+    setRememberMe(false);
+  };
 
   const handleProfileImageChange = (file: File | null) => {
     if (!file) return;
+
     const imageUrl = URL.createObjectURL(file);
     setProfileImage(imageUrl);
   };
 
   const handleLogin = async () => {
     setLoginError("");
-
-    if (!email.trim() || !password.trim()) {
-      setLoginError("Merci de remplir l'email et le mot de passe.");
-      return;
-    }
+    setIsLoginLoading(true);
 
     try {
-      setIsLoginLoading(true);
-
-      const response = await fetch("http://localhost:5004/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,46 +218,38 @@ export default function Account() {
         body: JSON.stringify({
           email,
           password,
+          rememberMe,
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || "Email ou mot de passe incorrect.");
+        setLoginError(errorText || "Email ou mot de passe invalide");
+        return;
       }
 
-      const result = await response.json();
-      const token = result.token || result.Token || result.accessToken;
+      const data = await response.json();
 
-      if (!token) {
-        throw new Error("Aucun token renvoyé par l'API.");
-      }
+      clearAuthStorage();
 
-      localStorage.setItem("token", token);
-
-      const payload = parseJwt(token);
-
-      if (payload) {
-        const tokenEmail = getClaimEmail(payload);
-
-        if (tokenEmail) {
-          setEmail(tokenEmail);
-          setProfileEmail(tokenEmail);
-        }
+      if (rememberMe) {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("rememberMe", "true");
       } else {
-        setProfileEmail(email);
+        sessionStorage.setItem("accessToken", data.accessToken);
+        sessionStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.removeItem("rememberMe");
       }
+
+      applyProfileFromToken(data.accessToken, setUsername, setProfileEmail);
 
       setIsLoggedIn(true);
       setView("profile");
-      setPassword("");
+
     } catch (error) {
-      console.error("Erreur connexion :", error);
-      setLoginError(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue lors de la connexion."
-      );
+      console.error("Erreur login :", error);
+      setLoginError("Impossible de contacter le serveur");
     } finally {
       setIsLoginLoading(false);
     }
@@ -207,7 +259,11 @@ export default function Account() {
     setRegisterError("");
     setRegisterSuccess("");
 
-    if (!registerEmail.trim() || !registerUsername.trim() || !registerPassword.trim()) {
+    if (
+      !registerEmail.trim() ||
+      !registerUsername.trim() ||
+      !registerPassword.trim()
+    ) {
       setRegisterError("Merci de remplir tous les champs.");
       return;
     }
@@ -226,7 +282,7 @@ export default function Account() {
       formData.append("User.Username", registerUsername);
       formData.append("User.Avatar", "");
 
-      const response = await fetch("http://localhost:5004/api/users/create", {
+      const response = await fetch(`${API_URL}/api/users/create`, {
         method: "POST",
         body: formData,
       });
@@ -262,11 +318,27 @@ export default function Account() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setView("login");
-    setPassword("");
+  const handleLogout = async () => {
+    const refreshToken = getStoredRefreshToken();
+
+    try {
+      if (refreshToken) {
+        await fetch(`${API_URL}/api/auth/logout`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(refreshToken),
+        });
+      }
+    } catch (error) {
+      console.error("Erreur logout :", error);
+    } finally {
+      clearAuthStorage();
+      setIsLoggedIn(false);
+      setView("login");
+      resetLoginState();
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -277,7 +349,7 @@ export default function Account() {
     if (!confirmed) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getStoredAccessToken();
 
       if (!token) {
         throw new Error("Aucun token trouvé.");
@@ -292,11 +364,16 @@ export default function Account() {
       const userId = getClaimUserId(payload);
 
       if (!userId) {
-        throw new Error("Impossible de récupérer l'identifiant utilisateur depuis le token.");
+        throw new Error(
+          "Impossible de récupérer l'identifiant utilisateur depuis le token."
+        );
       }
 
-      const response = await fetch(`http://localhost:5004/api/users/delete/${userId}`, {
+      const response = await fetch(`${API_URL}/api/users/delete/${userId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -304,14 +381,11 @@ export default function Account() {
         throw new Error(errorText || "Erreur lors de la suppression du compte.");
       }
 
-      localStorage.removeItem("token");
+      clearAuthStorage();
       setIsLoggedIn(false);
       setView("login");
-      setUsername("John Doe");
-      setProfileEmail("john@doe.com");
-      setProfileImage(defaultProfile);
-      setEmail("");
-      setPassword("");
+      resetProfileState();
+      resetLoginState();
 
       alert("Compte supprimé avec succès.");
     } catch (error) {
@@ -388,9 +462,24 @@ export default function Account() {
           console.log("Nouvelle proposition :", data);
         }}
         songSuggestions={[
-          { id: 1, title: "Numb", artist: "Linkin Park", status: "accepted" },
-          { id: 2, title: "Blinding Lights", artist: "The Weeknd", status: "pending" },
-          { id: 3, title: "Believer", artist: "Imagine Dragons", status: "rejected" },
+          {
+            id: 1,
+            title: "Numb",
+            artist: "Linkin Park",
+            status: "accepted",
+          },
+          {
+            id: 2,
+            title: "Blinding Lights",
+            artist: "The Weeknd",
+            status: "pending",
+          },
+          {
+            id: 3,
+            title: "Believer",
+            artist: "Imagine Dragons",
+            status: "rejected",
+          },
         ]}
       />
     );
@@ -402,6 +491,8 @@ export default function Account() {
       setEmail={setEmail}
       password={password}
       setPassword={setPassword}
+      rememberMe={rememberMe}
+      setRememberMe={setRememberMe}
       loginError={loginError}
       isLoginLoading={isLoginLoading}
       onGoToRegister={() => setView("register")}

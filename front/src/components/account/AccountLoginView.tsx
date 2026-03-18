@@ -1,6 +1,7 @@
 import {
   Anchor,
   Button,
+  Checkbox,
   Container,
   Group,
   Paper,
@@ -17,6 +18,8 @@ type AccountLoginViewProps = {
   setEmail: (value: string) => void;
   password: string;
   setPassword: (value: string) => void;
+  rememberMe: boolean;
+  setRememberMe: (value: boolean) => void;
   loginError: string;
   isLoginLoading: boolean;
   onGoToRegister: () => void;
@@ -29,6 +32,8 @@ export default function AccountLoginView({
   setEmail,
   password,
   setPassword,
+  rememberMe,
+  setRememberMe,
   loginError,
   isLoginLoading,
   onGoToRegister,
@@ -73,8 +78,19 @@ export default function AccountLoginView({
           required
         />
 
-        <Group justify="space-between" mt={5}>
-          <Anchor component="button" size="sm" c="red" onClick={onGoToForgotPassword}>
+        <Group justify="space-between" mt={15}>
+          <Checkbox
+            label="Se souvenir de moi"
+            checked={rememberMe}
+            onChange={(event) => setRememberMe(event.currentTarget.checked)}
+          />
+
+          <Anchor
+            component="button"
+            size="sm"
+            c="red"
+            onClick={onGoToForgotPassword}
+          >
             Mot de passe oublié ?
           </Anchor>
         </Group>
