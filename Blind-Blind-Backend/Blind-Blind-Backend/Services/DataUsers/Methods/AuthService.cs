@@ -116,7 +116,8 @@ namespace Blind_Blind_Backend.Services.DataUsers.Methods
                 new Claim("Id_User", user.Id_User),
                 new Claim("Email", user.Email),
                 new Claim("Role", user.User.Roles.Role_Name),
-                new Claim("Name", user.User.Username)
+                new Claim("Name", user.User.Username),
+                new Claim("Avatar", user.User.Avatar.ToString())
             };
 
             var key = new SymmetricSecurityKey(
