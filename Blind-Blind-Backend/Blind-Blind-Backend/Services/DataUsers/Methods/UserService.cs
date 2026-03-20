@@ -63,6 +63,15 @@ public class UserService : IUserService
                 throw new ArgumentException("Avatar n'est pas un Base64 valide.");
             }
         }
+        else
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Ressources", "default_profil.svg");
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException("Image par défaut introuvable.");
+
+            newUser.Avatar = await File.ReadAllBytesAsync(path);
+        }
 
         await _userRepository.AddUserAsync(newUser);
 
