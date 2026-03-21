@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Container, Paper, Text, Title } from '@mantine/core';
-import { NavbarMinimal, type AdminTab } from '../components/adminDashboard/NavbarMinimal';
-import AccountsTab from '../components/adminDashboard/Accounts/AccountsTab';
+import { useState } from "react";
+import { Container, Paper, Text, Title } from "@mantine/core";
+import { NavbarMinimal, type AdminTab } from "../components/adminDashboard/NavbarMinimal";
+import AccountsTab from "../components/adminDashboard/Accounts/AccountsTab";
+import MusicSuggestionsTab from "../components/adminDashboard/MusicSuggestions/MusicSuggestionsTab";
 
 function DashboardTab() {
   return (
@@ -26,18 +27,19 @@ function PlaceholderTab({ title }: { title: string }) {
 }
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
+  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       <NavbarMinimal activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <Container fluid style={{ flex: 1, padding: '24px' }}>
-        {activeTab === 'dashboard' && <DashboardTab />}
-        {activeTab === 'accounts' && <AccountsTab />}
-        {activeTab === 'analytics' && <PlaceholderTab title="Analytics" />}
-        {activeTab === 'releases' && <PlaceholderTab title="Releases" />}
-        {activeTab === 'security' && <PlaceholderTab title="Security" />}
+      <Container fluid style={{ flex: 1, padding: "24px" }}>
+        {activeTab === "dashboard" && <DashboardTab />}
+        {activeTab === "accounts" && <AccountsTab />}
+        {activeTab === "songs" && <MusicSuggestionsTab />}
+        {activeTab === "analytics" && <PlaceholderTab title="Analytics" />}
+        {activeTab === "releases" && <PlaceholderTab title="Releases" />}
+        {activeTab === "security" && <PlaceholderTab title="Security" />}
       </Container>
     </div>
   );
