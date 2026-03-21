@@ -76,12 +76,9 @@ export default function ProfileSidebar({
           <Title order={2} className={classes.username}>
             {username || "Pseudo"}
           </Title>
-          <Text c="dimmed" fs="italic" size="sm">
-            Ton espace perso
-          </Text>
         </Stack>
         
-        <Card radius="xl" padding="lg" withBorder className={classes.rankCard}>
+        <Card mt="xl" radius="xl" padding="lg" withBorder className={classes.rankCard}>
           <Group wrap="nowrap" align="center">
             <ThemeIcon size={52} radius="xl" variant="light" color="yellow">
               <IconMusic size={28} />
@@ -111,18 +108,6 @@ export default function ProfileSidebar({
             Se déconnecter
           </Button>
         
-          <Button
-            fullWidth
-            mt="md"
-            radius="xl"
-            size="md"
-            variant="outline"
-            color="red"
-            leftSection={<IconTrash size={18} />}
-            onClick={onDeleteAccount}
-          >
-            Supprimer le compte
-          </Button>
         </Stack>
       </Stack>
     </Paper>

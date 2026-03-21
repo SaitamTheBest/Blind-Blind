@@ -12,6 +12,7 @@ import {
 import classes from "../../styles/account/AuthenticationTitle.module.css";
 import FloatingLabelInput from "../inputs/FloatingLabelInput";
 import PasswordBasic from "../inputs/PasswordBasic";
+import { canSubmitLogin } from "../../utils/accountValidation";
 
 type AccountLoginViewProps = {
   email: string;
@@ -26,6 +27,7 @@ type AccountLoginViewProps = {
   onGoToForgotPassword: () => void;
   onLogin: () => void;
 };
+
 
 export default function AccountLoginView({
   email,
@@ -101,9 +103,11 @@ export default function AccountLoginView({
           radius="md"
           onClick={onLogin}
           loading={isLoginLoading}
+          disabled={!canSubmitLogin(email, password) || isLoginLoading}
         >
           Se connecter
         </Button>
+        
       </Paper>
     </Container>
   );

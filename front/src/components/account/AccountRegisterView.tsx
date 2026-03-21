@@ -11,6 +11,9 @@ import classes from "../../styles/account/AuthenticationTitle.module.css";
 import FloatingLabelInput from "../inputs/FloatingLabelInput";
 import PasswordBasic from "../inputs/PasswordBasic";
 import PasswordStrength from "../inputs/PasswordStrength";
+import { canSubmitRegister } from "../../utils/accountValidation";
+
+
 
 type AccountRegisterViewProps = {
   registerEmail: string;
@@ -111,6 +114,7 @@ export default function AccountRegisterView({
           radius="md"
           onClick={onRegister}
           loading={isRegisterLoading}
+          disabled={!canSubmitRegister(registerEmail, registerUsername, registerPassword, registerPasswordConfirm) || isRegisterLoading}
         >
           Créer un compte
         </Button>

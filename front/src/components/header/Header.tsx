@@ -17,6 +17,7 @@ import {
   Collapse,
   Avatar,
 } from '@mantine/core';
+import { useEffect, useState } from "react";
 
 import { useDisclosure } from '@mantine/hooks';
 import { Link, useLocation } from 'react-router-dom';
@@ -43,6 +44,32 @@ const miniJeux = [
   },
 ];
 
+function getStoredAccessToken(): string | null {
+  return (
+    localStorage.getItem("accessToken") ||
+    sessionStorage.getItem("accessToken")
+  );
+}
+
+function parseJwt(token: string): any {
+  try {
+    const base64 = token.split(".")[1];
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
+
+function getUsernameFromToken(): string {
+  const token = getStoredAccessToken();
+  if (!token) return "";
+
+  const payload = parseJwt(token);
+  if (!payload) return "";
+
+  return payload.Name || payload.name || "";
+}
+
 export default function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
@@ -50,6 +77,26 @@ export default function Header() {
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
 
   const location = useLocation();
+
+  const [username, setUsername] = useState("");
+  useEffect(() => {
+   const updateUser = () => {
+     const name = getUsernameFromToken();
+     setUsername(name);
+   };
+
+   updateUser();
+
+   window.addEventListener("storage", updateUser);
+   window.addEventListener("authChanged", updateUser);
+
+   return () => {
+     window.removeEventListener("storage", updateUser);
+     window.removeEventListener("authChanged", updateUser);
+   };
+  }, []);
+  
+  const isLoggedIn = !!username;
 
   return (
     <header className={classes.header}>
@@ -122,14 +169,33 @@ export default function Header() {
           component={Link}
           to="/account"
           aria-label="Ouvrir mon compte"
-          style={{ display: 'flex', alignItems: 'center' }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
         >
+          {isLoggedIn && (
+            <Text
+              size="sm"
+              fw={500}
+              c="white"
+              style={{
+                maxWidth: 120,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {username}
+            </Text>
+          )}
+
           <Avatar
             src={defaultProfile}
             alt="Compte"
             size={34}
             radius="xl"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         </Box>
 

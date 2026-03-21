@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import classes from "../../styles/account/AuthenticationTitle.module.css";
 import FloatingLabelInput from "../inputs/FloatingLabelInput";
+import { canSubmitForgotPassword } from "../../utils/accountValidation";
 
 type AccountForgotPasswordViewProps = {
   forgotEmail: string;
@@ -39,7 +40,7 @@ export default function AccountForgotPasswordView({
           required
         />
 
-        <Button fullWidth mt="xl" radius="md">
+        <Button fullWidth mt="xl" radius="md" disabled={!canSubmitForgotPassword(forgotEmail)}>
           Envoyer la demande
         </Button>
 

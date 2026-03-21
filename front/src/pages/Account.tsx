@@ -6,6 +6,13 @@ import AccountForgotPasswordView from "../components/account/AccountForgotPasswo
 import AccountProfileView from "../components/account/AccountProfileView";
 import AccountChangePasswordView from "../components/account/AccountChangePasswordView";
 import defaultProfile from "../res/default_profil.svg";
+import {
+  canSubmitLogin,
+  canSubmitRegister,
+  getRegisterFormError,
+  getChangePasswordFormError,
+  canSubmitChangePassword,
+} from "../utils/accountValidation";
 
 export type AccountView =
   | "login"
@@ -20,6 +27,7 @@ type JwtPayload = {
   Email?: string;
   Role?: string;
   Name?: string;
+  Avatar?: string;
   nameid?: string;
   email?: string;
   role?: string;
@@ -62,6 +70,7 @@ function isTokenValid(token: string): boolean {
 
 function getClaimUserId(payload: JwtPayload): string {
   return (
+    payload.Id_User ||
     payload.nameid ||
     payload[
       "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
@@ -108,6 +117,32 @@ function clearAuthStorage(): void {
   sessionStorage.removeItem("refreshToken");
 }
 
+function storeAuthTokens(
+  accessToken: string,
+  refreshToken: string,
+  persist: boolean
+): void {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
+
+  if (persist) {
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("rememberMe", "true");
+  } else {
+    sessionStorage.setItem("accessToken", accessToken);
+    sessionStorage.setItem("refreshToken", refreshToken);
+    localStorage.removeItem("rememberMe");
+  }
+}
+
+function getClaimRoleId(payload: JwtPayload): string {
+  const role = payload.Role || payload.role || "";
+  return role === "Admin" ? "2" : "1";
+}
+
 function applyProfileFromToken(
   token: string,
   setUsername: (value: string) => void,
@@ -128,6 +163,8 @@ function applyProfileFromToken(
     setProfileEmail(tokenEmail);
   }
 }
+
+
 
 export default function Account() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -161,6 +198,7 @@ export default function Account() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  
 
   const resetRef = useRef<() => void>(null);
 
@@ -198,16 +236,200 @@ export default function Account() {
     setRememberMe(false);
   };
 
-  const handleProfileImageChange = (file: File | null) => {
+  const handleProfileImageChange = async (file: File | null) => {
     if (!file) return;
 
     const imageUrl = URL.createObjectURL(file);
     setProfileImage(imageUrl);
+
+    try {
+      const token = getStoredAccessToken();
+
+      if (!token) {
+        throw new Error("Aucun token trouvé.");
+      }
+
+      const payload = parseJwt(token);
+
+      if (!payload) {
+        throw new Error("Token invalide.");
+      }
+
+      const userId = getClaimUserId(payload);
+
+      if (!userId) {
+        throw new Error(
+          "Impossible de récupérer l'identifiant utilisateur depuis le token."
+        );
+      }
+
+      const formData = new FormData();
+      formData.append("Id_User", userId);
+      formData.append("Username", username);
+      formData.append("Avatar", file);
+      formData.append("Id_Rank", "1");
+      formData.append("Id_Role", getClaimRoleId(payload));
+      formData.append("Elo", "0");
+
+      const updateResponse = await fetch(`${API_URL}/api/users/update`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!updateResponse.ok) {
+        const errorText = await updateResponse.text();
+        throw new Error(errorText || "Erreur lors de la mise à jour de l'avatar.");
+      }
+
+      const refreshToken = getStoredRefreshToken();
+
+      if (!refreshToken) {
+        throw new Error("Aucun refresh token trouvé.");
+      }
+
+      const refreshResponse = await fetch(`${API_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken,
+        }),
+      });
+
+      if (!refreshResponse.ok) {
+        const errorText = await refreshResponse.text();
+        throw new Error(errorText || "Impossible de rafraîchir la session.");
+      }
+
+      const refreshData = await refreshResponse.json();
+      const persist = localStorage.getItem("rememberMe") === "true";
+
+      storeAuthTokens(
+        refreshData.accessToken,
+        refreshData.refreshToken,
+        persist
+      );
+
+      applyProfileFromToken(
+        refreshData.accessToken,
+        setUsername,
+        setProfileEmail
+      );
+
+      window.dispatchEvent(new Event("authChanged"));
+    } catch (error) {
+      console.error("Erreur mise à jour avatar :", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de la mise à jour de l'avatar."
+      );
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      const token = getStoredAccessToken();
+
+      if (!token) {
+        throw new Error("Aucun token trouvé.");
+      }
+
+      const payload = parseJwt(token);
+
+      if (!payload) {
+        throw new Error("Token invalide.");
+      }
+
+      const userId = getClaimUserId(payload);
+
+      if (!userId) {
+        throw new Error(
+          "Impossible de récupérer l'identifiant utilisateur depuis le token."
+        );
+      }
+
+      const formData = new FormData();
+      formData.append("Id_User", userId);
+      formData.append("Username", username);
+      formData.append("Id_Rank", "1");
+      formData.append("Id_Role", getClaimRoleId(payload));
+      formData.append("Elo", "0");
+
+      const updateResponse = await fetch(`${API_URL}/api/users/update`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!updateResponse.ok) {
+        const errorText = await updateResponse.text();
+        throw new Error(errorText || "Erreur lors de la mise à jour du profil.");
+      }
+
+      const refreshToken = getStoredRefreshToken();
+
+      if (!refreshToken) {
+        throw new Error("Aucun refresh token trouvé.");
+      }
+
+      const refreshResponse = await fetch(`${API_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken,
+        }),
+      });
+
+      if (!refreshResponse.ok) {
+        const errorText = await refreshResponse.text();
+        throw new Error(errorText || "Impossible de rafraîchir la session.");
+      }
+
+      const refreshData = await refreshResponse.json();
+      const persist = localStorage.getItem("rememberMe") === "true";
+
+      storeAuthTokens(
+        refreshData.accessToken,
+        refreshData.refreshToken,
+        persist
+      );
+
+      applyProfileFromToken(
+        refreshData.accessToken,
+        setUsername,
+        setProfileEmail
+      );
+
+      window.dispatchEvent(new Event("authChanged"));
+      
+      alert("Profil mis à jour avec succès.");
+    } catch (error) {
+      console.error("Erreur mise à jour profil :", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de la mise à jour du profil."
+      );
+    }
   };
 
   const handleLogin = async () => {
     setLoginError("");
     setIsLoginLoading(true);
+
+    if (!canSubmitLogin(email, password)) {
+      setLoginError("Merci de renseigner un email valide et un mot de passe.");
+      return;
+    }
 
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -232,20 +454,13 @@ export default function Account() {
 
       clearAuthStorage();
 
-      if (rememberMe) {
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("rememberMe", "true");
-      } else {
-        sessionStorage.setItem("accessToken", data.accessToken);
-        sessionStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.removeItem("rememberMe");
-      }
+      storeAuthTokens(data.accessToken, data.refreshToken, rememberMe);
 
       applyProfileFromToken(data.accessToken, setUsername, setProfileEmail);
 
       setIsLoggedIn(true);
       setView("profile");
+      window.dispatchEvent(new Event("authChanged"));
 
     } catch (error) {
       console.error("Erreur login :", error);
@@ -259,17 +474,15 @@ export default function Account() {
     setRegisterError("");
     setRegisterSuccess("");
 
-    if (
-      !registerEmail.trim() ||
-      !registerUsername.trim() ||
-      !registerPassword.trim()
-    ) {
-      setRegisterError("Merci de remplir tous les champs.");
-      return;
-    }
+    const registerFormError = getRegisterFormError(
+      registerEmail,
+      registerUsername,
+      registerPassword,
+      registerPasswordConfirm
+    );
 
-    if (registerPassword !== registerPasswordConfirm) {
-      setRegisterError("Les mots de passe ne correspondent pas.");
+    if (registerFormError) {
+      setRegisterError(registerFormError);
       return;
     }
 
@@ -338,6 +551,7 @@ export default function Account() {
       setIsLoggedIn(false);
       setView("login");
       resetLoginState();
+      window.dispatchEvent(new Event("authChanged"));
     }
   };
 
@@ -386,6 +600,8 @@ export default function Account() {
       setView("login");
       resetProfileState();
       resetLoginState();
+      clearAuthStorage();
+      window.dispatchEvent(new Event("authChanged"));
 
       alert("Compte supprimé avec succès.");
     } catch (error) {
@@ -455,9 +671,7 @@ export default function Account() {
         onGoToChangePassword={() => setView("change-password")}
         onLogout={handleLogout}
         onDeleteAccount={handleDeleteAccount}
-        onSaveProfile={() => {
-          console.log("Profil sauvegardé");
-        }}
+        onSaveProfile={handleSaveProfile}
         onSubmitSongSuggestion={(data) => {
           console.log("Nouvelle proposition :", data);
         }}

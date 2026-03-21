@@ -8,6 +8,7 @@ import ClassicMode from "./pages/Classic";
 import ArtistMode from "./pages/Artist";
 import Account from "./pages/Account";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminRoute from "./utils/AdminRoute";
 
 import { GameProvider as ClassicGameProvider } from "./components/games/context/ClassicGameContext";
 import { ArtistGameProvider } from "./components/games/context/ArtistGameContext";
@@ -53,7 +54,15 @@ function App() {
                             />
 
                             {/* Admin Dashboard */}
-                            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                            <Route
+                                path="/admin/dashboard"
+                                element={
+                                    <AdminRoute>
+                                        <AdminDashboard />
+                                    </AdminRoute>
+                                }
+                            />
+                            
                         </Routes>
                     </div>
 

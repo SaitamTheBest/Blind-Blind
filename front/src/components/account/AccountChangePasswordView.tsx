@@ -9,6 +9,7 @@ import {
 import classes from "../../styles/account/AuthenticationTitle.module.css";
 import PasswordBasic from "../inputs/PasswordBasic";
 import PasswordStrength from "../inputs/PasswordStrength";
+import { canSubmitChangePassword } from "../../utils/accountValidation";
 
 type AccountChangePasswordViewProps = {
   currentPassword: string;
@@ -67,7 +68,7 @@ export default function AccountChangePasswordView({
           required
         />
 
-        <Button fullWidth mt="xl" radius="md">
+        <Button fullWidth mt="xl" radius="md" disabled={!canSubmitChangePassword(currentPassword, newPassword, confirmNewPassword)}>
           Enregistrer le nouveau mot de passe
         </Button>
 
