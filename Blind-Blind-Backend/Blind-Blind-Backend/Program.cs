@@ -131,6 +131,43 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 });
 #endregion
 
+#region Authorization Policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("OwnerOnly", policy =>
+        policy.RequireAssertion(context =>
+        {
+            var userId = context.User.FindFirst("Id_User")?.Value;
+
+            var routeId = context.Resource switch
+            {
+                HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
+                _ => null
+            };
+
+            return userId == routeId;
+        }));
+
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireClaim("Role", "Admin"));
+
+    options.AddPolicy("OwnerOrAdmin", policy =>
+    policy.RequireAssertion(context =>
+    {
+        var userId = context.User.FindFirst("Id_User")?.Value;
+        var role = context.User.FindFirst("Role")?.Value;
+
+        var routeId = context.Resource switch
+        {
+            HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
+            _ => null
+        };
+
+        return role == "Admin" || userId == routeId;
+    }));
+});
+#endregion
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

@@ -2,9 +2,11 @@
 using Blind_Blind_Backend.Services.DataUsers;
 using Blind_Blind_Backend.Entities.DataUsers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blind_Blind_Backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/users")]
     public class UsersController : ControllerBase
@@ -21,6 +23,7 @@ namespace Blind_Blind_Backend.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the user to retrieve.</param>
         /// <returns>An <see cref="IActionResult"/> containing the user data if found; otherwise, a NotFound result.</returns>
+        [AllowAnonymous]
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -37,6 +40,7 @@ namespace Blind_Blind_Backend.Controllers
         /// </summary>
         /// <param name="userDTO">The user data to create. Must not be null.</param>
         /// <returns>A 201 Created response with a location header pointing to the newly created user resource.</returns>
+        [AllowAnonymous]
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] ConnectionBlindBlindCreateDTO connectionBlindBlindDTO)
         {
@@ -62,6 +66,7 @@ namespace Blind_Blind_Backend.Controllers
         /// update operation and be valid according to the application's user model.</param>
         /// <returns>An IActionResult that indicates the outcome of the update operation. Returns Ok if the update is successful;
         /// otherwise, returns BadRequest with an error message.</returns>
+        [Authorize(Policy = "OwnerOrAdmin")]
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromForm] UserUpdateDTO userUpdateDTO)
         {
@@ -77,6 +82,7 @@ namespace Blind_Blind_Backend.Controllers
 
         }
 
+        [Authorize(Policy = "OwnerOrAdmin")]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {

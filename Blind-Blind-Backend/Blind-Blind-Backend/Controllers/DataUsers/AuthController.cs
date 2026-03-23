@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blind_Blind_Backend.Controllers.DataUsers
 {
+    [Authorize]
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
@@ -25,6 +26,7 @@ namespace Blind_Blind_Backend.Controllers.DataUsers
         /// <param name="login">The credentials used for authentication, including username and password. Cannot be null.</param>
         /// <returns>An IActionResult containing the authentication token if authentication is successful; otherwise, an
         /// Unauthorized result indicating invalid credentials.</returns>
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO login)
         {
@@ -46,6 +48,7 @@ namespace Blind_Blind_Backend.Controllers.DataUsers
         /// <returns>An <see cref="IActionResult"/> that represents the result of the refresh operation. Returns 200 OK with the
         /// new authentication token if the refresh is successful; otherwise, returns 401 Unauthorized if the refresh
         /// token is invalid or expired.</returns>
+        [AllowAnonymous]
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDTO refreshToken)
         {
