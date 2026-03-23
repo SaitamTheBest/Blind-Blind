@@ -1,4 +1,6 @@
-﻿namespace Blind_Blind_Backend.DTOs.DataUsers
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Blind_Blind_Backend.DTOs.DataUsers
 {
     public class UserDTO
     {
@@ -13,6 +15,8 @@
     public class UserCreateDTO
     {
         public string? Id_User { get; set; }
+
+        [Required(ErrorMessage = "Le nom d'utilisateur est requis.")]
         public string Username { get; set; }
         public string? Avatar { get; set; }
     }
