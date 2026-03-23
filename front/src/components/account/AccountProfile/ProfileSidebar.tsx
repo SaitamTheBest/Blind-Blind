@@ -14,10 +14,11 @@ import {
 import {
   IconLogout,
   IconMusic,
-  IconTrash,
   IconUpload,
 } from "@tabler/icons-react";
 import classes from "../../../styles/account/AuthenticationTitle.module.css";
+import UserCardPreview from "./UserCardPreview";
+import { EquippedCosmetics } from "./types";
 
 type ProfileSidebarProps = {
   username: string;
@@ -25,7 +26,7 @@ type ProfileSidebarProps = {
   resetRef: React.MutableRefObject<(() => void) | null>;
   onProfileImageChange: (file: File | null) => void;
   onLogout: () => void;
-  onDeleteAccount: () => void;
+  equippedCosmetics?: EquippedCosmetics;
 };
 
 export default function ProfileSidebar({
@@ -34,7 +35,7 @@ export default function ProfileSidebar({
   resetRef,
   onProfileImageChange,
   onLogout,
-  onDeleteAccount,
+  equippedCosmetics,
 }: ProfileSidebarProps) {
   return (
     <Paper
@@ -71,19 +72,19 @@ export default function ProfileSidebar({
             )}
           </FileButton>
         </div>
-        
+
         <Stack gap={4} align="center">
           <Title order={2} className={classes.username}>
             {username || "Pseudo"}
           </Title>
         </Stack>
-        
+
         <Card mt="xl" radius="xl" padding="lg" withBorder className={classes.rankCard}>
           <Group wrap="nowrap" align="center">
             <ThemeIcon size={52} radius="xl" variant="light" color="yellow">
               <IconMusic size={28} />
             </ThemeIcon>
-        
+
             <div>
               <Text size="xs" fw={700} tt="uppercase" c="dimmed">
                 Rang actuel
@@ -94,7 +95,13 @@ export default function ProfileSidebar({
             </div>
           </Group>
         </Card>
-        
+
+        <UserCardPreview
+          username={username}
+          profileImage={profileImage}
+          equippedCosmetics={equippedCosmetics}
+        />
+
         <Stack w="100%" gap="sm" mt="auto">
           <Button
             fullWidth
@@ -107,7 +114,6 @@ export default function ProfileSidebar({
           >
             Se déconnecter
           </Button>
-        
         </Stack>
       </Stack>
     </Paper>

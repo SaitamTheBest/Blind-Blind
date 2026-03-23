@@ -22,6 +22,28 @@ export default function AccountProfileView({
     { id: 2, title: "Blinding Lights", artist: "The Weeknd", status: "pending" },
     { id: 3, title: "Believer", artist: "Imagine Dragons", status: "rejected" },
   ],
+  inventory = {
+    banners: [
+      { id: 1, name: "Océan pastel", rarity: "rare", equipped: true },
+      { id: 2, name: "Nuit néon", rarity: "epic" },
+    ],
+    titles: [
+      { id: 10, name: "Roi du blind test", rarity: "legendary", equipped: true },
+      { id: 11, name: "Chasseur de refrains", rarity: "rare" },
+    ],
+    avatarBorders: [
+      { id: 20, name: "Halo argenté", rarity: "common", equipped: true },
+      { id: 21, name: "Pulse violet", rarity: "epic" },
+    ],
+  },
+  equippedCosmetics = {
+    banner: { id: 1, name: "Océan pastel", equipped: true },
+    title: { id: 10, name: "Roi du blind test", equipped: true },
+    avatarBorder: { id: 20, name: "Halo argenté", equipped: true },
+  },
+  onEquipBanner,
+  onEquipTitle,
+  onEquipAvatarBorder,
 }: AccountProfileViewProps) {
   return (
     <div className={classes.page}>
@@ -35,7 +57,7 @@ export default function AccountProfileView({
           </Text>
         </Stack>
 
-        <Grid gutter="xl" align="stretch">
+        <Grid gutter="xl" align="start">
           <Grid.Col span={{ base: 12, md: 4 }}>
             <ProfileSidebar
               username={username}
@@ -43,7 +65,7 @@ export default function AccountProfileView({
               resetRef={resetRef}
               onProfileImageChange={onProfileImageChange}
               onLogout={onLogout}
-              onDeleteAccount={onDeleteAccount}
+              equippedCosmetics={equippedCosmetics}
             />
           </Grid.Col>
 
@@ -58,6 +80,11 @@ export default function AccountProfileView({
               onSaveProfile={onSaveProfile}
               onSubmitSongSuggestion={onSubmitSongSuggestion}
               songSuggestions={songSuggestions}
+              inventory={inventory}
+              equippedCosmetics={equippedCosmetics}
+              onEquipBanner={onEquipBanner}
+              onEquipTitle={onEquipTitle}
+              onEquipAvatarBorder={onEquipAvatarBorder}
             />
           </Grid.Col>
         </Grid>
