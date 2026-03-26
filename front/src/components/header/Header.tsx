@@ -175,20 +175,18 @@ export default function Header() {
             gap: "10px",
           }}
         >
-          {isLoggedIn && (
-            <Text
-              size="sm"
-              fw={500}
-              c="white"
-              style={{
-                maxWidth: 120,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {username}
-            </Text>
-          )}
+          <Text
+            size="sm"
+            fw={500}
+            c="white"
+            style={{
+              maxWidth: 120,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {isLoggedIn ? username : "Connectez vous !"}
+          </Text>
 
           <Avatar
             src={defaultProfile}

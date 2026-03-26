@@ -19,7 +19,6 @@ export type InventoryItem = {
   id: number;
   name: string;
   image?: string;
-  rarity?: "common" | "rare" | "epic" | "legendary";
   equipped?: boolean;
 };
 
@@ -41,6 +40,8 @@ export type AccountProfileViewProps = {
   profileEmail: string;
   setProfileEmail: (value: string) => void;
   profileImage: string;
+  rankName: string;
+  rankImage?: string | null;
   resetRef: React.MutableRefObject<(() => void) | null>;
   onProfileImageChange: (file: File | null) => void;
   onGoToChangePassword: () => void;

@@ -8,10 +8,7 @@ import AccountChangePasswordView from "../components/account/AccountChangePasswo
 import defaultProfile from "../res/default_profil.svg";
 import {
   canSubmitLogin,
-  canSubmitRegister,
   getRegisterFormError,
-  getChangePasswordFormError,
-  canSubmitChangePassword,
 } from "../utils/accountValidation";
 
 export type AccountView =
@@ -48,7 +45,9 @@ function parseJwt(token: string): JwtPayload | null {
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split("")
-        .map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+        .map(
+          (char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`
+        )
         .join("")
     );
 
@@ -164,7 +163,24 @@ function applyProfileFromToken(
   }
 }
 
-
+type UserProfileResponse = {
+  id_User?: string;
+  username?: string;
+  email?: string;
+  avatar?: string | null;
+  elo?: number;
+  rank?: {
+    id_Rank?: number;
+    start_Elo?: number;
+    end_Elo?: number;
+    rank_Name?: string;
+    image_Rank?: string | null;
+  } | null;
+  roles?: {
+    id_Roles?: number;
+    role_Name?: string;
+  } | null;
+};
 
 export default function Account() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -193,14 +209,61 @@ export default function Account() {
   const [username, setUsername] = useState("John Doe");
   const [profileEmail, setProfileEmail] = useState("john@doe.com");
   const [profileImage, setProfileImage] = useState<string>(defaultProfile);
+  const [rankName, setRankName] = useState("Aucun rang");
+  const [rankImage, setRankImage] = useState<string | null>(null);
 
   // Change password
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  
 
   const resetRef = useRef<() => void>(null);
+
+  const fetchUserProfile = async (userId: string, token: string) => {
+    const response = await fetch(`${API_URL}/api/users/getById/${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        errorText || "Impossible de récupérer le profil utilisateur."
+      );
+    }
+
+    
+    const data: UserProfileResponse = await response.json();
+    console.log("avatar reçu:", data.avatar);
+    
+    if (data.username) {
+      setUsername(data.username);
+    }
+
+    if (data.email) {
+      setProfileEmail(data.email);
+    }
+
+    if (data.avatar) {
+      setProfileImage(`data:image/png;base64,${data.avatar}`);
+    } else {
+      setProfileImage(defaultProfile);
+    }
+
+    if (data.rank?.rank_Name) {
+      setRankName(data.rank.rank_Name);
+    } else {
+      setRankName("Aucun rang");
+    }
+
+    if (data.rank?.image_Rank) {
+      setRankImage(`data:image/png;base64,${data.rank.image_Rank}`);
+    } else {
+      setRankImage(null);
+    }
+  };
 
   useEffect(() => {
     const storedRememberMe = localStorage.getItem("rememberMe");
@@ -212,9 +275,22 @@ export default function Account() {
     }
 
     if (accessToken && refreshToken && isTokenValid(accessToken)) {
-      applyProfileFromToken(accessToken, setUsername, setProfileEmail);
-      setIsLoggedIn(true);
-      setView("profile");
+      const payload = parseJwt(accessToken);
+
+      if (payload) {
+        const userId = getClaimUserId(payload);
+
+        applyProfileFromToken(accessToken, setUsername, setProfileEmail);
+        setIsLoggedIn(true);
+        setView("profile");
+
+        if (userId) {
+          fetchUserProfile(userId, accessToken).catch((error) => {
+            console.error("Erreur chargement profil :", error);
+          });
+        }
+      }
+
       return;
     }
 
@@ -227,6 +303,8 @@ export default function Account() {
     setUsername("");
     setProfileEmail("");
     setProfileImage(defaultProfile);
+    setRankName("Aucun rang");
+    setRankImage(null);
   };
 
   const resetLoginState = () => {
@@ -239,6 +317,7 @@ export default function Account() {
   const handleProfileImageChange = async (file: File | null) => {
     if (!file) return;
 
+    const previousImage = profileImage;
     const imageUrl = URL.createObjectURL(file);
     setProfileImage(imageUrl);
 
@@ -264,11 +343,11 @@ export default function Account() {
       }
 
       const formData = new FormData();
-      formData.append("Id_User", userId);
+      formData.append("Id_User", String(userId));
       formData.append("Username", username);
       formData.append("Avatar", file);
       formData.append("Id_Rank", "1");
-      formData.append("Id_Role", getClaimRoleId(payload));
+      formData.append("Id_Role", String(getClaimRoleId(payload)));
       formData.append("Elo", "0");
 
       const updateResponse = await fetch(`${API_URL}/api/users/update`, {
@@ -284,50 +363,18 @@ export default function Account() {
         throw new Error(errorText || "Erreur lors de la mise à jour de l'avatar.");
       }
 
-      const refreshToken = getStoredRefreshToken();
-
-      if (!refreshToken) {
-        throw new Error("Aucun refresh token trouvé.");
-      }
-
-      const refreshResponse = await fetch(`${API_URL}/api/auth/refresh`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken,
-        }),
-      });
-
-      if (!refreshResponse.ok) {
-        const errorText = await refreshResponse.text();
-        throw new Error(errorText || "Impossible de rafraîchir la session.");
-      }
-
-      const refreshData = await refreshResponse.json();
-      const persist = localStorage.getItem("rememberMe") === "true";
-
-      storeAuthTokens(
-        refreshData.accessToken,
-        refreshData.refreshToken,
-        persist
-      );
-
-      applyProfileFromToken(
-        refreshData.accessToken,
-        setUsername,
-        setProfileEmail
-      );
-
+      await fetchUserProfile(userId, token);
       window.dispatchEvent(new Event("authChanged"));
     } catch (error) {
+      setProfileImage(previousImage);
       console.error("Erreur mise à jour avatar :", error);
       alert(
         error instanceof Error
           ? error.message
           : "Une erreur est survenue lors de la mise à jour de l'avatar."
       );
+    } finally {
+      URL.revokeObjectURL(imageUrl);
     }
   };
 
@@ -373,44 +420,9 @@ export default function Account() {
         throw new Error(errorText || "Erreur lors de la mise à jour du profil.");
       }
 
-      const refreshToken = getStoredRefreshToken();
-
-      if (!refreshToken) {
-        throw new Error("Aucun refresh token trouvé.");
-      }
-
-      const refreshResponse = await fetch(`${API_URL}/api/auth/refresh`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken,
-        }),
-      });
-
-      if (!refreshResponse.ok) {
-        const errorText = await refreshResponse.text();
-        throw new Error(errorText || "Impossible de rafraîchir la session.");
-      }
-
-      const refreshData = await refreshResponse.json();
-      const persist = localStorage.getItem("rememberMe") === "true";
-
-      storeAuthTokens(
-        refreshData.accessToken,
-        refreshData.refreshToken,
-        persist
-      );
-
-      applyProfileFromToken(
-        refreshData.accessToken,
-        setUsername,
-        setProfileEmail
-      );
-
+      await fetchUserProfile(userId, token);
       window.dispatchEvent(new Event("authChanged"));
-      
+
       alert("Profil mis à jour avec succès.");
     } catch (error) {
       console.error("Erreur mise à jour profil :", error);
@@ -428,6 +440,7 @@ export default function Account() {
 
     if (!canSubmitLogin(email, password)) {
       setLoginError("Merci de renseigner un email valide et un mot de passe.");
+      setIsLoginLoading(false);
       return;
     }
 
@@ -453,15 +466,19 @@ export default function Account() {
       const data = await response.json();
 
       clearAuthStorage();
-
       storeAuthTokens(data.accessToken, data.refreshToken, rememberMe);
-
       applyProfileFromToken(data.accessToken, setUsername, setProfileEmail);
+
+      const payload = parseJwt(data.accessToken);
+      const userId = payload ? getClaimUserId(payload) : "";
+
+      if (userId) {
+        await fetchUserProfile(userId, data.accessToken);
+      }
 
       setIsLoggedIn(true);
       setView("profile");
       window.dispatchEvent(new Event("authChanged"));
-
     } catch (error) {
       console.error("Erreur login :", error);
       setLoginError("Impossible de contacter le serveur");
@@ -550,6 +567,7 @@ export default function Account() {
       clearAuthStorage();
       setIsLoggedIn(false);
       setView("login");
+      resetProfileState();
       resetLoginState();
       window.dispatchEvent(new Event("authChanged"));
     }
@@ -600,7 +618,6 @@ export default function Account() {
       setView("login");
       resetProfileState();
       resetLoginState();
-      clearAuthStorage();
       window.dispatchEvent(new Event("authChanged"));
 
       alert("Compte supprimé avec succès.");
@@ -666,6 +683,8 @@ export default function Account() {
         profileEmail={profileEmail}
         setProfileEmail={setProfileEmail}
         profileImage={profileImage}
+        rankName={rankName}
+        rankImage={rankImage}
         resetRef={resetRef}
         onProfileImageChange={handleProfileImageChange}
         onGoToChangePassword={() => setView("change-password")}

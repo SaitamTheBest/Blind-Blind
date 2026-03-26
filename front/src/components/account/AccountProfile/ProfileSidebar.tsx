@@ -11,11 +11,7 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import {
-  IconLogout,
-  IconMusic,
-  IconUpload,
-} from "@tabler/icons-react";
+import { IconLogout, IconMusic, IconUpload } from "@tabler/icons-react";
 import classes from "../../../styles/account/AuthenticationTitle.module.css";
 import UserCardPreview from "./UserCardPreview";
 import { EquippedCosmetics } from "./types";
@@ -23,6 +19,8 @@ import { EquippedCosmetics } from "./types";
 type ProfileSidebarProps = {
   username: string;
   profileImage: string;
+  rankName: string;
+  rankImage?: string | null;
   resetRef: React.MutableRefObject<(() => void) | null>;
   onProfileImageChange: (file: File | null) => void;
   onLogout: () => void;
@@ -32,6 +30,8 @@ type ProfileSidebarProps = {
 export default function ProfileSidebar({
   username,
   profileImage,
+  rankName,
+  rankImage,
   resetRef,
   onProfileImageChange,
   onLogout,
@@ -79,18 +79,28 @@ export default function ProfileSidebar({
           </Title>
         </Stack>
 
-        <Card mt="xl" radius="xl" padding="lg" withBorder className={classes.rankCard}>
+        <Card
+          mt="xl"
+          radius="xl"
+          padding="lg"
+          withBorder
+          className={classes.rankCard}
+        >
           <Group wrap="nowrap" align="center">
-            <ThemeIcon size={52} radius="xl" variant="light" color="yellow">
-              <IconMusic size={28} />
-            </ThemeIcon>
+            {rankImage ? (
+              <Avatar src={rankImage} size={52} radius="xl" />
+            ) : (
+              <ThemeIcon size={52} radius="xl" variant="light" color="yellow">
+                <IconMusic size={28} />
+              </ThemeIcon>
+            )}
 
             <div>
               <Text size="xs" fw={700} tt="uppercase" c="dimmed">
                 Rang actuel
               </Text>
               <Text fw={700} size="lg">
-                RANG_NOM
+                {rankName || "Aucun rang"}
               </Text>
             </div>
           </Group>

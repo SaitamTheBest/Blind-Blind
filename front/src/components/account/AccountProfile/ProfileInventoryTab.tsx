@@ -8,20 +8,6 @@ type InventoryGridProps = {
   onEquip?: (itemId: number) => void;
 };
 
-function getRarityColor(rarity?: string) {
-  switch (rarity) {
-    case "common":
-      return "green";
-    case "rare":
-      return "blue";
-    case "epic":
-      return "violet";
-    case "legendary":
-      return "yellow";
-    default:
-      return "gray";
-  }
-}
 
 function InventoryGrid({ items, emptyLabel, onEquip }: InventoryGridProps) {
   if (items.length === 0) {
@@ -51,11 +37,6 @@ function InventoryGrid({ items, emptyLabel, onEquip }: InventoryGridProps) {
 
             <Group justify="space-between" align="center">
               <Text fw={600}>{item.name}</Text>
-              {item.rarity && (
-                <Badge variant="light" color={getRarityColor(item.rarity)}>
-                  {item.rarity}
-                </Badge>
-              )}
             </Group>
 
             <Button

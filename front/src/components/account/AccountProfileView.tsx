@@ -10,6 +10,8 @@ export default function AccountProfileView({
   profileEmail,
   setProfileEmail,
   profileImage,
+  rankName,
+  rankImage,
   resetRef,
   onProfileImageChange,
   onGoToChangePassword,
@@ -24,16 +26,16 @@ export default function AccountProfileView({
   ],
   inventory = {
     banners: [
-      { id: 1, name: "Océan pastel", rarity: "rare", equipped: true },
-      { id: 2, name: "Nuit néon", rarity: "epic" },
+      { id: 1, name: "Océan pastel", equipped: true },
+      { id: 2, name: "Nuit néon" },
     ],
     titles: [
-      { id: 10, name: "Roi du blind test", rarity: "legendary", equipped: true },
-      { id: 11, name: "Chasseur de refrains", rarity: "rare" },
+      { id: 10, name: "Roi du blind test", equipped: true },
+      { id: 11, name: "Chasseur de refrains" },
     ],
     avatarBorders: [
-      { id: 20, name: "Halo argenté", rarity: "common", equipped: true },
-      { id: 21, name: "Pulse violet", rarity: "epic" },
+      { id: 20, name: "Halo argenté", equipped: true },
+      { id: 21, name: "Pulse violet" },
     ],
   },
   equippedCosmetics = {
@@ -62,6 +64,8 @@ export default function AccountProfileView({
             <ProfileSidebar
               username={username}
               profileImage={profileImage}
+              rankName={rankName}
+              rankImage={rankImage}
               resetRef={resetRef}
               onProfileImageChange={onProfileImageChange}
               onLogout={onLogout}
