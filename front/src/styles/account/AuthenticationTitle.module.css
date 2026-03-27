@@ -119,3 +119,58 @@
   border-color: #fecaca;
   background: #fff5f5;
 }
+
+.sidebar {
+  min-height: 100%;
+}
+
+
+.userCardBanner {
+  width: 100%;
+  border-radius: 18px;
+  padding: 14px;
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 50%, #f8fafc 100%);
+  border: 1px solid #f1f5f9;
+}
+
+.userCardAvatarRing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+}
+
+.userCardAvatar {
+  border: none;
+}
+
+.userCardName {
+  line-height: 1.1;
+  color: #1e293b;
+}
+
+.userCardTitle {
+  font-style: italic;
+}
+
+.inventoryCard {
+  background: #ffffff;
+}
+
+.inventoryVisual {
+  min-height: 120px;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventoryImage {
+  max-width: 100%;
+  max-height: 110px;
+  object-fit: contain;
+}

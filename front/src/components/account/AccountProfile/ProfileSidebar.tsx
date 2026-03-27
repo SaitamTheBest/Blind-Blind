@@ -11,30 +11,31 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import {
-  IconLogout,
-  IconMusic,
-  IconTrash,
-  IconUpload,
-} from "@tabler/icons-react";
+import { IconLogout, IconMusic, IconUpload } from "@tabler/icons-react";
 import classes from "../../../styles/account/AuthenticationTitle.module.css";
+import UserCardPreview from "./UserCardPreview";
+import { EquippedCosmetics } from "./types";
 
 type ProfileSidebarProps = {
   username: string;
   profileImage: string;
+  rankName: string;
+  rankImage?: string | null;
   resetRef: React.MutableRefObject<(() => void) | null>;
   onProfileImageChange: (file: File | null) => void;
   onLogout: () => void;
-  onDeleteAccount: () => void;
+  equippedCosmetics?: EquippedCosmetics;
 };
 
 export default function ProfileSidebar({
   username,
   profileImage,
+  rankName,
+  rankImage,
   resetRef,
   onProfileImageChange,
   onLogout,
-  onDeleteAccount,
+  equippedCosmetics,
 }: ProfileSidebarProps) {
   return (
     <Paper
@@ -71,30 +72,46 @@ export default function ProfileSidebar({
             )}
           </FileButton>
         </div>
-        
+
         <Stack gap={4} align="center">
           <Title order={2} className={classes.username}>
             {username || "Pseudo"}
           </Title>
         </Stack>
-        
-        <Card mt="xl" radius="xl" padding="lg" withBorder className={classes.rankCard}>
+
+        <Card
+          mt="xl"
+          radius="xl"
+          padding="lg"
+          withBorder
+          className={classes.rankCard}
+        >
           <Group wrap="nowrap" align="center">
-            <ThemeIcon size={52} radius="xl" variant="light" color="yellow">
-              <IconMusic size={28} />
-            </ThemeIcon>
-        
+            {rankImage ? (
+              <Avatar src={rankImage} size={52} radius="xl" />
+            ) : (
+              <ThemeIcon size={52} radius="xl" variant="light" color="yellow">
+                <IconMusic size={28} />
+              </ThemeIcon>
+            )}
+
             <div>
               <Text size="xs" fw={700} tt="uppercase" c="dimmed">
                 Rang actuel
               </Text>
               <Text fw={700} size="lg">
-                RANG_NOM
+                {rankName || "Aucun rang"}
               </Text>
             </div>
           </Group>
         </Card>
-        
+
+        <UserCardPreview
+          username={username}
+          profileImage={profileImage}
+          equippedCosmetics={equippedCosmetics}
+        />
+
         <Stack w="100%" gap="sm" mt="auto">
           <Button
             fullWidth
@@ -107,7 +124,6 @@ export default function ProfileSidebar({
           >
             Se déconnecter
           </Button>
-        
         </Stack>
       </Stack>
     </Paper>
