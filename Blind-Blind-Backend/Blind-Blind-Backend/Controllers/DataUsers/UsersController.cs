@@ -67,11 +67,12 @@ namespace Blind_Blind_Backend.Controllers
         /// <returns>An IActionResult that indicates the outcome of the update operation. Returns Ok if the update is successful;
         /// otherwise, returns BadRequest with an error message.</returns>
         [Authorize(Policy = "OwnerOrAdmin")]
-        [HttpPost("update")]
-        public async Task<IActionResult> Update([FromForm] UserUpdateDTO userUpdateDTO)
+        [HttpPost("update/{id}")]
+        public async Task<IActionResult> Update(string id, [FromForm] UserUpdateDTO userUpdateDTO)
         {
             try
             {
+                userUpdateDTO.Id_User = id;
                 await _userService.UpdateUserAsync(userUpdateDTO);
                 return Ok();
             }

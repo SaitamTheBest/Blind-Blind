@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 Env.Load(); // charge .env.development ou .env.production
 
@@ -37,7 +38,32 @@ builder.Services.AddDbContext<BlindBlindContext>(options =>
 #region API + Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Entrez votre token JWT comme ceci : Bearer {votre_token}"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -135,18 +161,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("OwnerOnly", policy =>
-        policy.RequireAssertion(context =>
+    policy.RequireAssertion(context =>
+    {
+        var userId = context.User.FindFirst("Id_User")?.Value;
+
+        var routeId = context.Resource switch
         {
-            var userId = context.User.FindFirst("Id_User")?.Value;
+            HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
 
-            var routeId = context.Resource switch
-            {
-                HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
-                _ => null
-            };
+            Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext mvcContext
+                => mvcContext.RouteData.Values["id"]?.ToString(),
 
-            return userId == routeId;
-        }));
+            _ => null
+        };
+
+        return userId != null && userId == routeId;
+    }));
 
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireClaim("Role", "Admin"));

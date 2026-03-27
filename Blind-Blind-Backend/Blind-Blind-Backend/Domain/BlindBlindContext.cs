@@ -1,7 +1,8 @@
 ﻿using Blind_Blind_Backend.Entities.DataGames;
-using Blind_Blind_Backend.Entities.Logs;
 using Blind_Blind_Backend.Entities.DataUsers;
+using Blind_Blind_Backend.Entities.Logs;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace Blind_Blind_Backend.Domain
 {
@@ -44,9 +45,16 @@ namespace Blind_Blind_Backend.Domain
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.Created_At)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
             modelBuilder.Entity<Featurings>()
-                .HasNoKey();
+                    .HasNoKey();
         }
     }
 }
