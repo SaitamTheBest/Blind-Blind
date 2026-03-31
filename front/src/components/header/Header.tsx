@@ -16,33 +16,44 @@ import {
   Divider,
   Collapse,
   Avatar,
-} from '@mantine/core';
+} from "@mantine/core";
 import { useEffect, useState } from "react";
-
-import { useDisclosure } from '@mantine/hooks';
-import { Link, useLocation } from 'react-router-dom';
-import { IconDeviceGamepad3, IconChevronDown } from '@tabler/icons-react';
+import { useDisclosure } from "@mantine/hooks";
+import { Link, useLocation } from "react-router-dom";
+import { IconDeviceGamepad3, IconChevronDown } from "@tabler/icons-react";
+import { API_URL } from "../../config";
 
 // @ts-ignore
-import classes from '../../styles/header/Header.module.css';
+import classes from "../../styles/header/Header.module.css";
 
-import logo from '../../res/Blind-Blind-logo-blanc.png';
-import defaultProfile from '../../res/default_profil.svg';
+import logo from "../../res/Blind-Blind-logo-blanc.png";
+import defaultProfile from "../../res/default_profil.svg";
 
 const miniJeux = [
   {
-    label: 'Classic',
-    description: 'Jouez au mode classique de Blind-Blind',
+    label: "Classic",
+    description: "Jouez au mode classique de Blind-Blind",
     icon: IconDeviceGamepad3,
-    to: '/classic',
+    to: "/classic",
   },
   {
-    label: 'Artistes',
-    description: 'Jouez au mode artistes de Blind-Blind',
+    label: "Artistes",
+    description: "Jouez au mode artistes de Blind-Blind",
     icon: IconDeviceGamepad3,
-    to: '/artists',
+    to: "/artists",
   },
 ];
+
+type JwtPayload = {
+  Id_User?: string;
+  nameid?: string;
+  Name?: string;
+  name?: string;
+  username?: string;
+  unique_name?: string;
+  Avatar?: string;
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"?: string;
+};
 
 function getStoredAccessToken(): string | null {
   return (
@@ -51,10 +62,23 @@ function getStoredAccessToken(): string | null {
   );
 }
 
-function parseJwt(token: string): any {
+function parseJwt(token: string): JwtPayload | null {
   try {
-    const base64 = token.split(".")[1];
-    return JSON.parse(atob(base64));
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(
+          (char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`
+        )
+        .join("")
+    );
+
+    return JSON.parse(jsonPayload);
   } catch {
     return null;
   }
@@ -67,7 +91,52 @@ function getUsernameFromToken(): string {
   const payload = parseJwt(token);
   if (!payload) return "";
 
-  return payload.Name || payload.name || "";
+  return payload.Name || payload.name || payload.username || payload.unique_name || "";
+}
+
+function getUserIdFromToken(): string {
+  const token = getStoredAccessToken();
+  if (!token) return "";
+
+  const payload = parseJwt(token);
+  if (!payload) return "";
+
+  return (
+    payload.Id_User ||
+    payload.nameid ||
+    payload[
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ] ||
+    ""
+  );
+}
+
+async function fetchAvatarFromApi(
+  userId: string,
+  token: string
+): Promise<string> {
+  try {
+    const response = await fetch(`${API_URL}/api/users/getById/${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      return defaultProfile;
+    }
+
+    const data = await response.json();
+
+    if (data.avatar) {
+      return `data:image/png;base64,${data.avatar}`;
+    }
+
+    return defaultProfile;
+  } catch {
+    return defaultProfile;
+  }
 }
 
 export default function Header() {
@@ -79,47 +148,56 @@ export default function Header() {
   const location = useLocation();
 
   const [username, setUsername] = useState("");
+  const [avatarSrc, setAvatarSrc] = useState(defaultProfile);
+
   useEffect(() => {
-   const updateUser = () => {
-     const name = getUsernameFromToken();
-     setUsername(name);
-   };
+    const updateUser = async () => {
+      const name = getUsernameFromToken();
+      setUsername(name);
 
-   updateUser();
+      const token = getStoredAccessToken();
+      const userId = getUserIdFromToken();
 
-   window.addEventListener("storage", updateUser);
-   window.addEventListener("authChanged", updateUser);
+      if (token && userId) {
+        const avatar = await fetchAvatarFromApi(userId, token);
+        setAvatarSrc(avatar);
+      } else {
+        setAvatarSrc(defaultProfile);
+      }
+    };
 
-   return () => {
-     window.removeEventListener("storage", updateUser);
-     window.removeEventListener("authChanged", updateUser);
-   };
+    updateUser();
+
+    window.addEventListener("storage", updateUser);
+    window.addEventListener("authChanged", updateUser);
+
+    return () => {
+      window.removeEventListener("storage", updateUser);
+      window.removeEventListener("authChanged", updateUser);
+    };
   }, []);
-  
+
   const isLoggedIn = !!username;
 
   return (
     <header className={classes.header}>
       <Container className={classes.inner} size="xl">
-        {/* LOGO */}
         <Box component={Link} to="/" className={classes.logoGroup}>
           <Image src={logo} alt="Blind-Blind" h={32} />
           <span className={classes.siteName}>Blind-Blind</span>
         </Box>
 
-        {/* DESKTOP LINKS */}
         <Box className={classes.links} visibleFrom="sm">
           <Group gap={20}>
             <Anchor
               component={Link}
               to="/"
               className={classes.link}
-              data-active={location.pathname === '/' || undefined}
+              data-active={location.pathname === "/" || undefined}
             >
               Accueil
             </Anchor>
 
-            {/* MINI JEUX */}
             <HoverCard width={300} position="bottom" radius="md" shadow="md">
               <HoverCard.Target>
                 <Box className={classes.link}>
@@ -164,7 +242,6 @@ export default function Header() {
           </Group>
         </Box>
 
-        {/* AVATAR COMPTE */}
         <Box
           component={Link}
           to="/account"
@@ -189,7 +266,7 @@ export default function Header() {
           </Text>
 
           <Avatar
-            src={defaultProfile}
+            src={avatarSrc}
             alt="Compte"
             size={34}
             radius="xl"
@@ -197,7 +274,6 @@ export default function Header() {
           />
         </Box>
 
-        {/* BURGER */}
         <Burger
           opened={drawerOpened}
           onClick={toggleDrawer}
@@ -207,7 +283,6 @@ export default function Header() {
           color="white"
         />
 
-        {/* DRAWER MOBILE */}
         <Drawer
           opened={drawerOpened}
           onClose={closeDrawer}
@@ -231,7 +306,7 @@ export default function Header() {
             <UnstyledButton
               className={classes.link}
               onClick={toggleLinks}
-              style={{ display: 'block', width: '100%' }}
+              style={{ display: "block", width: "100%" }}
             >
               <Center inline>
                 <Box component="span" mr={5}>
@@ -273,7 +348,6 @@ export default function Header() {
 
             <Divider my="sm" />
 
-            {/* LIEN COMPTE MOBILE */}
             <UnstyledButton
               component={Link}
               to="/account"
@@ -281,8 +355,8 @@ export default function Header() {
               className={classes.link}
             >
               <Group>
-                <Avatar src={defaultProfile} size={28} radius="xl" />
-                <Text>Mon compte</Text>
+                <Avatar src={avatarSrc} size={28} radius="xl" />
+                <Text>{isLoggedIn ? username : "Mon compte"}</Text>
               </Group>
             </UnstyledButton>
           </ScrollArea>

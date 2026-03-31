@@ -93,6 +93,7 @@ function getClaimUsername(payload: JwtPayload): string {
   return payload.Name || payload.username || payload.unique_name || "";
 }
 
+
 function getStoredAccessToken(): string | null {
   return (
     localStorage.getItem("accessToken") ||
@@ -163,6 +164,34 @@ function applyProfileFromToken(
   }
 }
 
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        reject(new Error("Impossible de lire le fichier."));
+        return;
+      }
+
+      const parts = reader.result.split(",");
+
+      if (parts.length < 2) {
+        reject(new Error("Format base64 invalide."));
+        return;
+      }
+
+      resolve(parts[1]);
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Erreur lors de la conversion de l'image."));
+    };
+  });
+};
+
 type UserProfileResponse = {
   id_User?: string;
   username?: string;
@@ -182,18 +211,61 @@ type UserProfileResponse = {
   } | null;
 };
 
+const refreshSession = async (
+    setUsername: (value: string) => void,
+    setProfileEmail: (value: string) => void
+  ): Promise<string> => {
+    const refreshToken = getStoredRefreshToken();
+
+    if (!refreshToken) {
+      throw new Error("Aucun refresh token trouvé.");
+    }
+
+    const response = await fetch(`${API_URL}/api/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Impossible de rafraîchir la session.");
+    }
+
+    const data = await response.json();
+    const persist = localStorage.getItem("rememberMe") === "true";
+
+    storeAuthTokens(data.accessToken, data.refreshToken, persist);
+    applyProfileFromToken(data.accessToken, setUsername, setProfileEmail);
+
+    return data.accessToken;
+};
+
+function extractBase64FromImageSrc(imageSrc: string): string {
+  if (!imageSrc) return "";
+
+  if (imageSrc.startsWith("data:image")) {
+    const parts = imageSrc.split(",");
+    return parts.length > 1 ? parts[1] : "";
+  }
+
+  return "";
+}
+
 export default function Account() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [view, setView] = useState<AccountView>("login");
 
-  // Login
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Register
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
@@ -202,17 +274,14 @@ export default function Account() {
   const [registerSuccess, setRegisterSuccess] = useState("");
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
 
-  // Forgot password
   const [forgotEmail, setForgotEmail] = useState("");
 
-  // Profile
   const [username, setUsername] = useState("John Doe");
   const [profileEmail, setProfileEmail] = useState("john@doe.com");
   const [profileImage, setProfileImage] = useState<string>(defaultProfile);
   const [rankName, setRankName] = useState("Aucun rang");
   const [rankImage, setRankImage] = useState<string | null>(null);
 
-  // Change password
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -234,10 +303,9 @@ export default function Account() {
       );
     }
 
-    
     const data: UserProfileResponse = await response.json();
     console.log("avatar reçu:", data.avatar);
-    
+
     if (data.username) {
       setUsername(data.username);
     }
@@ -342,28 +410,36 @@ export default function Account() {
         );
       }
 
+      const avatarBase64 = await fileToBase64(file);
+
       const formData = new FormData();
       formData.append("Id_User", String(userId));
       formData.append("Username", username);
-      formData.append("Avatar", file);
+      formData.append("Avatar", avatarBase64);
       formData.append("Id_Rank", "1");
       formData.append("Id_Role", String(getClaimRoleId(payload)));
       formData.append("Elo", "0");
 
-      const updateResponse = await fetch(`${API_URL}/api/users/update`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const updateResponse = await fetch(
+        `${API_URL}/api/users/update/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       if (!updateResponse.ok) {
         const errorText = await updateResponse.text();
-        throw new Error(errorText || "Erreur lors de la mise à jour de l'avatar.");
+        throw new Error(
+          errorText || "Erreur lors de la mise à jour de l'avatar."
+        );
       }
 
-      await fetchUserProfile(userId, token);
+      const newAccessToken = await refreshSession(setUsername, setProfileEmail);
+      await fetchUserProfile(userId, newAccessToken);
       window.dispatchEvent(new Event("authChanged"));
     } catch (error) {
       setProfileImage(previousImage);
@@ -393,6 +469,8 @@ export default function Account() {
       }
 
       const userId = getClaimUserId(payload);
+      const currentAvatarBase64 = extractBase64FromImageSrc(profileImage);
+      
 
       if (!userId) {
         throw new Error(
@@ -403,26 +481,31 @@ export default function Account() {
       const formData = new FormData();
       formData.append("Id_User", userId);
       formData.append("Username", username);
+      formData.append("Avatar", currentAvatarBase64);
       formData.append("Id_Rank", "1");
       formData.append("Id_Role", getClaimRoleId(payload));
       formData.append("Elo", "0");
 
-      const updateResponse = await fetch(`${API_URL}/api/users/update`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const updateResponse = await fetch(
+        `${API_URL}/api/users/update/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       if (!updateResponse.ok) {
         const errorText = await updateResponse.text();
         throw new Error(errorText || "Erreur lors de la mise à jour du profil.");
       }
 
-      await fetchUserProfile(userId, token);
+      const newAccessToken = await refreshSession(setUsername, setProfileEmail);
+      await fetchUserProfile(userId, newAccessToken);
       window.dispatchEvent(new Event("authChanged"));
-
+          
       alert("Profil mis à jour avec succès.");
     } catch (error) {
       console.error("Erreur mise à jour profil :", error);
