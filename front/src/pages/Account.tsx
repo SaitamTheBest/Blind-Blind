@@ -10,6 +10,7 @@ import {
   canSubmitLogin,
   getRegisterFormError,
 } from "../utils/accountValidation";
+import { notifyError, notifySuccess } from "../utils/notify";
 
 export type AccountView =
   | "login"
@@ -92,7 +93,6 @@ function getClaimEmail(payload: JwtPayload): string {
 function getClaimUsername(payload: JwtPayload): string {
   return payload.Name || payload.username || payload.unique_name || "";
 }
-
 
 function getStoredAccessToken(): string | null {
   return (
@@ -212,37 +212,37 @@ type UserProfileResponse = {
 };
 
 const refreshSession = async (
-    setUsername: (value: string) => void,
-    setProfileEmail: (value: string) => void
-  ): Promise<string> => {
-    const refreshToken = getStoredRefreshToken();
+  setUsername: (value: string) => void,
+  setProfileEmail: (value: string) => void
+): Promise<string> => {
+  const refreshToken = getStoredRefreshToken();
 
-    if (!refreshToken) {
-      throw new Error("Aucun refresh token trouvé.");
-    }
+  if (!refreshToken) {
+    throw new Error("Aucun refresh token trouvé.");
+  }
 
-    const response = await fetch(`${API_URL}/api/auth/refresh`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        refreshToken,
-      }),
-    });
+  const response = await fetch(`${API_URL}/api/auth/refresh`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      refreshToken,
+    }),
+  });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Impossible de rafraîchir la session.");
-    }
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Impossible de rafraîchir la session.");
+  }
 
-    const data = await response.json();
-    const persist = localStorage.getItem("rememberMe") === "true";
+  const data = await response.json();
+  const persist = localStorage.getItem("rememberMe") === "true";
 
-    storeAuthTokens(data.accessToken, data.refreshToken, persist);
-    applyProfileFromToken(data.accessToken, setUsername, setProfileEmail);
+  storeAuthTokens(data.accessToken, data.refreshToken, persist);
+  applyProfileFromToken(data.accessToken, setUsername, setProfileEmail);
 
-    return data.accessToken;
+  return data.accessToken;
 };
 
 function extractBase64FromImageSrc(imageSrc: string): string {
@@ -304,7 +304,6 @@ export default function Account() {
     }
 
     const data: UserProfileResponse = await response.json();
-    console.log("avatar reçu:", data.avatar);
 
     if (data.username) {
       setUsername(data.username);
@@ -441,14 +440,22 @@ export default function Account() {
       const newAccessToken = await refreshSession(setUsername, setProfileEmail);
       await fetchUserProfile(userId, newAccessToken);
       window.dispatchEvent(new Event("authChanged"));
+
+      notifySuccess({
+        title: "Avatar mis à jour",
+        message: "Ta photo de profil a bien été modifiée.",
+      });
     } catch (error) {
       setProfileImage(previousImage);
       console.error("Erreur mise à jour avatar :", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue lors de la mise à jour de l'avatar."
-      );
+
+      notifyError({
+        title: "Erreur",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue lors de la mise à jour de l'avatar.",
+      });
     } finally {
       URL.revokeObjectURL(imageUrl);
     }
@@ -470,7 +477,6 @@ export default function Account() {
 
       const userId = getClaimUserId(payload);
       const currentAvatarBase64 = extractBase64FromImageSrc(profileImage);
-      
 
       if (!userId) {
         throw new Error(
@@ -505,15 +511,21 @@ export default function Account() {
       const newAccessToken = await refreshSession(setUsername, setProfileEmail);
       await fetchUserProfile(userId, newAccessToken);
       window.dispatchEvent(new Event("authChanged"));
-          
-      alert("Profil mis à jour avec succès.");
+
+      notifySuccess({
+        title: "Profil mis à jour",
+        message: "Tes informations ont bien été enregistrées.",
+      });
     } catch (error) {
       console.error("Erreur mise à jour profil :", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue lors de la mise à jour du profil."
-      );
+
+      notifyError({
+        title: "Erreur",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue lors de la mise à jour du profil.",
+      });
     }
   };
 
@@ -703,14 +715,20 @@ export default function Account() {
       resetLoginState();
       window.dispatchEvent(new Event("authChanged"));
 
-      alert("Compte supprimé avec succès.");
+      notifySuccess({
+        title: "Compte supprimé",
+        message: "Ton compte a bien été supprimé.",
+      });
     } catch (error) {
       console.error("Erreur suppression compte :", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue lors de la suppression du compte."
-      );
+
+      notifyError({
+        title: "Erreur",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue lors de la suppression du compte.",
+      });
     }
   };
 

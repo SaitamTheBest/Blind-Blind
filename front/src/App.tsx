@@ -1,6 +1,7 @@
-import React from "react";
-import '@mantine/core/styles.css';
+import React, { useEffect, useState } from "react";
+import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Footer from "./components/footer/Footer";
@@ -14,64 +15,82 @@ import AdminRoute from "./utils/AdminRoute";
 import { GameProvider as ClassicGameProvider } from "./components/games/context/ClassicGameContext";
 import { ArtistGameProvider } from "./components/games/context/ArtistGameContext";
 
-import { MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
-import { ModalsProvider } from '@mantine/modals';
+import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
+import { tryRefreshSessionOnAppStart } from "./utils/authSession";
 import "./styles/global.css";
 
 function App() {
-    return (
-        <MantineProvider>
-            <ModalsProvider>
-                <Notifications />
-                <Router>
-                    <Header />
+  const [isAuthBootstrapped, setIsAuthBootstrapped] = useState(false);
 
-                    <div style={{ minHeight: 'calc(100vh - 118px)' }}>
-                        <Routes>
-                            <Route path="/" element={<Home />} />
+  useEffect(() => {
+    const bootstrapAuth = async () => {
+      await tryRefreshSessionOnAppStart();
+      window.dispatchEvent(new Event("authChanged"));
+      setIsAuthBootstrapped(true);
+    };
 
-                            {/* Account */}
-                            <Route path="/account" element={<Account />} />
+    bootstrapAuth();
+  }, []);
 
-                            {/* MODE CLASSIC */}
-                            <Route
-                                path="/classic"
-                                element={
-                                    <ClassicGameProvider>
-                                        <ClassicMode />
-                                    </ClassicGameProvider>
-                                }
-                            />
+  if (!isAuthBootstrapped) {
+    return null;
+  }
 
-                            {/* MODE ARTISTS */}
-                            <Route
-                                path="/artists"
-                                element={
-                                    <ArtistGameProvider>
-                                        <ArtistMode />
-                                    </ArtistGameProvider>
-                                }
-                            />
+  return (
+    <MantineProvider>
+      <ModalsProvider>
+        <Notifications position="top-right" zIndex={9999} />
+        <Router>
+          <div className="app-shell">
+            <Header />
 
-                            {/* Admin Dashboard */}
-                            <Route
-                                path="/admin/dashboard"
-                                element={
-                                    <AdminRoute>
-                                        <AdminDashboard />
-                                    </AdminRoute>
-                                }
-                            />
-                            
-                        </Routes>
-                    </div>
+            <main className="app-main">
+              <Routes>
+                <Route path="/" element={<Home />} />
 
-                    <Footer />
-                </Router>
-            </ModalsProvider>
-        </MantineProvider>
-    );
+                {/* Account */}
+                <Route path="/account" element={<Account />} />
+
+                {/* MODE CLASSIC */}
+                <Route
+                  path="/classic"
+                  element={
+                    <ClassicGameProvider>
+                      <ClassicMode />
+                    </ClassicGameProvider>
+                  }
+                />
+
+                {/* MODE ARTISTS */}
+                <Route
+                  path="/artists"
+                  element={
+                    <ArtistGameProvider>
+                      <ArtistMode />
+                    </ArtistGameProvider>
+                  }
+                />
+
+                {/* Admin Dashboard */}
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <AdminRoute>
+                      <AdminDashboard />
+                    </AdminRoute>
+                  }
+                />
+              </Routes>
+            </main>
+
+            <Footer />
+          </div>
+        </Router>
+      </ModalsProvider>
+    </MantineProvider>
+  );
 }
 
 export default App;
