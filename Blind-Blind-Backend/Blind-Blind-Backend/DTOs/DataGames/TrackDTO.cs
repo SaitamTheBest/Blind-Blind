@@ -26,4 +26,27 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public List<ArtistDTO> Featurings { get; set; }
     }
+
+    public class TrackCrudDTO
+    {
+        public string? Id_Tracks { get; set; }
+
+        public string Name { get; set; }
+
+        public int Release_Year { get; set; }
+
+        public int Nb_Stream { get; set; }
+
+        public DateTime Time { get; set; }
+
+        public string Url_Source { get; set; }
+
+        public int Id_Genre { get; set; }
+
+        public string Id_Album { get; set; }
+
+        public string Id_Artist { get; set; }
+
+        public List<string>? List_Id_Featurings { get; set; }
+    }
 }

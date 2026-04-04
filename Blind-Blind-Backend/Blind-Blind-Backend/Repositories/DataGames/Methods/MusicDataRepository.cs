@@ -31,6 +31,12 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             context.Tracks.Add(track);
             await context.SaveChangesAsync();
         }
+
+        public async Task AddFeaturings(IEnumerable<Featurings> featurings)
+        {
+            context.Featurings.AddRange(featurings);
+            await context.SaveChangesAsync();
+        }
         #endregion
 
         #region UPDATE
@@ -82,6 +88,13 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 context.Tracks.Remove(track);
                 await context.SaveChangesAsync();
             }
+        }
+
+        public async Task DeleteFeaturingsByTrackAsync(string id_track)
+        {
+            var featurings = context.Featurings.Where(f => f.Id_Tracks == id_track);
+            context.Featurings.RemoveRange(featurings);
+            await context.SaveChangesAsync();
         }
         #endregion
     }

@@ -5,15 +5,17 @@ namespace Blind_Blind_Backend.Services.DataGames
     public interface IMusicDataService
     {
         #region CREATE
-        Task CreateTrack(TrackDTO trackDTO);
-        Task CreateAlbum(AlbumDTO albumDTO);
-        Task CreateArtist(ArtistDTO artistDTO);
+        Task CreateTrack(TrackCrudDTO trackCrudDTO);
+        Task CreateAlbum(AlbumCrudDTO albumCrudDTO);
+        Task CreateArtist(ArtistCrudDTO artistCrudDTO);
+        Task AddFeaturingsToTrack(string trackId, List<string> artistIds);
         #endregion
 
         #region UPDATE
-        Task UpdateTrack(TrackDTO trackDTO);
-        Task UpdateAlbum(AlbumDTO albumDTO);
-        Task UpdateArtist(ArtistDTO artistDTO);
+        Task UpdateTrack(TrackCrudDTO trackCrudDTO);
+        Task UpdateAlbum(AlbumCrudDTO albumCrudDTO);
+        Task UpdateArtist(ArtistCrudDTO artistCrudDTO);
+        Task UpdateFeaturingsForTrack(string trackId, List<string> artistIds);
         #endregion
 
         #region DELETE

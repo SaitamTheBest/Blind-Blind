@@ -8,6 +8,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames
         Task CreateTrack(Tracks track);
         Task CreateAlbum(Album album);
         Task CreateArtist(Artists artist);
+        Task AddFeaturings(IEnumerable<Featurings> featurings);
         #endregion
     
         #region UPDATE
@@ -20,6 +21,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames
         Task DeleteTrack(string id);
         Task DeleteAlbum(string id);
         Task DeleteArtist(string id);
+        Task DeleteFeaturingsByTrackAsync(string id_track);
         #endregion
     }
 }
