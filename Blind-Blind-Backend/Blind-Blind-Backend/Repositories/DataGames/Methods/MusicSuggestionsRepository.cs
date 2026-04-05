@@ -28,6 +28,14 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Music_Suggestions>> GetByUserIdAsync(string userId)
+        {
+            return await _context.Music_Suggestions
+                .Where(s => s.Id_User == userId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<Music_Suggestions?> GetByIdAsync(int id)
         {
             return await _context.Music_Suggestions

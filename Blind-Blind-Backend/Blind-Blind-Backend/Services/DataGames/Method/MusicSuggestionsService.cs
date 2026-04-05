@@ -41,7 +41,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Id_Suggestion = suggestion.Id_Suggestion,
                 Title = suggestion.Title,
                 Artist_Name = suggestion.Artist_Name,
-                Album_Name = dto.Album_Name,
+                Album_Name = suggestion.Album_Name,
                 Message = suggestion.Message,
                 Status = suggestion.Status,
                 Created_At = suggestion.Created_At
@@ -64,15 +64,11 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             });
         }
 
-        public async Task<MusicSuggestionDTO?> GetUserSuggestionAsync(int id, string userId)
+        public async Task<IEnumerable<MusicSuggestionDTO>> GetUserSuggestionsAsync(string userId)
         {
-            var suggestion = await _repository.GetByIdAsync(id);
-            if (suggestion == null || suggestion.Id_User != userId)
-            {
-                return null;
-            }
+            var suggestions = await _repository.GetByUserIdAsync(userId);
 
-            return new MusicSuggestionDTO
+            return suggestions.Select(suggestion => new MusicSuggestionDTO
             {
                 Id_Suggestion = suggestion.Id_Suggestion,
                 Title = suggestion.Title,
@@ -81,7 +77,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Message = suggestion.Message,
                 Status = suggestion.Status,
                 Created_At = suggestion.Created_At
-            };
+            });
         }
 
         public async Task AcceptSuggestionAsync(int id, string adminId)

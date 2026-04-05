@@ -42,24 +42,18 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         /// <remarks>This method requires the caller to be authenticated. If the user is not identified,
         /// the method returns an Unauthorized result. If no suggestion is found for the given user identifier, a
         /// NotFound result is returned.</remarks>
-        /// <param name="id">The unique identifier of the user for whom the music suggestion is requested.</param>
         /// <returns>An IActionResult that contains the music suggestion if found; otherwise, a NotFound result if no suggestion
         /// exists, or an Unauthorized result if the user is not authenticated.</returns>
         [Authorize]
-        [HttpGet("api/music-suggestions/me/{id}")]
-        public async Task<IActionResult> GetUserSuggestion(int id)
+        [HttpGet("api/music-suggestions/me")]
+        public async Task<IActionResult> GetUserSuggestions()
         {
             var userId = User.FindFirstValue("Id_User");
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("Utilisateur non identifié.");
 
-            var suggestion = await _service.GetUserSuggestionAsync(id, userId);
-            if (suggestion == null)
-            {
-                return NotFound("Suggestion introuvable.");
-            }
-
-            return Ok(suggestion);
+            var suggestions = await _service.GetUserSuggestionsAsync(userId);
+            return Ok(suggestions);
         }
         #endregion
 
