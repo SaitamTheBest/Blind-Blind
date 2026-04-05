@@ -23,6 +23,7 @@ namespace Blind_Blind_Backend.Domain
         public DbSet<Lyrics> Lyrics => Set<Lyrics>();
         public DbSet<Tracks> Tracks => Set<Tracks>();
         public DbSet<Type_Artists> Type_Artists => Set<Type_Artists>();
+        public DbSet<Music_Suggestions> Music_Suggestions => Set<Music_Suggestions>();
 
         #endregion
 

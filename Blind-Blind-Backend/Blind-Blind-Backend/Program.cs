@@ -106,6 +106,18 @@ builder.Services.Scan(scan => scan
     .AsImplementedInterfaces()
     .WithScopedLifetime());
 
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IMusicDataService>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IMusicSuggestionsService>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
 // Repositories
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IUserRepository>()
@@ -121,6 +133,18 @@ builder.Services.Scan(scan => scan
 
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IAuthRepository>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Repository")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IMusicDataRepository>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Repository")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IMusicSuggestionsRepository>()
     .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Repository")))
     .AsImplementedInterfaces()
     .WithScopedLifetime());
