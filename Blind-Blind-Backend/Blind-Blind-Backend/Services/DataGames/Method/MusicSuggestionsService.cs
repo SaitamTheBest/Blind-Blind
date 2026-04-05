@@ -15,13 +15,21 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
         public async Task<MusicSuggestionDTO> CreateSuggestionAsync(string userId, MusicSuggestionCreateDTO dto)
         {
+            var pendingCount = await _repository.CountPendingSuggestionsAsync(userId, TimeSpan.FromDays(7));
+
+            if (pendingCount >= 5)
+            {
+                throw new InvalidOperationException("Vous avez atteint la limite de suggestions en attente de validation pour cette semaine.");
+            }
+
             var suggestion = new Music_Suggestions
             {
                 Id_User = userId,
                 Title = dto.Title,
                 Artist_Name = dto.Artist_Name,
+                Album_Name = dto.Album_Name,
                 Message = dto.Message,
-                Status = "Pending",
+                Status = "pending",
                 Created_At = DateTime.UtcNow,
                 Updated_At = DateTime.UtcNow
             };
@@ -33,6 +41,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Id_Suggestion = suggestion.Id_Suggestion,
                 Title = suggestion.Title,
                 Artist_Name = suggestion.Artist_Name,
+                Album_Name = dto.Album_Name,
                 Message = suggestion.Message,
                 Status = suggestion.Status,
                 Created_At = suggestion.Created_At
@@ -47,6 +56,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Id_Suggestion = s.Id_Suggestion,
                 Title = s.Title,
                 Artist_Name = s.Artist_Name,
+                Album_Name = s.Album_Name,
                 Message = s.Message,
                 Status = s.Status,
                 Created_At = s.Created_At,
@@ -67,6 +77,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Id_Suggestion = suggestion.Id_Suggestion,
                 Title = suggestion.Title,
                 Artist_Name = suggestion.Artist_Name,
+                Album_Name = suggestion.Album_Name,
                 Message = suggestion.Message,
                 Status = suggestion.Status,
                 Created_At = suggestion.Created_At

@@ -45,5 +45,13 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             _context.Music_Suggestions.Update(suggestion);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountPendingSuggestionsAsync(string userId, TimeSpan timeSpan)
+        {
+            var cutoffDate = DateTime.UtcNow.Subtract(timeSpan);
+            return await _context.Music_Suggestions
+                .Where(s => s.Id_User == userId && s.Status == "pending" && s.Created_At >= cutoffDate)
+                .CountAsync();
+        }
     }
 }

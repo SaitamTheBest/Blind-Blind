@@ -8,5 +8,6 @@ namespace Blind_Blind_Backend.Repositories.DataGames
         Task<Music_Suggestions?> GetByIdAsync(int id);
         Task<IEnumerable<Music_Suggestions>> GetAllAsync();
         Task UpdateAsync(Music_Suggestions suggestion);
+        Task<int> CountPendingSuggestionsAsync(string userId, TimeSpan timeSpan);
     }
 }
