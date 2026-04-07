@@ -5,14 +5,18 @@ export type SuggestionStatus = "pending" | "accepted" | "rejected";
 export type SongSuggestion = {
   id: number;
   title: string;
+  album?: string;
   artist: string;
   status: SuggestionStatus;
+  message?: string;
+  createdAt?: string;
 };
 
 export type SuggestionFormData = {
   title: string;
+  album?: string;
   artist: string;
-  message: string;
+  message?: string;
 };
 
 export type InventoryItem = {

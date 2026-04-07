@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   Badge,
   Button,
   Divider,
@@ -13,6 +14,7 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
+import { IconInfoCircle } from "@tabler/icons-react";
 import classes from "../../../styles/account/AuthenticationTitle.module.css";
 import { getSuggestionBadge } from "./helpers";
 import { SongSuggestion, SuggestionFormData } from "./types";
@@ -22,24 +24,46 @@ type ProfileSuggestionsTabProps = {
   songSuggestions: SongSuggestion[];
 };
 
+const MAX_PENDING_SUGGESTIONS = 5;
+
 export default function ProfileSuggestionsTab({
   onSubmitSongSuggestion,
   songSuggestions,
 }: ProfileSuggestionsTabProps) {
   const [suggestionTitle, setSuggestionTitle] = React.useState("");
+  const [suggestionAlbum, setSuggestionAlbum] = React.useState("");
   const [suggestionArtist, setSuggestionArtist] = React.useState("");
   const [suggestionMessage, setSuggestionMessage] = React.useState("");
 
+  const pendingSuggestionsCount = songSuggestions.filter(
+    (suggestion) => suggestion.status === "pending"
+  ).length;
+
+  const remainingSuggestions = Math.max(
+    0,
+    MAX_PENDING_SUGGESTIONS - pendingSuggestionsCount
+  );
+
+  const isLimitReached = remainingSuggestions <= 0;
+
+  const canSubmit =
+    !isLimitReached &&
+    suggestionTitle.trim().length > 0 &&
+    suggestionAlbum.trim().length > 0 &&
+    suggestionArtist.trim().length > 0;
+
   const handleSubmitSuggestion = () => {
-    if (!suggestionTitle.trim() || !suggestionArtist.trim()) return;
+    if (!canSubmit) return;
 
     onSubmitSongSuggestion?.({
       title: suggestionTitle.trim(),
+      album: suggestionAlbum.trim(),
       artist: suggestionArtist.trim(),
       message: suggestionMessage.trim(),
     });
 
     setSuggestionTitle("");
+    setSuggestionAlbum("");
     setSuggestionArtist("");
     setSuggestionMessage("");
   };
@@ -53,15 +77,49 @@ export default function ProfileSuggestionsTab({
         </Text>
       </div>
 
+      <Alert
+        icon={<IconInfoCircle size={16} />}
+        radius="md"
+        variant="light"
+        color={isLimitReached ? "red" : "blue"}
+      >
+        <Group justify="space-between" align="center">
+          <div>
+            <Text fw={600}>
+              {isLimitReached
+                ? "Limite atteinte"
+                : `Il te reste ${remainingSuggestions} proposition(s) en attente possible(s) cette semaine.`}
+            </Text>
+            <Text size="sm" c="dimmed">
+              Maximum : {MAX_PENDING_SUGGESTIONS} suggestions en attente sur 7 jours.
+            </Text>
+          </div>
+
+          <Badge variant="light" color={isLimitReached ? "red" : "blue"}>
+            {pendingSuggestionsCount}/{MAX_PENDING_SUGGESTIONS} en attente
+          </Badge>
+        </Group>
+      </Alert>
+
       <Paper withBorder radius="lg" p="lg" className={classes.innerCard}>
         <Stack gap="md">
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
             <TextInput
               label="Titre de la musique"
               placeholder="Ex. Someone Like You"
               value={suggestionTitle}
               onChange={(event) => setSuggestionTitle(event.currentTarget.value)}
               radius="md"
+              disabled={isLimitReached}
+            />
+
+            <TextInput
+              label="Album"
+              placeholder="Ex. 21"
+              value={suggestionAlbum}
+              onChange={(event) => setSuggestionAlbum(event.currentTarget.value)}
+              radius="md"
+              disabled={isLimitReached}
             />
 
             <TextInput
@@ -70,6 +128,7 @@ export default function ProfileSuggestionsTab({
               value={suggestionArtist}
               onChange={(event) => setSuggestionArtist(event.currentTarget.value)}
               radius="md"
+              disabled={isLimitReached}
             />
           </SimpleGrid>
 
@@ -80,10 +139,11 @@ export default function ProfileSuggestionsTab({
             value={suggestionMessage}
             onChange={(event) => setSuggestionMessage(event.currentTarget.value)}
             radius="md"
+            disabled={isLimitReached}
           />
 
           <Group justify="flex-end">
-            <Button radius="xl" onClick={handleSubmitSuggestion}>
+            <Button radius="xl" onClick={handleSubmitSuggestion} disabled={!canSubmit}>
               Envoyer la proposition
             </Button>
           </Group>
@@ -115,6 +175,13 @@ export default function ProfileSuggestionsTab({
                     <Group justify="space-between" align="flex-start">
                       <div>
                         <Text fw={600}>{suggestion.title}</Text>
+
+                        {suggestion.album && (
+                          <Text size="sm" c="dimmed">
+                            Album : {suggestion.album}
+                          </Text>
+                        )}
+
                         <Text size="sm" c="dimmed">
                           {suggestion.artist}
                         </Text>

@@ -56,7 +56,11 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
 
         public async Task<int> CountPendingSuggestionsAsync(string userId, TimeSpan timeSpan)
         {
-            var cutoffDate = DateTime.UtcNow.Subtract(timeSpan);
+            var cutoffDate = DateTime.SpecifyKind(
+                DateTime.UtcNow.Subtract(timeSpan),
+                DateTimeKind.Unspecified
+            );
+
             return await _context.Music_Suggestions
                 .Where(s => s.Id_User == userId && s.Status == "pending" && s.Created_At >= cutoffDate)
                 .CountAsync();

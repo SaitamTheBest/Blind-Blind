@@ -1,5 +1,4 @@
 ﻿using Blind_Blind_Backend.Entities.DataUsers;
-using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,53 +13,54 @@ namespace Blind_Blind_Backend.Entities.DataGames
 
         [Required]
         [Column("id_user")]
-        public string Id_User { get; set; }
+        public string Id_User { get; set; } = null!;
 
         [Required]
         [Column("title")]
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
 
-        [Column("artist_name")]
         [Required]
-        public string Artist_Name { get; set; }
+        [Column("artist_name")]
+        public string Artist_Name { get; set; } = null!;
 
         [Column("album_name")]
-        public string Album_Name { get; set; }
+        public string? Album_Name { get; set; }
 
-        [Column("release_date")]
-        public DateTime Release_Date { get; set; }
+        [Column("release_date", TypeName = "timestamp without time zone")]
+        public DateTime? Release_Date { get; set; }
 
         [Column("message")]
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
+        [Required]
         [Column("status")]
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
 
         [Column("admin_comment")]
-        public string Admin_Comment { get; set; }
+        public string? Admin_Comment { get; set; }
 
         [Column("reviewed_by")]
-        public string Reviewed_By { get; set; }
+        public string? Reviewed_By { get; set; }
 
-        [Column("reviewed_at")]
+        [Column("reviewed_at", TypeName = "timestamp without time zone")]
         public DateTime? Reviewed_At { get; set; }
 
         [Column("created_track_id")]
-        public string Created_Track_Id { get; set; }
+        public string? Created_Track_Id { get; set; }
 
-        [Column("created_at")]
+        [Column("created_at", TypeName = "timestamp without time zone")]
         public DateTime Created_At { get; set; }
 
-        [Column("updated_at")]
+        [Column("updated_at", TypeName = "timestamp without time zone")]
         public DateTime Updated_At { get; set; }
 
         [ForeignKey(nameof(Id_User))]
-        public User User { get; set; }
+        public User User { get; set; } = null!;
 
         [ForeignKey(nameof(Reviewed_By))]
-        public User Admin { get; set; }
+        public User? Admin { get; set; }
 
         [ForeignKey(nameof(Created_Track_Id))]
-        public Tracks Created_Track { get; set; }
+        public Tracks? Created_Track { get; set; }
     }
 }

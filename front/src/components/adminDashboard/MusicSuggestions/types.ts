@@ -3,6 +3,7 @@ export type SuggestionStatus = "pending" | "accepted" | "rejected";
 export type SongSuggestion = {
   id: number;
   title: string;
+  album?: string;
   artist: string;
   message?: string;
   proposedBy: string;
@@ -11,7 +12,7 @@ export type SongSuggestion = {
 };
 
 export type AddedSong = {
-  id: number;
+  id: string | number;
   title: string;
   artist: string;
   album: string;

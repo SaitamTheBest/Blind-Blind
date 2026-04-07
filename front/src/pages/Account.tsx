@@ -36,6 +36,59 @@ type JwtPayload = {
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"?: string;
 };
 
+type UserProfileResponse = {
+  id_User?: string;
+  username?: string;
+  email?: string;
+  avatar?: string | null;
+  elo?: number;
+  rank?: {
+    id_Rank?: number;
+    start_Elo?: number;
+    end_Elo?: number;
+    rank_Name?: string;
+    image_Rank?: string | null;
+  } | null;
+  roles?: {
+    id_Roles?: number;
+    role_Name?: string;
+  } | null;
+};
+
+type SuggestionStatus = "pending" | "accepted" | "rejected";
+
+type SongSuggestion = {
+  id: number;
+  title: string;
+  album?: string;
+  artist: string;
+  status: SuggestionStatus;
+  message?: string;
+  createdAt?: string;
+};
+
+type SuggestionFormData = {
+  title: string;
+  album?: string;
+  artist: string;
+  message?: string;
+};
+
+type ApiSongSuggestionResponseItem = {
+  idSuggestion?: number;
+  id_suggestion?: number;
+  title?: string;
+  albumName?: string;
+  album_name?: string;
+  artistName?: string;
+  artist_name?: string;
+  artist_Name?: string;
+  message?: string | null;
+  status?: string;
+  createdAt?: string;
+  created_at?: string;
+};
+
 function parseJwt(token: string): JwtPayload | null {
   try {
     const parts = token.split(".");
@@ -192,25 +245,6 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-type UserProfileResponse = {
-  id_User?: string;
-  username?: string;
-  email?: string;
-  avatar?: string | null;
-  elo?: number;
-  rank?: {
-    id_Rank?: number;
-    start_Elo?: number;
-    end_Elo?: number;
-    rank_Name?: string;
-    image_Rank?: string | null;
-  } | null;
-  roles?: {
-    id_Roles?: number;
-    role_Name?: string;
-  } | null;
-};
-
 const refreshSession = async (
   setUsername: (value: string) => void,
   setProfileEmail: (value: string) => void
@@ -256,6 +290,26 @@ function extractBase64FromImageSrc(imageSrc: string): string {
   return "";
 }
 
+function normalizeSuggestionStatus(value?: string): SuggestionStatus {
+  if (value === "accepted") return "accepted";
+  if (value === "rejected") return "rejected";
+  return "pending";
+}
+
+function mapApiSuggestionToFront(
+  item: ApiSongSuggestionResponseItem
+): SongSuggestion {
+  return {
+    id: Number(item.idSuggestion ?? item.id_suggestion ?? 0),
+    title: item.title ?? "",
+    album: item.albumName ?? item.album_name ?? "",
+    artist: item.artistName ?? item.artist_name ?? item.artist_Name ?? "",
+    status: normalizeSuggestionStatus(item.status),
+    message: item.message ?? "",
+    createdAt: item.createdAt ?? item.created_at ?? "",
+  };
+}
+
 export default function Account() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [view, setView] = useState<AccountView>("login");
@@ -281,6 +335,9 @@ export default function Account() {
   const [profileImage, setProfileImage] = useState<string>(defaultProfile);
   const [rankName, setRankName] = useState("Aucun rang");
   const [rankImage, setRankImage] = useState<string | null>(null);
+
+  const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
+  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -332,6 +389,48 @@ export default function Account() {
     }
   };
 
+  const fetchMySongSuggestions = async (token: string) => {
+    setIsSuggestionsLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/music-suggestions/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          errorText || "Impossible de récupérer tes propositions."
+        );
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        setSongSuggestions([]);
+        return;
+      }
+
+      setSongSuggestions(data.map(mapApiSuggestionToFront));
+    } catch (error) {
+      console.error("Erreur chargement suggestions :", error);
+      setSongSuggestions([]);
+
+      notifyError({
+        title: "Erreur",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue lors du chargement des propositions.",
+      });
+    } finally {
+      setIsSuggestionsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const storedRememberMe = localStorage.getItem("rememberMe");
     const accessToken = getStoredAccessToken();
@@ -356,6 +455,10 @@ export default function Account() {
             console.error("Erreur chargement profil :", error);
           });
         }
+
+        fetchMySongSuggestions(accessToken).catch((error) => {
+          console.error("Erreur chargement suggestions :", error);
+        });
       }
 
       return;
@@ -372,6 +475,7 @@ export default function Account() {
     setProfileImage(defaultProfile);
     setRankName("Aucun rang");
     setRankImage(null);
+    setSongSuggestions([]);
   };
 
   const resetLoginState = () => {
@@ -529,6 +633,89 @@ export default function Account() {
     }
   };
 
+  const handleSubmitSongSuggestion = async (data: SuggestionFormData) => {
+    try {
+      const token = getStoredAccessToken();
+    
+      if (!token) {
+        throw new Error("Tu dois être connecté pour proposer une musique.");
+      }
+    
+      const response = await fetch(`${API_URL}/api/music-suggestions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: data.title,
+          artist_Name: data.artist,
+          Album_Name: data.album?.trim() || "",
+          message: data.message ?? "",
+        }),
+      });
+    
+      if (!response.ok) {
+        let userMessage = "Impossible d'envoyer la proposition.";
+      
+        try {
+          const errorData = await response.json();
+        
+          if (
+            typeof errorData?.message === "string" &&
+            errorData.message.toLowerCase().includes("limite")
+          ) {
+            userMessage =
+              "Tu as déjà 5 propositions en attente cette semaine. Attends qu’une proposition soit traitée avant d’en envoyer une nouvelle.";
+          } else if (errorData?.errors) {
+            if (errorData.errors.Album_Name?.length) {
+              userMessage = "Merci de renseigner l’album.";
+            } else if (errorData.errors.artist_Name?.length) {
+              userMessage = "Merci de renseigner l’artiste.";
+            } else if (errorData.errors.title?.length) {
+              userMessage = "Merci de renseigner le titre.";
+            } else {
+              userMessage =
+                "Certains champs sont invalides. Vérifie les informations saisies.";
+            }
+          } else if (typeof errorData?.title === "string") {
+            userMessage = errorData.title;
+          }
+        } catch {
+          const errorText = await response.text();
+        
+          if (errorText.toLowerCase().includes("limite")) {
+            userMessage =
+              "Tu as déjà 5 propositions en attente cette semaine. Attends qu’une proposition soit traitée avant d’en envoyer une nouvelle.";
+          }
+        }
+      
+        throw new Error(userMessage);
+      }
+    
+      notifySuccess({
+        title: "Proposition envoyée",
+        message: "Ta suggestion a bien été enregistrée.",
+      });
+    
+      try {
+        await fetchMySongSuggestions(token);
+      } catch (error) {
+        console.error("Erreur rafraîchissement suggestions :", error);
+      }
+    } catch (error) {
+      console.error("Erreur envoi suggestion :", error);
+    
+      notifyError({
+        title: "Erreur",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue lors de l'envoi de la proposition.",
+      });
+    }
+  };
+
   const handleLogin = async () => {
     setLoginError("");
     setIsLoginLoading(true);
@@ -570,6 +757,8 @@ export default function Account() {
       if (userId) {
         await fetchUserProfile(userId, data.accessToken);
       }
+
+      await fetchMySongSuggestions(data.accessToken);
 
       setIsLoggedIn(true);
       setView("profile");
@@ -792,29 +981,8 @@ export default function Account() {
         onLogout={handleLogout}
         onDeleteAccount={handleDeleteAccount}
         onSaveProfile={handleSaveProfile}
-        onSubmitSongSuggestion={(data) => {
-          console.log("Nouvelle proposition :", data);
-        }}
-        songSuggestions={[
-          {
-            id: 1,
-            title: "Numb",
-            artist: "Linkin Park",
-            status: "accepted",
-          },
-          {
-            id: 2,
-            title: "Blinding Lights",
-            artist: "The Weeknd",
-            status: "pending",
-          },
-          {
-            id: 3,
-            title: "Believer",
-            artist: "Imagine Dragons",
-            status: "rejected",
-          },
-        ]}
+        onSubmitSongSuggestion={handleSubmitSongSuggestion}
+        songSuggestions={songSuggestions}
       />
     );
   }

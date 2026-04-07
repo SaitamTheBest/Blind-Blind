@@ -22,7 +22,7 @@ export default function SuggestionsList({
         <div>
           <Title order={3}>Propositions des joueurs</Title>
           <Text c="dimmed" size="sm">
-            Les joueurs proposent : titre, artiste, message optionnel.
+            Les joueurs proposent : titre, album, artiste, message optionnel.
           </Text>
         </div>
 
@@ -41,24 +41,50 @@ export default function SuggestionsList({
 
           {suggestions.map((suggestion, index) => (
             <div key={suggestion.id}>
-              <Group justify="space-between" align="flex-start">
-                <div>
+              <Group
+                justify="space-between"
+                align="flex-start"
+                wrap="nowrap"
+                gap="md"
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <Text fw={700}>{suggestion.title}</Text>
+
+                  {suggestion.album && (
+                    <Text size="sm" c="dimmed">
+                      Album : {suggestion.album}
+                    </Text>
+                  )}
+
                   <Text size="sm" c="dimmed">
                     {suggestion.artist}
                   </Text>
+
                   <Text size="xs" mt={4} c="dimmed">
                     Proposé par {suggestion.proposedBy} • {suggestion.createdAt}
                   </Text>
 
                   {suggestion.message && (
-                    <Text size="sm" mt="xs">
+                    <Text
+                      size="sm"
+                      mt="xs"
+                      style={{
+                        whiteSpace: "normal",
+                        overflowWrap: "anywhere",
+                        wordBreak: "break-word",
+                      }}
+                    >
                       “{suggestion.message}”
                     </Text>
                   )}
                 </div>
 
-                <Group gap="xs">
+                <Group
+                  gap="xs"
+                  wrap="nowrap"
+                  align="flex-start"
+                  style={{ flexShrink: 0 }}
+                >
                   {getStatusBadge(suggestion.status)}
 
                   {suggestion.status === "pending" && (

@@ -22,6 +22,8 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 throw new InvalidOperationException("Vous avez atteint la limite de suggestions en attente de validation pour cette semaine.");
             }
 
+            var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
             var suggestion = new Music_Suggestions
             {
                 Id_User = userId,
@@ -30,8 +32,8 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Album_Name = dto.Album_Name,
                 Message = dto.Message,
                 Status = "pending",
-                Created_At = DateTime.UtcNow,
-                Updated_At = DateTime.UtcNow
+                Created_At = now,
+                Updated_At = now
             };
 
             await _repository.CreateAsync(suggestion);
@@ -85,10 +87,12 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             var suggestion = await _repository.GetByIdAsync(id);
             if (suggestion == null) throw new ArgumentException("Suggestion introuvable.");
 
-            suggestion.Status = "Accepted";
+            var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
+            suggestion.Status = "accepted";
             suggestion.Reviewed_By = adminId;
-            suggestion.Reviewed_At = DateTime.UtcNow;
-            suggestion.Updated_At = DateTime.UtcNow;
+            suggestion.Reviewed_At = now;
+            suggestion.Updated_At = now;
 
             await _repository.UpdateAsync(suggestion);
         }
@@ -98,10 +102,12 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             var suggestion = await _repository.GetByIdAsync(id);
             if (suggestion == null) throw new ArgumentException("Suggestion introuvable.");
 
-            suggestion.Status = "Rejected";
+            var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
+            suggestion.Status = "rejected";
             suggestion.Reviewed_By = adminId;
-            suggestion.Reviewed_At = DateTime.UtcNow;
-            suggestion.Updated_At = DateTime.UtcNow;
+            suggestion.Reviewed_At = now;
+            suggestion.Updated_At = now;
 
             await _repository.UpdateAsync(suggestion);
         }
