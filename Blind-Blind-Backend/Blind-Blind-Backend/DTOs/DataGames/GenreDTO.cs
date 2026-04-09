@@ -6,4 +6,9 @@
 
         public string Libelle { get; set; }
     }
+
+    public class GenreCrudDTO
+    {
+        public string Libelle { get; set; }
+    }
 }

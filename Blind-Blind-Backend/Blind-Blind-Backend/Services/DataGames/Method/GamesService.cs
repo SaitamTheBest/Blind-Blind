@@ -105,7 +105,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
             return new ArtistDTO
             {
-                Id_Artist = entity.Id_Artist,
+                Id_Artists = entity.Id_Artists,
                 Name = entity.Name,
                 Start_Date = entity.Start_Date,
                 Last_Release = entity.Last_Release,
@@ -116,14 +116,14 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
         }
 
-        private GenreDTO? MapGenre(Genre? entity)
+        private GenreDTO? MapGenre(Genre_Tracks? entity)
         {
             if (entity == null)
                 return null;
 
             return new GenreDTO
             {
-                Id_Genre = entity.Id_Genre,
+                Id_Genre = entity.Id_Genre_Tracks,
                 Libelle = entity.Libelle
             };
         }
@@ -155,7 +155,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Id_Track = entity.Id_Tracks,
                 Name = entity.Name,
                 Release_Year = entity.Release_Year,
-                Nb_Stream = entity.Nb_Stream,
+                Popularity = entity.Popularity,
                 Feat = entity.Feat,
                 Time = entity.Time,
                 Url_Source = entity.Url_Source,

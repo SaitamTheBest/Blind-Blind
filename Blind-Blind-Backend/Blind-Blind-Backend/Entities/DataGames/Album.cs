@@ -10,8 +10,8 @@ namespace Blind_Blind_Backend.Entities.DataGames
         [Column("id_album")] 
         public string Id_Album { get; set; }
 
-        [Column("id_artist")]
-        public string Id_Artist { get; set; }
+        [Column("id_artists")]
+        public string Id_Artists { get; set; }
 
         [Column("name")] 
         public string Name { get; set; } 
@@ -28,7 +28,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
         [Column("is_single")]
         public bool Is_Single { get; set; }
 
-        [ForeignKey(nameof(Id_Artist))]
+        [ForeignKey(nameof(Id_Artists))]
         public virtual Artists Artists { get; set; }
     }
 }

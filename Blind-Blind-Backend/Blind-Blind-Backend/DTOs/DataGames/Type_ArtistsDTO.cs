@@ -6,4 +6,9 @@
 
         public string Type { get; set; }
     }
+
+    public class Type_ArtistsCrudDTO
+    {
+        public string Type { get; set; }
+    }
 }

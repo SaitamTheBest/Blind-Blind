@@ -7,8 +7,8 @@ namespace Blind_Blind_Backend.Entities.DataGames
     public class Artists
     {
         [Key]
-        [Column("id_artist")]
-        public string Id_Artist { get; set; }
+        [Column("id_artists")]
+        public string Id_Artists { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
@@ -33,5 +33,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
 
         [ForeignKey(nameof(Id_Type_Artists))]
         public virtual Type_Artists Type_Artists { get; set; }
+
+        public virtual ICollection<Featurings> Featurings { get; set; } = new List<Featurings>();
     }
 }

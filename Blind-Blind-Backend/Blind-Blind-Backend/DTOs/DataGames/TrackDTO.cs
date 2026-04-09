@@ -10,7 +10,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Release_Year { get; set; }
 
-        public int Nb_Stream { get; set; }
+        public int Popularity { get; set; }
 
         public bool Feat { get; set; }
 
@@ -35,7 +35,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Release_Year { get; set; }
 
-        public int Nb_Stream { get; set; }
+        public int Popularity { get; set; }
 
         public DateTime Time { get; set; }
 
@@ -45,7 +45,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public string Id_Album { get; set; }
 
-        public string Id_Artist { get; set; }
+        public string Id_Artists { get; set; }
 
         public List<string>? List_Id_Featurings { get; set; }
     }

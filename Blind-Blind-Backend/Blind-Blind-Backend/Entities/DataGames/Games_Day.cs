@@ -20,7 +20,7 @@ namespace Blind_Blind_Backend.Entities.DataGames {
         public string Id_Album { get; set; }
 
         [Column("id_artist")]
-        public string Id_Artist { get; set; }
+        public string Id_Artists { get; set; }
 
         [Column("date_games")]
         public DateTime Date_Games { get; set; }
@@ -37,7 +37,7 @@ namespace Blind_Blind_Backend.Entities.DataGames {
         [ForeignKey(nameof(Id_Album))]
         public virtual Album Album { get; set; }
 
-        [ForeignKey(nameof(Id_Artist))]
+        [ForeignKey(nameof(Id_Artists))]
         public virtual Artists Artist { get; set; }
     }
 }

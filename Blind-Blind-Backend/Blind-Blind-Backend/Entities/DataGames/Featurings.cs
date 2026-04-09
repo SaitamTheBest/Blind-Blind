@@ -10,13 +10,13 @@ namespace Blind_Blind_Backend.Entities.DataGames
         [Column("id_tracks")]
         public string Id_Tracks { get; set; }
 
-        [Column("id_artist")]
-        public string Id_Artist { get; set; }
+        [Column("id_artists")]
+        public string Id_Artists { get; set; }
 
         [ForeignKey(nameof(Id_Tracks))]
         public virtual Tracks Tracks { get; set; }
 
-        [ForeignKey(nameof(Id_Artist))]
+        [ForeignKey(nameof(Id_Artists))]
         public virtual Artists Artists { get; set; }
     }
 }

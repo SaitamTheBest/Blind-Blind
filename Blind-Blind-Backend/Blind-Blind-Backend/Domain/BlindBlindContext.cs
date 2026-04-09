@@ -19,7 +19,7 @@ namespace Blind_Blind_Backend.Domain
         public DbSet<Artists> Artists => Set<Artists>();
         public DbSet<Featurings> Featurings => Set<Featurings>();
         public DbSet<Games_Day> Games_Day => Set<Games_Day>();
-        public DbSet<Genre> Genres => Set<Genre>();
+        public DbSet<Genre_Tracks> Genres => Set<Genre_Tracks>();
         public DbSet<Lyrics> Lyrics => Set<Lyrics>();
         public DbSet<Tracks> Tracks => Set<Tracks>();
         public DbSet<Type_Artists> Type_Artists => Set<Type_Artists>();
@@ -55,7 +55,19 @@ namespace Blind_Blind_Backend.Domain
                 );
 
             modelBuilder.Entity<Featurings>()
-                    .HasNoKey();
+                .HasKey(f => new { f.Id_Tracks, f.Id_Artists });
+
+            modelBuilder.Entity<Featurings>()
+                .HasOne(f => f.Tracks)
+                .WithMany(t => t.Featurings)
+                .HasForeignKey(f => f.Id_Tracks)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Featurings>()
+                .HasOne(f => f.Artists)
+                .WithMany(a => a.Featurings)
+                .HasForeignKey(f => f.Id_Artists)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

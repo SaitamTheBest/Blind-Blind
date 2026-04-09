@@ -7,7 +7,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
     [Table("music_suggestions", Schema = "blindblindv1_datagames")]
     public class Music_Suggestions
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id_suggestion")]
         public int Id_Suggestion { get; set; }
 
