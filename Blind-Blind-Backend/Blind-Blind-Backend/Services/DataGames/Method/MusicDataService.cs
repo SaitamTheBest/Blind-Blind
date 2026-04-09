@@ -157,62 +157,62 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #endregion
 
         #region CREATE
-        public Task CreateAlbum(AlbumCrudDTO albumCrudDTO)
+        public Task CreateAlbum(AlbumCreateDTO albumCreateDTO)
         {
             var album = new Album
             {
                 Id_Album = Guid.NewGuid().ToString(),
-                Id_Artists = albumCrudDTO.Artist,
-                Name = albumCrudDTO.Name,
-                Release_Year = albumCrudDTO.Release_Year,
-                Nb_Stream = albumCrudDTO.Nb_Stream,
-                Image_Album = albumCrudDTO.Image_Album,
-                Is_Single = albumCrudDTO.Is_Single
+                Id_Artists = albumCreateDTO.Artist,
+                Name = albumCreateDTO.Name,
+                Release_Year = albumCreateDTO.Release_Year,
+                Nb_Stream = albumCreateDTO.Nb_Stream,
+                Image_Album = albumCreateDTO.Image_Album,
+                Is_Single = albumCreateDTO.Is_Single
             };
 
             return _repository.CreateAlbum(album);
         }
 
-        public Task CreateArtist(ArtistCrudDTO artistCrudDTO)
+        public Task CreateArtist(ArtistCreateDTO artistCreateDTO)
         {
             var artist = new Artists
             {
                 Id_Artists = Guid.NewGuid().ToString(),
-                Name = artistCrudDTO.Name,
-                Start_Date = artistCrudDTO.Start_Date,
-                Last_Release = artistCrudDTO.Last_Release,
-                Id_Type_Artists = artistCrudDTO.Id_Type_Artists,
-                Nationality = artistCrudDTO.Nationality,
-                Nb_Followers = artistCrudDTO.Nb_Followers,
-                Image_Artists = artistCrudDTO.Image_Artists
+                Name = artistCreateDTO.Name,
+                Start_Date = artistCreateDTO.Start_Date,
+                Last_Release = artistCreateDTO.Last_Release,
+                Id_Type_Artists = artistCreateDTO.Id_Type_Artists,
+                Nationality = artistCreateDTO.Nationality,
+                Nb_Followers = artistCreateDTO.Nb_Followers,
+                Image_Artists = artistCreateDTO.Image_Artists
             };
 
             return _repository.CreateArtist(artist);
         }
 
-        public async Task CreateTrack(TrackCrudDTO trackCrudDTO)
+        public async Task CreateTrack(TrackCreateDTO trackCreateDTO)
         {
             var trackId = Guid.NewGuid().ToString();
-            var featuringsExist = trackCrudDTO.List_Id_Featurings != null && trackCrudDTO.List_Id_Featurings.Any();
+            var featuringsExist = trackCreateDTO.List_Id_Featurings != null && trackCreateDTO.List_Id_Featurings.Any();
 
             var track = new Tracks
             {
                 Id_Tracks = trackId,
-                Name = trackCrudDTO.Name,
-                Release_Year = trackCrudDTO.Release_Year,
-                Popularity = trackCrudDTO.Popularity,
+                Name = trackCreateDTO.Name,
+                Release_Year = trackCreateDTO.Release_Year,
+                Popularity = trackCreateDTO.Popularity,
                 Feat = featuringsExist,
-                Time = trackCrudDTO.Time,
-                Url_Source = trackCrudDTO.Url_Source,
-                Id_Genre = trackCrudDTO.Id_Genre,
-                Id_Album = trackCrudDTO.Id_Album,
+                Time = trackCreateDTO.Time,
+                Url_Source = trackCreateDTO.Url_Source,
+                Id_Genre = trackCreateDTO.Id_Genre,
+                Id_Album = trackCreateDTO.Id_Album,
             };
 
             await _repository.CreateTrack(track);
 
             if (featuringsExist)
             {
-                await AddFeaturingsToTrack(trackId, trackCrudDTO.List_Id_Featurings!);
+                await AddFeaturingsToTrack(trackId, trackCreateDTO.List_Id_Featurings!);
             }
         }
 
@@ -247,13 +247,13 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return _repository.CreateTypeArtist(typeArtist);
         }
 
-        public Task CreateLyrics(LyricsCrudDTO lyricsCrudDTO)
+        public Task CreateLyrics(LyricsCreateDTO lyricsCreateDTO)
         {
             var lyrics = new Lyrics
             {
-                Id_Lyrics = lyricsCrudDTO.Id_Lyrics,
-                Lyric = lyricsCrudDTO.Lyric,
-                Id_Tracks = lyricsCrudDTO.Id_Tracks
+                Id_Lyrics = Guid.NewGuid().ToString(),
+                Lyric = lyricsCreateDTO.Lyric,
+                Id_Tracks = lyricsCreateDTO.Id_Tracks
             };
 
             return _repository.CreateLyrics(lyrics);
@@ -262,68 +262,68 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
 
         #region UPDATE
-        public Task UpdateAlbum(AlbumCrudDTO albumCrudDTO)
+        public Task UpdateAlbum(AlbumUpdateDTO albumUpdateDTO)
         {
-            if (string.IsNullOrEmpty(albumCrudDTO.Id_Album))
+            if (string.IsNullOrEmpty(albumUpdateDTO.Id_Album))
                 throw new ArgumentException("L'ID de l'album est requis pour la mise à jour.");
 
             var album = new Album
             {
-                Id_Album = albumCrudDTO.Id_Album,
-                Id_Artists = albumCrudDTO.Artist,
-                Name = albumCrudDTO.Name,
-                Release_Year = albumCrudDTO.Release_Year,
-                Nb_Stream = albumCrudDTO.Nb_Stream,
-                Image_Album = albumCrudDTO.Image_Album,
-                Is_Single = albumCrudDTO.Is_Single
+                Id_Album = albumUpdateDTO.Id_Album,
+                Id_Artists = albumUpdateDTO.Artist,
+                Name = albumUpdateDTO.Name,
+                Release_Year = albumUpdateDTO.Release_Year,
+                Nb_Stream = albumUpdateDTO.Nb_Stream,
+                Image_Album = albumUpdateDTO.Image_Album,
+                Is_Single = albumUpdateDTO.Is_Single
             };
 
             return _repository.UpdateAlbum(album);
         }
 
-        public Task UpdateArtist(ArtistCrudDTO artistCrudDTO)
+        public Task UpdateArtist(ArtistUpdateDTO artistUpdateDTO)
         {
-            if (string.IsNullOrEmpty(artistCrudDTO.Id_Artists))
+            if (string.IsNullOrEmpty(artistUpdateDTO.Id_Artists))
                 throw new ArgumentException("L'ID de l'artiste est requis pour la mise à jour.");
 
             var artist = new Artists
             {
-                Id_Artists = artistCrudDTO.Id_Artists,
-                Name = artistCrudDTO.Name,
-                Start_Date = artistCrudDTO.Start_Date,
-                Last_Release = artistCrudDTO.Last_Release,
-                Id_Type_Artists = artistCrudDTO.Id_Type_Artists,
-                Nationality = artistCrudDTO.Nationality,
-                Nb_Followers = artistCrudDTO.Nb_Followers,
-                Image_Artists = artistCrudDTO.Image_Artists
+                Id_Artists = artistUpdateDTO.Id_Artists,
+                Name = artistUpdateDTO.Name,
+                Start_Date = artistUpdateDTO.Start_Date,
+                Last_Release = artistUpdateDTO.Last_Release,
+                Id_Type_Artists = artistUpdateDTO.Id_Type_Artists,
+                Nationality = artistUpdateDTO.Nationality,
+                Nb_Followers = artistUpdateDTO.Nb_Followers,
+                Image_Artists = artistUpdateDTO.Image_Artists
             };
 
             return _repository.UpdateArtist(artist);
         }
 
-        public async Task UpdateTrack(TrackCrudDTO trackCrudDTO)
+        public async Task UpdateTrack(TrackUpdateDTO trackUpdateDTO)
         {
-            if (string.IsNullOrEmpty(trackCrudDTO.Id_Tracks))
+            if (string.IsNullOrEmpty(trackUpdateDTO.Id_Tracks))
                 throw new ArgumentException("L'ID de la track est requis pour la mise à jour.");
 
-            var featuringsExist = trackCrudDTO.List_Id_Featurings != null && trackCrudDTO.List_Id_Featurings.Any();
+            var featuringsExist = trackUpdateDTO.List_Id_Featurings != null && trackUpdateDTO.List_Id_Featurings.Any();
 
             var track = new Tracks
             {
-                Id_Tracks = trackCrudDTO.Id_Tracks,
-                Name = trackCrudDTO.Name,
-                Release_Year = trackCrudDTO.Release_Year,
-                Popularity = trackCrudDTO.Popularity,
+                Id_Tracks = trackUpdateDTO.Id_Tracks,
+                Name = trackUpdateDTO.Name,
+                Release_Year = trackUpdateDTO.Release_Year,
+                Popularity = trackUpdateDTO.Popularity,
                 Feat = featuringsExist,
-                Time = trackCrudDTO.Time,
-                Url_Source = trackCrudDTO.Url_Source,
-                Id_Genre = trackCrudDTO.Id_Genre,
-                Id_Album = trackCrudDTO.Id_Album,
+                Time = trackUpdateDTO.Time,
+                Url_Source = trackUpdateDTO.Url_Source,
+                Id_Genre = trackUpdateDTO.Id_Genre,
+                Id_Album = trackUpdateDTO.Id_Album,
             };
 
             await _repository.UpdateTrack(track);
 
-            await UpdateFeaturingsForTrack(trackCrudDTO.Id_Tracks, trackCrudDTO.List_Id_Featurings ?? new List<string>());
+            await UpdateFeaturingsForTrack(trackUpdateDTO.Id_Tracks, trackUpdateDTO.List_Id_Featurings ?? new List<string>());
         }
 
         public async Task UpdateFeaturingsForTrack(string trackId, List<string> artistIds)
@@ -356,16 +356,16 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return _repository.UpdateTypeArtist(typeArtist);
         }
 
-        public Task UpdateLyrics(LyricsCrudDTO lyricsCrudDTO)
+        public Task UpdateLyrics(LyricsUpdateDTO lyricsUpdateDTO)
         {
-            if (string.IsNullOrEmpty(lyricsCrudDTO.Id_Lyrics))
+            if (string.IsNullOrEmpty(lyricsUpdateDTO.Id_Lyrics))
                 throw new ArgumentException("L'ID des paroles est requis pour la mise à jour.");
 
             var lyrics = new Lyrics
             {
-                Id_Lyrics = lyricsCrudDTO.Id_Lyrics,
-                Lyric = lyricsCrudDTO.Lyric,
-                Id_Tracks = lyricsCrudDTO.Id_Tracks
+                Id_Lyrics = lyricsUpdateDTO.Id_Lyrics,
+                Lyric = lyricsUpdateDTO.Lyric,
+                Id_Tracks = lyricsUpdateDTO.Id_Tracks
             };
 
             return _repository.UpdateLyrics(lyrics);

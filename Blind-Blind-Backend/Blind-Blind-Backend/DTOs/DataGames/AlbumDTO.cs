@@ -19,6 +19,38 @@
         public bool Is_Single { get; set; }
     }
 
+    public class AlbumCreateDTO
+    {
+        public string Artist { get; set; }
+
+        public string Name { get; set; }
+
+        public int Release_Year { get; set; }
+
+        public int Nb_Stream { get; set; }
+
+        public string Image_Album { get; set; }
+
+        public bool Is_Single { get; set; }
+    }
+
+    public class AlbumUpdateDTO
+    {
+        public string Id_Album { get; set; }
+
+        public string Artist { get; set; }
+
+        public string Name { get; set; }
+
+        public int Release_Year { get; set; }
+
+        public int Nb_Stream { get; set; }
+
+        public string Image_Album { get; set; }
+
+        public bool Is_Single { get; set; }
+    }
+
     public class AlbumCrudDTO
     {
         public string Id_Album { get; set; }

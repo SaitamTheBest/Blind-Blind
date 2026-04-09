@@ -20,23 +20,23 @@ namespace Blind_Blind_Backend.Services.DataGames
         #endregion
 
         #region CREATE
-        Task CreateTrack(TrackCrudDTO trackCrudDTO);
-        Task CreateAlbum(AlbumCrudDTO albumCrudDTO);
-        Task CreateArtist(ArtistCrudDTO artistCrudDTO);
+        Task CreateTrack(TrackCreateDTO trackCreateDTO);
+        Task CreateAlbum(AlbumCreateDTO albumCreateDTO);
+        Task CreateArtist(ArtistCreateDTO artistCreateDTO);
         Task AddFeaturingsToTrack(string trackId, List<string> artistIds);
         Task CreateGenre(GenreCrudDTO genreCrudDTO);
         Task CreateTypeArtist(Type_ArtistsCrudDTO typeArtistCrudDTO);
-        Task CreateLyrics(LyricsCrudDTO lyricsCrudDTO);
+        Task CreateLyrics(LyricsCreateDTO lyricsCreateDTO);
         #endregion
 
         #region UPDATE
-        Task UpdateTrack(TrackCrudDTO trackCrudDTO);
-        Task UpdateAlbum(AlbumCrudDTO albumCrudDTO);
-        Task UpdateArtist(ArtistCrudDTO artistCrudDTO);
+        Task UpdateTrack(TrackUpdateDTO trackUpdateDTO);
+        Task UpdateAlbum(AlbumUpdateDTO albumUpdateDTO);
+        Task UpdateArtist(ArtistUpdateDTO artistUpdateDTO);
         Task UpdateFeaturingsForTrack(string trackId, List<string> artistIds);
         Task UpdateGenre(GenreCrudDTO genreCrudDTO);
         Task UpdateTypeArtist(Type_ArtistsCrudDTO typeArtistCrudDTO);
-        Task UpdateLyrics(LyricsCrudDTO lyricsCrudDTO);
+        Task UpdateLyrics(LyricsUpdateDTO lyricsUpdateDTO);
         #endregion
 
         #region DELETE

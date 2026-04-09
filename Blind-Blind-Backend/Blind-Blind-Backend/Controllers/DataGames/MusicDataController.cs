@@ -66,9 +66,9 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateAlbum([FromBody] AlbumCrudDTO albumCrudDTO)
+        public async Task<IActionResult> CreateAlbum([FromBody] AlbumCreateDTO albumCreateDTO)
         {
-            await _service.CreateAlbum(albumCrudDTO);
+            await _service.CreateAlbum(albumCreateDTO);
             return Ok(new { message = "Album créé avec succès." });
         }
 
@@ -87,11 +87,11 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateAlbum([FromBody] AlbumCrudDTO albumCrudDTO)
+        public async Task<IActionResult> UpdateAlbum([FromBody] AlbumUpdateDTO albumUpdateDTO)
         {
             try
             {
-                await _service.UpdateAlbum(albumCrudDTO);
+                await _service.UpdateAlbum(albumUpdateDTO);
                 return Ok(new { message = "Album mis à jour avec succès." });
             }
             catch (ArgumentException ex)
@@ -179,9 +179,9 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateArtist([FromBody] ArtistCrudDTO artistCrudDTO)
+        public async Task<IActionResult> CreateArtist([FromBody] ArtistCreateDTO artistCreateDTO)
         {
-            await _service.CreateArtist(artistCrudDTO);
+            await _service.CreateArtist(artistCreateDTO);
             return Ok(new { message = "Artiste créé avec succès." });
         }
 
@@ -199,11 +199,11 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateArtist([FromBody] ArtistCrudDTO artistCrudDTO)
+        public async Task<IActionResult> UpdateArtist([FromBody] ArtistUpdateDTO artistUpdateDTO)
         {
             try
             {
-                await _service.UpdateArtist(artistCrudDTO);
+                await _service.UpdateArtist(artistUpdateDTO);
                 return Ok(new { message = "Artiste mis à jour avec succès." });
             }
             catch (ArgumentException ex)
@@ -290,9 +290,9 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateTrack([FromBody] TrackCrudDTO trackCrudDTO)
+        public async Task<IActionResult> CreateTrack([FromBody] TrackCreateDTO trackCreateDTO)
         {
-            await _service.CreateTrack(trackCrudDTO);
+            await _service.CreateTrack(trackCreateDTO);
             return Ok(new { message = "Track créée avec succès." });
         }
 
@@ -312,11 +312,11 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateTrack([FromBody] TrackCrudDTO trackCrudDTO)
+        public async Task<IActionResult> UpdateTrack([FromBody] TrackUpdateDTO trackUpdateDTO)
         {
             try
             {
-                await _service.UpdateTrack(trackCrudDTO);
+                await _service.UpdateTrack(trackUpdateDTO);
                 return Ok(new { message = "Track mise à jour avec succès." });
             }
             catch (ArgumentException ex)
@@ -682,9 +682,9 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateLyrics([FromBody] LyricsCrudDTO lyricsCrudDTO)
+        public async Task<IActionResult> CreateLyrics([FromBody] LyricsCreateDTO lyricsCreateDTO)
         {
-            await _service.CreateLyrics(lyricsCrudDTO);
+            await _service.CreateLyrics(lyricsCreateDTO);
             return Ok(new { message = "Paroles créées avec succès." });
         }
 
@@ -702,11 +702,11 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateLyrics([FromBody] LyricsCrudDTO lyricsCrudDTO)
+        public async Task<IActionResult> UpdateLyrics([FromBody] LyricsUpdateDTO lyricsUpdateDTO)
         {
             try
             {
-                await _service.UpdateLyrics(lyricsCrudDTO);
+                await _service.UpdateLyrics(lyricsUpdateDTO);
                 return Ok(new { message = "Paroles mises à jour avec succès." });
             }
             catch (ArgumentException ex)
