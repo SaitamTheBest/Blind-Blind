@@ -11,6 +11,10 @@ import ArtistMode from "./pages/Artist";
 import Account from "./pages/Account";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./utils/AdminRoute";
+import Error404 from "./components/errors/Error404";
+import Error401 from "./components/errors/Error401";
+import Error500 from "./components/errors/Error500";
+import Error503 from "./components/errors/Error503";
 
 import { GameProvider as ClassicGameProvider } from "./components/games/context/ClassicGameContext";
 import { ArtistGameProvider } from "./components/games/context/ArtistGameContext";
@@ -82,6 +86,12 @@ function App() {
                     </AdminRoute>
                   }
                 />
+
+                {/* Erreurs */}
+                <Route path="*" element={<Error404 />} />
+                <Route path="/401" element={<Error401 />} />
+                <Route path="/500" element={<Error500 />} />
+                <Route path="/503" element={<Error503 />} />
               </Routes>
             </main>
 

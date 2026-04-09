@@ -5,6 +5,7 @@ import {
   IconGauge,
   IconUser,
   IconMusic,
+  IconVinyl,
 } from '@tabler/icons-react';
 import { Avatar, Center, Stack, Tooltip, UnstyledButton } from '@mantine/core';
 import LogoBlindBlind from '../../res/Blind-Blind-logo-noir.png';
@@ -14,6 +15,7 @@ export type AdminTab =
   | 'dashboard'
   | 'analytics'
   | 'songs'
+  | 'discs'
   | 'releases'
   | 'accounts'
   | 'security';
@@ -48,8 +50,9 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 const navItems: { icon: NavbarLinkProps['icon']; label: string; value: AdminTab }[] = [
   { icon: IconGauge, label: 'Dashboard', value: 'dashboard' },
   { icon: IconDeviceDesktopAnalytics, label: 'Analytics', value: 'analytics' },
-  { icon: IconMusic, label: 'Songs', value: 'songs' },
   { icon: IconUser, label: 'Accounts', value: 'accounts' },
+  { icon: IconMusic, label: 'Submissions', value: 'songs' },
+  { icon: IconVinyl, label: 'Library', value: 'discs' },
   { icon: IconFingerprint, label: 'Security', value: 'security' },
   { icon: IconCalendarStats, label: 'Releases', value: 'releases' },
 ];
