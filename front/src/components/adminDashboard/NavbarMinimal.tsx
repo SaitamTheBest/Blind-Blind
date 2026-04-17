@@ -15,7 +15,7 @@ export type AdminTab =
   | 'dashboard'
   | 'analytics'
   | 'songs'
-  | 'discs'
+  | 'library'
   | 'releases'
   | 'accounts'
   | 'security';
@@ -52,7 +52,7 @@ const navItems: { icon: NavbarLinkProps['icon']; label: string; value: AdminTab 
   { icon: IconDeviceDesktopAnalytics, label: 'Analytics', value: 'analytics' },
   { icon: IconUser, label: 'Accounts', value: 'accounts' },
   { icon: IconMusic, label: 'Submissions', value: 'songs' },
-  { icon: IconVinyl, label: 'Library', value: 'discs' },
+  { icon: IconVinyl, label: 'Library', value: 'library' },
   { icon: IconFingerprint, label: 'Security', value: 'security' },
   { icon: IconCalendarStats, label: 'Releases', value: 'releases' },
 ];

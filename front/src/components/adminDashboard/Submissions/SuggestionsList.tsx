@@ -1,6 +1,16 @@
-import { ActionIcon, Badge, Divider, Group, Paper, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Divider,
+  Group,
+  Paper,
+  ScrollArea,
+  Stack,
+  Text,
+  Title,
+  Tooltip,
+} from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { getStatusBadge } from "./helpers";
+import { renderStatusBadge } from "./helpers";
 import type { SongSuggestion } from "./types";
 
 type SuggestionsListProps = {
@@ -17,7 +27,17 @@ export default function SuggestionsList({
   onRejectSuggestion,
 }: SuggestionsListProps) {
   return (
-    <Paper withBorder radius="md" p="lg">
+    <Paper
+      withBorder
+      radius="md"
+      p="lg"
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 420,
+      }}
+    >
       <Group justify="space-between" mb="md">
         <div>
           <Title order={3}>Propositions des joueurs</Title>
@@ -26,12 +46,20 @@ export default function SuggestionsList({
           </Text>
         </div>
 
-        <Badge variant="light" color="blue">
-          {pendingCount} en attente
-        </Badge>
+        <Paper
+          px="sm"
+          py={4}
+          radius="xl"
+          withBorder={false}
+          bg="rgba(0, 102, 255, 0.08)"
+        >
+          <Text size="xs" fw={700} c="blue">
+            {pendingCount} EN ATTENTE
+          </Text>
+        </Paper>
       </Group>
 
-      <ScrollArea h={420}>
+      <ScrollArea style={{ flex: 1 }} h={340}>
         <Stack gap="sm">
           {suggestions.length === 0 && (
             <Paper withBorder radius="md" p="md">
@@ -61,7 +89,8 @@ export default function SuggestionsList({
                   </Text>
 
                   <Text size="xs" mt={4} c="dimmed">
-                    Proposé par {suggestion.proposedBy} • {suggestion.createdAt}
+                    Proposé par {suggestion.proposedBy}
+                    {suggestion.createdAt ? ` • ${suggestion.createdAt}` : ""}
                   </Text>
 
                   {suggestion.message && (
@@ -79,34 +108,42 @@ export default function SuggestionsList({
                   )}
                 </div>
 
-                <Group
-                  gap="xs"
-                  wrap="nowrap"
-                  align="flex-start"
-                  style={{ flexShrink: 0 }}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "8px",
+                    flexShrink: 0,
+                    alignItems: "flex-start",
+                  }}
                 >
-                  {getStatusBadge(suggestion.status)}
+                  {renderStatusBadge(suggestion.status)}
 
                   {suggestion.status === "pending" && (
                     <>
-                      <ActionIcon
-                        variant="light"
-                        color="green"
-                        onClick={() => onSelectSuggestion(String(suggestion.id))}
-                      >
-                        <IconCheck size={16} />
-                      </ActionIcon>
+                      <Tooltip label="Préparer le traitement">
+                        <ActionIcon
+                          variant="light"
+                          color="green"
+                          onClick={() => onSelectSuggestion(String(suggestion.id))}
+                          aria-label={`Sélectionner la suggestion ${suggestion.title}`}
+                        >
+                          <IconCheck size={16} />
+                        </ActionIcon>
+                      </Tooltip>
 
-                      <ActionIcon
-                        variant="light"
-                        color="red"
-                        onClick={() => onRejectSuggestion(suggestion.id)}
-                      >
-                        <IconX size={16} />
-                      </ActionIcon>
+                      <Tooltip label="Refuser la suggestion">
+                        <ActionIcon
+                          variant="light"
+                          color="red"
+                          onClick={() => onRejectSuggestion(suggestion.id)}
+                          aria-label={`Refuser la suggestion ${suggestion.title}`}
+                        >
+                          <IconX size={16} />
+                        </ActionIcon>
+                      </Tooltip>
                     </>
                   )}
-                </Group>
+                </div>
               </Group>
 
               {index < suggestions.length - 1 && <Divider mt="md" />}

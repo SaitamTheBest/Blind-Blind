@@ -138,7 +138,7 @@ export default function DiscsTab() {
         setLoadingTracks(true);
         setErrorTracks(null);
 
-        const data = await fetchJson<Track[]>("/api/games/get-all-tracks");
+        const data = await fetchJson<Track[]>("/api/music-data/tracks");
         setTracks(Array.isArray(data) ? data : []);
       } catch (error) {
         setErrorTracks(error instanceof Error ? error.message : "Erreur inconnue.");
@@ -152,7 +152,7 @@ export default function DiscsTab() {
         setLoadingAlbums(true);
         setErrorAlbums(null);
 
-        const data = await fetchJson<Album[]>("/api/games/get-all-albums");
+        const data = await fetchJson<Album[]>("/api/music-data/albums");
         setAlbums(Array.isArray(data) ? data : []);
       } catch (error) {
         setErrorAlbums(error instanceof Error ? error.message : "Erreur inconnue.");
@@ -166,7 +166,7 @@ export default function DiscsTab() {
         setLoadingArtists(true);
         setErrorArtists(null);
 
-        const data = await fetchJson<Artist[]>("/api/games/get-all-artists");
+        const data = await fetchJson<Artist[]>("/api/music-data/artists");
         setArtists(Array.isArray(data) ? data : []);
       } catch (error) {
         setErrorArtists(error instanceof Error ? error.message : "Erreur inconnue.");
@@ -184,7 +184,7 @@ export default function DiscsTab() {
     <Paper withBorder radius="md" p="lg">
       <Group justify="space-between" align="center" mb="md">
         <Box>
-          <Title order={2}>Disque</Title>
+          <Title order={2}>Library</Title>
           <Text c="dimmed" mt={4}>
             Gestion et consultation des musiques, albums et artistes présents en base.
           </Text>

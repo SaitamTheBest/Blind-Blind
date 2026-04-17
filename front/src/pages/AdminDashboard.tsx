@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_URL } from "../config";
 import { Container, Paper, Text, Title } from "@mantine/core";
 import { NavbarMinimal, type AdminTab } from "../components/adminDashboard/NavbarMinimal";
 import AccountsTab from "../components/adminDashboard/Accounts/AccountsTab";
@@ -38,7 +39,7 @@ export default function AdminDashboard() {
         {activeTab === "dashboard" && <DashboardTab />}
         {activeTab === "accounts" && <AccountsTab />}
         {activeTab === "songs" && <MusicSuggestionsTab />}
-        {activeTab === "discs" && <DiscsTab />}
+        {activeTab === "library" && <DiscsTab />}
         {activeTab === "analytics" && <PlaceholderTab title="Analytics" />}
         {activeTab === "releases" && <PlaceholderTab title="Releases" />}
         {activeTab === "security" && <PlaceholderTab title="Security" />}

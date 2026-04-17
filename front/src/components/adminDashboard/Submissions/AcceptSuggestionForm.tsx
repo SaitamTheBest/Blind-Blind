@@ -1,70 +1,100 @@
-import { Button, Paper, Select, Stack, Text, TextInput, Title } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+import { Button, Paper, Stack, Text, Title } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 import type { SongSuggestion } from "./types";
 
 type AcceptSuggestionFormProps = {
   pendingSuggestions: SongSuggestion[];
   selectedSuggestionId: string | null;
-  setSelectedSuggestionId: (value: string | null) => void;
-  album: string;
-  setAlbum: (value: string) => void;
-  releaseDate: string | null;
-  setReleaseDate: (value: string | null) => void;
-  canAcceptSuggestion: boolean;
-  onAcceptSuggestion: () => void;
+  onOpenProcessing: () => void;
 };
 
 export default function AcceptSuggestionForm({
   pendingSuggestions,
   selectedSuggestionId,
-  setSelectedSuggestionId,
-  album,
-  setAlbum,
-  releaseDate,
-  setReleaseDate,
-  canAcceptSuggestion,
-  onAcceptSuggestion,
+  onOpenProcessing,
 }: AcceptSuggestionFormProps) {
+  const selectedSuggestion =
+    pendingSuggestions.find(
+      (suggestion) => String(suggestion.id) === selectedSuggestionId
+    ) ?? null;
+
   return (
-    <Paper withBorder radius="md" p="lg">
-      <Title order={3}>Accepter une proposition</Title>
-      <Text c="dimmed" size="sm" mt="xs" mb="md">
-        Sélectionne une suggestion en attente puis complète album et date.
-      </Text>
+    <Paper
+      withBorder
+      radius="md"
+      p="lg"
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 420,
+      }}
+    >
+      <Stack gap="md" style={{ flex: 1 }}>
+        <div>
+          <Title order={3}>Traiter une proposition</Title>
+          <Text c="dimmed" size="sm" mt="xs">
+            Sélectionne une proposition dans la liste, puis ouvre le formulaire
+            complet pour lier ou créer l’artiste, l’album, les featurings, les
+            paroles et la track.
+          </Text>
+        </div>
 
-      <Stack>
-        <Select
-          label="Proposition"
-          placeholder="Choisir une proposition"
-          data={pendingSuggestions.map((item) => ({
-            value: String(item.id),
-            label: `${item.title} — ${item.artist}`,
-          }))}
-          value={selectedSuggestionId}
-          onChange={setSelectedSuggestionId}
-        />
+        {selectedSuggestion ? (
+          <Paper withBorder radius="md" p="md">
+            <Stack gap={4}>
+              <Text fw={600}>{selectedSuggestion.title}</Text>
 
-        <TextInput
-          label="Album"
-          placeholder="Ex. Hybrid Theory"
-          value={album}
-          onChange={(event) => setAlbum(event.currentTarget.value)}
-        />
+              {selectedSuggestion.album && (
+                <Text size="sm" c="dimmed">
+                  Album : {selectedSuggestion.album}
+                </Text>
+              )}
 
-        <DateInput
-          label="Date de sortie"
-          placeholder="Sélectionner une date"
-          value={releaseDate}
-          onChange={setReleaseDate}
-        />
+              <Text size="sm" c="dimmed">
+                Artiste : {selectedSuggestion.artist}
+              </Text>
+
+              <Text size="xs" c="dimmed">
+                Proposé par {selectedSuggestion.proposedBy}
+                {selectedSuggestion.createdAt
+                  ? ` • ${selectedSuggestion.createdAt}`
+                  : ""}
+              </Text>
+
+              {selectedSuggestion.message && (
+                <Text size="sm" mt="xs">
+                  “{selectedSuggestion.message}”
+                </Text>
+              )}
+            </Stack>
+          </Paper>
+        ) : (
+          <Paper
+            withBorder
+            radius="md"
+            p="md"
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text size="sm" c="dimmed" ta="center">
+              Sélectionne une suggestion dans la liste de gauche pour commencer
+              le traitement.
+            </Text>
+          </Paper>
+        )}
 
         <Button
+          mt="auto"
           leftSection={<IconCheck size={16} />}
-          onClick={onAcceptSuggestion}
-          disabled={!canAcceptSuggestion}
+          onClick={onOpenProcessing}
+          disabled={!selectedSuggestion}
         >
-          Accepter et ajouter à la BDD
+          Ouvrir le formulaire complet
         </Button>
       </Stack>
     </Paper>
