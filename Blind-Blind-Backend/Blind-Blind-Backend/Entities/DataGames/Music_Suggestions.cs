@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataGames
 {
-    [Table("music_suggestions", Schema = "blindblindv1_datagames")]
+    [Table("music_suggestions", Schema = "blindblindv1_dataGames")]
     public class Music_Suggestions
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.Logs
 {
-    [Table("log_http", Schema = "blindblindv1_datalogs")]
+    [Table("log_http", Schema = "blindblindv1_dataAdmin")]
     public class HttpLog
     {
         [Key]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataUsers
 {
-    [Table("connection_blind_blind", Schema = "blindblindv1_datausers")]
+    [Table("connection_blind_blind", Schema = "blindblindv1_dataUsers")]
     public class ConnectionBlindBlind
     {
         [Key]

@@ -1,4 +1,5 @@
-﻿using Blind_Blind_Backend.Entities.DataGames;
+﻿using Blind_Blind_Backend.Entities.DataAdmin;
+using Blind_Blind_Backend.Entities.DataGames;
 using Blind_Blind_Backend.Entities.DataUsers;
 using Blind_Blind_Backend.Entities.Logs;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,8 @@ namespace Blind_Blind_Backend.Domain
 
         #region blindblindv1_datalogs
 
+        public DbSet<Announcement> Announcement => Set<Announcement>();
+        public DbSet<Announcement_Type> Announcement_Type => Set<Announcement_Type>();
         public DbSet<HttpLog> HttpLog => Set<HttpLog>();
         
         #endregion

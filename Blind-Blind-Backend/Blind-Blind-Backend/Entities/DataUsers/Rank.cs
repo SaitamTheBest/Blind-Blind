@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataUsers
 {
-    [Table("rank", Schema = "blindblindv1_datausers")]
+    [Table("rank", Schema = "blindblindv1_dataUsers")]
     public class Rank
     {
         [Key]

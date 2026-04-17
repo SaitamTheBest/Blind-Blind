@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataUsers
 {
-    [Table("users", Schema = "blindblindv1_datausers")]
+    [Table("users", Schema = "blindblindv1_dataUsers")]
     public class User
     {
         [Key]

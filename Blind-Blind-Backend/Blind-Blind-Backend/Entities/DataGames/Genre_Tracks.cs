@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataGames
 {
-    [Table("genre_tracks", Schema = "blindblindv1_datagames")]
+    [Table("genre_tracks", Schema = "blindblindv1_dataGames")]
     public class Genre_Tracks
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

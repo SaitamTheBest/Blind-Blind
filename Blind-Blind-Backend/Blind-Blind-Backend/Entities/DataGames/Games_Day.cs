@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataGames {
-    [Table("games_day", Schema = "blindblindv1_datagames")]
+    [Table("games_day", Schema = "blindblindv1_dataGames")]
     public class Games_Day
     {
         [Key]

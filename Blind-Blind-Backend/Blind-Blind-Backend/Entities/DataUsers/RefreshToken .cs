@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataUsers
 {
-    [Table("refresh_tokens", Schema = "blindblindv1_datausers")]
+    [Table("refresh_tokens", Schema = "blindblindv1_dataUsers")]
     public class RefreshToken
     {
         [Key]
