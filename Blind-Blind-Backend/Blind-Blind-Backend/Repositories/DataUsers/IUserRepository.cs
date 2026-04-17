@@ -12,7 +12,9 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
         Task AddConnectionBlindBlindAsync(ConnectionBlindBlind connectionBlindBlind);
         Task UpdateConnectionBlindBlindAsync(ConnectionBlindBlind connectionBlindBlind);
         Task DeleteConnectionBlindBlindAsync(string id);
-
-
+        Task<int> GetTotalUsersAsync();
+        Task<int> GetTotalRanksAsync();
+        Task<int> GetTotalRolesAsync();
+        Task<int> GetTotalConnectionsAsync();
     }
 }

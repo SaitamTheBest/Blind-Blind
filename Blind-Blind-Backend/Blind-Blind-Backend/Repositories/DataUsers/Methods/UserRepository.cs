@@ -71,5 +71,25 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<int> GetTotalUsersAsync()
+        {
+            return await _context.User.CountAsync();
+        }
+
+        public async Task<int> GetTotalRanksAsync()
+        {
+            return await _context.Rank.CountAsync();
+        }
+
+        public async Task<int> GetTotalRolesAsync()
+        {
+            return await _context.Roles.CountAsync();
+        }
+
+        public async Task<int> GetTotalConnectionsAsync()
+        {
+            return await _context.ConnectionBlindBlind.CountAsync();
+        }
     }
 }
