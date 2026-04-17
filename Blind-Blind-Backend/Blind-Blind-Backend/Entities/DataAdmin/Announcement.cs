@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blind_Blind_Backend.Entities.DataAdmin
 {
-    [Table("announcement", Schema = "blindblindv1_dataadmin")]
+    [Table("announcement", Schema = "blindblindv1_dataAdmin")]
     public class Announcement
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

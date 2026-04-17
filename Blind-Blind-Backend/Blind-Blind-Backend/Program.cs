@@ -2,8 +2,10 @@
 using Blind_Blind_Backend.Domain;
 using Blind_Blind_Backend.DTOs.General;
 using Blind_Blind_Backend.Middlewares;
+using Blind_Blind_Backend.Repositories.DataAdmin;
 using Blind_Blind_Backend.Repositories.DataGames;
 using Blind_Blind_Backend.Repositories.DataUsers;
+using Blind_Blind_Backend.Services.DataAdmin;
 using Blind_Blind_Backend.Services.DataGames;
 using Blind_Blind_Backend.Services.DataUsers;
 using Blind_Blind_Backend.Services.General;
@@ -118,6 +120,12 @@ builder.Services.Scan(scan => scan
     .AsImplementedInterfaces()
     .WithScopedLifetime());
 
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IAnnouncementService>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
 // Repositories
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IUserRepository>()
@@ -145,6 +153,12 @@ builder.Services.Scan(scan => scan
 
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IMusicSuggestionsRepository>()
+    .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Repository")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IAnnouncementRepository>()
     .AddClasses(classes => classes.Where(c => c.Name.EndsWith("Repository")))
     .AsImplementedInterfaces()
     .WithScopedLifetime());
