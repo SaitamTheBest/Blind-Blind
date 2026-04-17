@@ -36,6 +36,20 @@ namespace Blind_Blind_Backend.Controllers
         }
 
         /// <summary>
+        /// Retrieves all users available in the system.
+        /// </summary>
+        /// <remarks>This endpoint is only accessible to administrators.</remarks>
+        /// <returns>An <see cref="IActionResult"/> containing a list of <see cref="UserDTO"/> objects representing all users.</returns>
+        [Authorize(Policy = "AdminOnly")]
+        [HttpGet("all")]
+        [ProducesResponseType(typeof(List<UserDTO>), 200)]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userService.GetAllAsync();
+            return Ok(users);
+        }
+
+        /// <summary>
         /// Creates a new user with the specified information.
         /// </summary>
         /// <param name="userDTO">The user data to create. Must not be null.</param>

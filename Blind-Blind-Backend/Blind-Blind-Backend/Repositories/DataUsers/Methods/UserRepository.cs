@@ -24,6 +24,8 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
         public async Task<IReadOnlyList<User>> GetAllAsync()
         {
             return await _context.User
+                .Include(u => u.Rank)
+                .Include(u => u.Roles)
                 .AsNoTracking()
                 .ToListAsync();
         }

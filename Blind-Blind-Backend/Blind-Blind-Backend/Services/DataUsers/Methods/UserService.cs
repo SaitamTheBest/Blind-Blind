@@ -40,6 +40,39 @@ public class UserService : IUserService
         };
     }
 
+    public async Task<List<UserDTO>> GetAllAsync()
+    {
+        var users = await _userRepository.GetAllAsync();
+
+        if (users == null || users.Count == 0)
+            return new List<UserDTO>();
+
+        var userDTOs = new List<UserDTO>();
+        foreach (var user in users)
+        {
+            var userDTO = new UserDTO
+            {
+                Id_User = user.Id_User,
+                Username = user.Username,
+                Avatar = user.Avatar != null ? Convert.ToBase64String(user.Avatar) : null,
+                Elo = user.Elo,
+                Rank = user.Rank != null ? new RankDTO
+                {
+                    Id_Rank = user.Rank.Id_Rank,
+                    Rank_Name = user.Rank.Rank_Name,
+                } : null,
+                Roles = user.Roles != null ? new RolesDTO
+                {
+                    Id_Roles = user.Roles.Id_Roles,
+                    Role_Name = user.Roles.Role_Name,
+                } : null
+            };
+            userDTOs.Add(userDTO);
+        }
+
+        return userDTOs;
+    }
+
     public async Task<User> CreateUserAsync(UserCreateDTO userDTO)
     {
         var newUser = new User

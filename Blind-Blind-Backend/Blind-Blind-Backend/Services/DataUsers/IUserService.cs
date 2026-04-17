@@ -6,6 +6,7 @@ namespace Blind_Blind_Backend.Services.DataUsers
     public interface IUserService
     {
         Task<UserDTO> GetByIdAsync(string id);
+        Task<List<UserDTO>> GetAllAsync();
         Task<User> CreateUserAsync(UserCreateDTO userDTO);
         Task UpdateUserAsync(UserUpdateDTO user);
         Task DeleteUserAsync(string id);
