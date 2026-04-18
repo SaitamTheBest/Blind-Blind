@@ -66,13 +66,18 @@ type ApiAlbum = {
 type ApiGenre = {
   id_genre_tracks?: string;
   Id_Genre_Tracks?: string;
+  id_Genre?: string | number;
+  Id_Genre?: string | number;
   genre?: string;
   Genre?: string;
+  libelle?: string;
+  Libelle?: string;
 };
 
 type ApiTypeArtist = {
-  id_type_artists?: string;
-  Id_Type_Artists?: string;
+  id_type_artists?: string | number;
+  Id_Type_Artists?: string | number;
+  id_Type_Artists?: string | number;
   type?: string;
   Type?: string;
 };
@@ -149,16 +154,43 @@ function mapApiAlbum(item: ApiAlbum): AlbumOption | null {
 }
 
 function mapApiGenre(item: ApiGenre): GenreOption | null {
-  const value = item.id_genre_tracks ?? item.Id_Genre_Tracks ?? "";
-  const label = item.genre ?? item.Genre ?? "";
+  const rawValue =
+    item.id_genre_tracks ??
+    item.Id_Genre_Tracks ??
+    item.id_Genre ??
+    item.Id_Genre;
+
+  const value =
+    rawValue !== undefined && rawValue !== null ? String(rawValue) : "";
+
+  const label =
+    item.genre ??
+    item.Genre ??
+    item.libelle ??
+    item.Libelle ??
+    "";
+
   if (!value || !label) return null;
+
   return { value, label };
 }
 
 function mapApiTypeArtist(item: ApiTypeArtist): TypeArtistOption | null {
-  const value = item.id_type_artists ?? item.Id_Type_Artists ?? "";
-  const label = item.type ?? item.Type ?? "";
+  const rawValue =
+    item.id_type_artists ??
+    item.Id_Type_Artists ??
+    item.id_Type_Artists;
+
+  const value =
+    rawValue !== undefined && rawValue !== null ? String(rawValue) : "";
+
+  const label =
+    item.type ??
+    item.Type ??
+    "";
+
   if (!value || !label) return null;
+
   return { value, label };
 }
 
