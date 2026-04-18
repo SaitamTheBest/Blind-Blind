@@ -10,6 +10,8 @@ namespace Blind_Blind_Backend.DTOs.DataUsers
         public int Elo { get; set; }
         public RankDTO? Rank { get; set; }
         public RolesDTO? Roles { get; set; }
+        public DateTime Created_At { get; set; }
+        public DateTime? Updated_At { get; set; }
     }
 
     public class UserCreateDTO

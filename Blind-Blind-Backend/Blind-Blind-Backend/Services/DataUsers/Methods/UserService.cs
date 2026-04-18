@@ -36,7 +36,9 @@ public class UserService : IUserService
             {
                 Id_Roles = user.Roles.Id_Roles,
                 Role_Name = user.Roles.Role_Name,
-            } : null
+            } : null,
+            Created_At = user.Created_At,
+            Updated_At = user.Updated_At
         };
     }
 
@@ -65,7 +67,9 @@ public class UserService : IUserService
                 {
                     Id_Roles = user.Roles.Id_Roles,
                     Role_Name = user.Roles.Role_Name,
-                } : null
+                } : null,
+                Created_At = user.Created_At,
+                Updated_At = user.Updated_At
             };
             userDTOs.Add(userDTO);
         }
