@@ -16,7 +16,6 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import type {
   AlbumOption,
@@ -139,21 +138,21 @@ function ProcessingArtistFields({
                 nothingFoundMessage="Aucun type trouvé"
               />
 
-              <DateInput
+              <TextInput
                 label="Date de début"
-                placeholder="Sélectionner une date"
-                value={toDateValue(newArtist.startDate)}
-                onChange={(value) =>
-                  onNewArtistChange("startDate", toIsoDate(value))
+                type="date"
+                value={newArtist.startDate ?? ""}
+                onChange={(event) =>
+                  onNewArtistChange("startDate", event.currentTarget.value || null)
                 }
               />
 
-              <DateInput
+              <TextInput
                 label="Dernière sortie"
-                placeholder="Sélectionner une date"
-                value={toDateValue(newArtist.lastRelease)}
-                onChange={(value) =>
-                  onNewArtistChange("lastRelease", toIsoDate(value))
+                type="date"
+                value={newArtist.lastRelease ?? ""}
+                onChange={(event) =>
+                  onNewArtistChange("lastRelease", event.currentTarget.value || null)
                 }
               />
 
@@ -271,21 +270,21 @@ function FeaturingCard({
                 nothingFoundMessage="Aucun type trouvé"
               />
 
-              <DateInput
+              <TextInput
                 label="Date de début"
-                placeholder="Sélectionner une date"
-                value={toDateValue(featuring.newArtist.startDate)}
-                onChange={(value) =>
-                  onNewArtistChange("startDate", toIsoDate(value))
+                type="date"
+                value={featuring.newArtist.startDate ?? ""}
+                onChange={(event) =>
+                  onNewArtistChange("startDate", event.currentTarget.value || null)
                 }
               />
 
-              <DateInput
+              <TextInput
                 label="Dernière sortie"
-                placeholder="Sélectionner une date"
-                value={toDateValue(featuring.newArtist.lastRelease)}
-                onChange={(value) =>
-                  onNewArtistChange("lastRelease", toIsoDate(value))
+                type="date"
+                value={featuring.newArtist.lastRelease ?? ""}
+                onChange={(event) =>
+                  onNewArtistChange("lastRelease", event.currentTarget.value || null)
                 }
               />
 
