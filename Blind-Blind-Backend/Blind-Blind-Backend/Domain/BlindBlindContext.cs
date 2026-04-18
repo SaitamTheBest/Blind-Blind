@@ -57,6 +57,55 @@ namespace Blind_Blind_Backend.Domain
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
                 );
 
+            modelBuilder.Entity<User>()
+                .Property(e => e.Updated_At)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
+                );
+
+            modelBuilder.Entity<Games_Day>()
+                .Property(e => e.Date_Games)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Tracks>()
+                .Property(e => e.Time)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Announcement>()
+                .Property(e => e.Created_At)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Announcement>()
+                .Property(e => e.Updated_At)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
+                );
+
+            modelBuilder.Entity<Announcement>()
+                .Property(e => e.Publication_Date)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
+                );
+
+            modelBuilder.Entity<HttpLog>()
+                .Property(e => e.CreatedAt)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
             modelBuilder.Entity<Featurings>()
                 .HasKey(f => new { f.Id_Tracks, f.Id_Artists });
 
