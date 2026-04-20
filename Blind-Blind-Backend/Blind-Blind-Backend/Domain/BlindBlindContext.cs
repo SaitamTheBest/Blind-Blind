@@ -106,6 +106,48 @@ namespace Blind_Blind_Backend.Domain
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
                 );
 
+            modelBuilder.Entity<Artists>()
+                .Property(e => e.Start_Date)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Artists>()
+                .Property(e => e.Last_Release)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Music_Suggestions>()
+                .Property(e => e.Release_Date)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
+                );
+
+            modelBuilder.Entity<Music_Suggestions>()
+                .Property(e => e.Reviewed_At)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
+                );
+
+            modelBuilder.Entity<Music_Suggestions>()
+                .Property(e => e.Created_At)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Music_Suggestions>()
+                .Property(e => e.Updated_At)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
             modelBuilder.Entity<Featurings>()
                 .HasKey(f => new { f.Id_Tracks, f.Id_Artists });
 
