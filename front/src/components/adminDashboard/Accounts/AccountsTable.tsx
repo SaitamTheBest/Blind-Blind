@@ -1,67 +1,78 @@
+import { useState } from "react";
 import {
+  Avatar,
   Badge,
-  Button,
+  Box,
+  Collapse,
   Group,
-  Modal,
   Paper,
   Select,
-  Table,
+  Stack,
   Text,
   TextInput,
   Title,
-} from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+} from "@mantine/core";
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconSearch,
+} from "@tabler/icons-react";
 
-export type PlayerStatus = 'active' | 'inactive' | 'banned';
+export type PlayerStatus = "active" | "inactive" | "banned" | "unknown";
 
 export type Player = {
-  id: number;
+  id: string;
   pseudo: string;
-  email: string;
+  avatar: string;
+  roleName: string;
+  elo: number;
+  rankName: string;
   status: PlayerStatus;
   createdAt: string;
-  lastSessionAt: string;
+  updatedAt: string;
 };
 
 type AccountsTableProps = {
   players: Player[];
   search: string;
-  statusFilter: 'all' | PlayerStatus;
-  playerToToggle: Player | null;
+  statusFilter: "all" | PlayerStatus;
   totalPlayers: number;
   activePlayers: number;
   inactivePlayers: number;
   bannedPlayers: number;
+  loading?: boolean;
   onSearchChange: (value: string) => void;
-  onStatusFilterChange: (value: 'all' | PlayerStatus) => void;
-  onOpenToggleModal: (player: Player) => void;
-  onCloseToggleModal: () => void;
-  onConfirmToggleBan: () => void;
+  onStatusFilterChange: (value: "all" | PlayerStatus) => void;
 };
+
+function formatElo(value: number) {
+  if (!Number.isFinite(value)) return "—";
+  return `${value}`;
+}
 
 function getStatusLabel(status: PlayerStatus) {
   switch (status) {
-    case 'active':
-      return 'Actif';
-    case 'inactive':
-      return 'Inactif';
-    case 'banned':
-      return 'Banni';
+    case "active":
+      return "Actif";
+    case "inactive":
+      return "Inactif";
+    case "banned":
+      return "Banni";
     default:
-      return status;
+      return "Inconnu";
   }
 }
 
 function getStatusColor(status: PlayerStatus) {
   switch (status) {
-    case 'active':
-      return 'teal';
-    case 'inactive':
-      return 'yellow';
-    case 'banned':
-      return 'red';
+    case "active":
+      return "teal";
+    case "inactive":
+      return "yellow";
+    case "banned":
+      return "red";
     default:
-      return 'gray';
+      return "gray";
   }
 }
 
@@ -69,170 +80,207 @@ export default function AccountsTable({
   players,
   search,
   statusFilter,
-  playerToToggle,
   totalPlayers,
   activePlayers,
   inactivePlayers,
   bannedPlayers,
+  loading = false,
   onSearchChange,
   onStatusFilterChange,
-  onOpenToggleModal,
-  onCloseToggleModal,
-  onConfirmToggleBan,
 }: AccountsTableProps) {
-  const rows = players.map((player) => (
-    <Table.Tr key={player.id}>
-      <Table.Td style={{ color: '#000', backgroundColor: '#fff' }}>
-        {player.pseudo}
-      </Table.Td>
-
-      <Table.Td style={{ color: '#000', backgroundColor: '#fff' }}>
-        {player.email}
-      </Table.Td>
-
-      <Table.Td style={{ color: '#000', backgroundColor: '#fff' }}>
-        {player.createdAt}
-      </Table.Td>
-
-      <Table.Td style={{ color: '#000', backgroundColor: '#fff' }}>
-        {player.lastSessionAt}
-      </Table.Td>
-
-      <Table.Td style={{ color: '#000', backgroundColor: '#fff' }}>
-        <Badge color={getStatusColor(player.status)} variant="light">
-          {getStatusLabel(player.status)}
-        </Badge>
-      </Table.Td>
-
-      <Table.Td style={{ color: '#000', backgroundColor: '#fff' }}>
-        <Button
-          size="xs"
-          color={player.status === 'banned' ? 'blue' : 'red'}
-          variant="light"
-          onClick={() => onOpenToggleModal(player)}
-        >
-          {player.status === 'banned' ? 'Débannir' : 'Ban'}
-        </Button>
-      </Table.Td>
-    </Table.Tr>
-  ));
+  const [openedRowId, setOpenedRowId] = useState<string | null>(null);
 
   return (
-    <>
-      <Modal
-        opened={!!playerToToggle}
-        onClose={onCloseToggleModal}
-        title={
-          playerToToggle?.status === 'banned'
-            ? 'Confirmer le débannissement'
-            : 'Confirmer le bannissement'
-        }
-        centered
-      >
-        <Text size="sm" c="dimmed">
-          {playerToToggle?.status === 'banned'
-            ? `Voulez-vous vraiment débannir ${playerToToggle?.pseudo} ?`
-            : `Voulez-vous vraiment bannir ${playerToToggle?.pseudo} ?`}
+    <Paper withBorder radius="sm" p="md" bg="white">
+      <Group justify="space-between" align="end" mb="sm">
+        <div>
+          <Title order={2} c="black">
+            Gestion des comptes
+          </Title>
+          <Text c="dimmed" size="sm" mt={2}>
+            Clique sur un utilisateur pour afficher ses infos supplémentaires.
+          </Text>
+        </div>
+
+        <Text size="sm" fw={700} c="blue">
+          {players.length} résultat{players.length > 1 ? "s" : ""}
         </Text>
+      </Group>
 
-        <Group justify="flex-end" mt="lg">
-          <Button variant="default" onClick={onCloseToggleModal}>
-            Annuler
-          </Button>
+      <Group grow mb="sm">
+        <TextInput
+          radius="sm"
+          placeholder="Rechercher par pseudo"
+          value={search}
+          onChange={(event) => onSearchChange(event.currentTarget.value)}
+          leftSection={<IconSearch size={16} />}
+        />
 
-          <Button
-            color={playerToToggle?.status === 'banned' ? 'blue' : 'red'}
-            onClick={onConfirmToggleBan}
-          >
-            {playerToToggle?.status === 'banned' ? 'Débannir' : 'Bannir'}
-          </Button>
-        </Group>
-      </Modal>
+        <Select
+          radius="sm"
+          data={[
+            { value: "all", label: `Tous les statuts (${totalPlayers})` },
+            { value: "active", label: `Actifs (${activePlayers})` },
+            { value: "inactive", label: `Inactifs (${inactivePlayers})` },
+            { value: "banned", label: `Bannis (${bannedPlayers})` },
+          ]}
+          value={statusFilter}
+          onChange={(value) =>
+            onStatusFilterChange((value as "all" | PlayerStatus) || "all")
+          }
+        />
+      </Group>
 
-      <Paper withBorder radius="md" p="md" style={{ backgroundColor: '#fff' }}>
-        <Group justify="space-between" mb="md">
-          <div>
-            <Title order={3}>Accounts</Title>
-            <Text c="dimmed" size="sm">
-              Liste des joueurs et gestion des comptes
-            </Text>
-          </div>
-        </Group>
-
-        <Group grow mb="md">
-          <TextInput
-            placeholder="Rechercher par pseudo ou email"
-            value={search}
-            onChange={(event) => onSearchChange(event.currentTarget.value)}
-            leftSection={<IconSearch size={16} />}
-          />
-
-          <Select
-            data={[
-              { value: 'all', label: `Tous les statuts (${totalPlayers})` },
-              { value: 'active', label: `Actifs (${activePlayers})` },
-              { value: 'inactive', label: `Inactifs (${inactivePlayers})` },
-              { value: 'banned', label: `Bannis (${bannedPlayers})` },
-            ]}
-            value={statusFilter}
-            onChange={(value) =>
-              onStatusFilterChange(
-                (value as 'all' | PlayerStatus) || 'all'
-              )
-            }
-          />
-        </Group>
-
-        <Table
-          striped
-          highlightOnHover
-          withTableBorder
-          withColumnBorders
-          styles={{
-            table: { backgroundColor: '#fff' },
-            th: {
-              color: '#000',
-              backgroundColor: '#fff',
-              fontWeight: 600,
-            },
-            td: {
-              color: '#000',
-              backgroundColor: '#fff',
-            },
+      <Paper withBorder radius="sm" style={{ overflow: "hidden" }}>
+        <Box
+          px="sm"
+          py={10}
+          style={{
+            borderBottom: "1px solid #e9ecef",
+            background: "#f8f9fa",
           }}
         >
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Pseudo</Table.Th>
-              <Table.Th>Email</Table.Th>
-              <Table.Th>Créé le</Table.Th>
-              <Table.Th>Dernière session</Table.Th>
-              <Table.Th>Statut</Table.Th>
-              <Table.Th>Action</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
+          <Text fw={700} size="sm" c="black">
+            Utilisateur
+          </Text>
+        </Box>
 
-          <Table.Tbody>
-            {rows.length > 0 ? (
-              rows
-            ) : (
-              <Table.Tr>
-                <Table.Td
-                  colSpan={6}
+        {players.length === 0 ? (
+          <Box px="sm" py="md">
+            <Text size="sm" c="dimmed" ta="center">
+              {loading ? "Chargement des utilisateurs..." : "Aucun utilisateur trouvé."}
+            </Text>
+          </Box>
+        ) : (
+          <Stack gap={0}>
+            {players.map((player) => {
+              const isOpened = openedRowId === player.id;
+
+              return (
+                <Box
+                  key={player.id}
                   style={{
-                    textAlign: 'center',
-                    color: '#000',
-                    backgroundColor: '#fff',
-                    padding: '20px',
+                    borderBottom: "1px solid #e9ecef",
+                    background: "#fff",
                   }}
                 >
-                  Aucun joueur trouvé
-                </Table.Td>
-              </Table.Tr>
-            )}
-          </Table.Tbody>
-        </Table>
+                  <Group
+                    justify="space-between"
+                    align="center"
+                    wrap="nowrap"
+                    px="sm"
+                    py={10}
+                    style={{ cursor: "pointer" }}
+                    onClick={() =>
+                      setOpenedRowId((current) =>
+                        current === player.id ? null : player.id
+                      )
+                    }
+                  >
+                    <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                      <Avatar
+                        src={player.avatar || undefined}
+                        radius="sm"
+                        size={34}
+                        color="gray"
+                      >
+                        {player.pseudo?.charAt(0)?.toUpperCase() || "U"}
+                      </Avatar>
+
+                      <Box style={{ minWidth: 0 }}>
+                        <Text
+                          fw={600}
+                          size="sm"
+                          c="black"
+                          style={{
+                            lineHeight: 1.1,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {player.pseudo}
+                        </Text>
+
+                        <Text
+                          size="xs"
+                          c="dimmed"
+                          style={{
+                            lineHeight: 1.1,
+                            marginTop: 3,
+                          }}
+                        >
+                          {player.roleName || "Aucun rôle"}
+                        </Text>
+                      </Box>
+                    </Group>
+
+                    <Group gap="xs" align="center" wrap="nowrap">
+                      <Badge
+                        color={getStatusColor(player.status)}
+                        variant="light"
+                        radius="sm"
+                        size="sm"
+                      >
+                        {getStatusLabel(player.status)}
+                      </Badge>
+
+                      <Box c="dimmed">
+                        {isOpened ? (
+                          <IconChevronUp size={16} />
+                        ) : (
+                          <IconChevronDown size={16} />
+                        )}
+                      </Box>
+                    </Group>
+                  </Group>
+
+                  <Collapse in={isOpened}>
+                    <Box
+                      px="sm"
+                      py={8}
+                      style={{
+                        background: "#f8f9fa",
+                        borderTop: "1px solid #edf0f2",
+                      }}
+                    >
+                      <Group gap="lg" wrap="wrap">
+                        <Text size="sm" c="black">
+                          <Text span fw={600}>
+                            Elo :
+                          </Text>{" "}
+                          {formatElo(player.elo)}
+                        </Text>
+
+                        <Text size="sm" c="black">
+                          <Text span fw={600}>
+                            Rank :
+                          </Text>{" "}
+                          {player.rankName || "Non classé"}
+                        </Text>
+
+                        <Text size="sm" c="black">
+                          <Text span fw={600}>
+                            Créé le :
+                          </Text>{" "}
+                          {player.createdAt || "—"}
+                        </Text>
+
+                        <Text size="sm" c="black">
+                          <Text span fw={600}>
+                            Dernière mise à jour :
+                          </Text>{" "}
+                          {player.updatedAt || "—"}
+                        </Text>
+                      </Group>
+                    </Box>
+                  </Collapse>
+                </Box>
+              );
+            })}
+          </Stack>
+        )}
       </Paper>
-    </>
+    </Paper>
   );
 }
