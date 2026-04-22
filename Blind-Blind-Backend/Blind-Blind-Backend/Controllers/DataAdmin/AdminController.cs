@@ -8,7 +8,7 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
 {
     [ApiController]
     [Route("api/admin")]
-    [Authorize]
+    [Authorize(Policy = "AdminOnly")]
     public class AdminController : ControllerBase
     {
         private readonly IAnnouncementService _announcementService;
@@ -102,7 +102,6 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
         /// <param name="announcementUpdateDTO">Détails mis à jour de l'annonce</param>
         /// <returns>Annonce mise à jour</returns>
         [HttpPut("announcements/{id}")]
-        [Authorize(Policy = "AdminOnly")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<AnnouncementDTO>> UpdateAnnouncement(int id, [FromForm] AnnouncementUpdateDTO announcementUpdateDTO)
         {
@@ -132,7 +131,6 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
         /// <param name="id">ID de l'annonce à supprimer</param>
         /// <returns>Pas de contenu</returns>
         [HttpDelete("announcements/{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteAnnouncement(int id)
         {
             try
@@ -203,7 +201,6 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
         /// <param name="announcementTypeCreateDTO">Détails du type d'annonce à créer</param>
         /// <returns>Type d'annonce créé</returns>
         [HttpPost("announcement-types")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Announcement_TypeDTO>> CreateAnnouncementType([FromBody] Announcement_TypeCreateDTO announcementTypeCreateDTO)
         {
             try
@@ -229,7 +226,6 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
         /// <param name="announcementTypeUpdateDTO">Détails mis à jour du type d'annonce</param>
         /// <returns>Type d'annonce mis à jour</returns>
         [HttpPut("announcement-types/{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Announcement_TypeDTO>> UpdateAnnouncementType(int id, [FromBody] Announcement_TypeUpdateDTO announcementTypeUpdateDTO)
         {
             try
