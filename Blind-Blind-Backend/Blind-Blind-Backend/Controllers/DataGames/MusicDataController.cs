@@ -64,9 +64,10 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Tags("Albums")]
         [HttpPost("album")]
         [Authorize(Policy = "AdminOnly")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateAlbum([FromBody] AlbumCreateDTO albumCreateDTO)
+        public async Task<IActionResult> CreateAlbum([FromForm] AlbumCreateDTO albumCreateDTO)
         {
             await _service.CreateAlbum(albumCreateDTO);
             return Ok(new { message = "Album créé avec succès." });
@@ -85,9 +86,10 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Tags("Albums")]
         [HttpPut("album")]
         [Authorize(Policy = "AdminOnly")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateAlbum([FromBody] AlbumUpdateDTO albumUpdateDTO)
+        public async Task<IActionResult> UpdateAlbum([FromForm] AlbumUpdateDTO albumUpdateDTO)
         {
             try
             {
@@ -177,9 +179,10 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Tags("Artists")]
         [HttpPost("artist")]
         [Authorize(Policy = "AdminOnly")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateArtist([FromBody] ArtistCreateDTO artistCreateDTO)
+        public async Task<IActionResult> CreateArtist([FromForm] ArtistCreateDTO artistCreateDTO)
         {
             await _service.CreateArtist(artistCreateDTO);
             return Ok(new { message = "Artiste créé avec succès." });
@@ -197,9 +200,10 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Tags("Artists")]
         [HttpPut("artist")]
         [Authorize(Policy = "AdminOnly")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateArtist([FromBody] ArtistUpdateDTO artistUpdateDTO)
+        public async Task<IActionResult> UpdateArtist([FromForm] ArtistUpdateDTO artistUpdateDTO)
         {
             try
             {

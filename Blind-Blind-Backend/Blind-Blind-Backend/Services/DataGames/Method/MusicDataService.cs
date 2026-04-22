@@ -1,6 +1,7 @@
 ﻿using Blind_Blind_Backend.DTOs.DataGames;
 using Blind_Blind_Backend.Entities.DataGames;
 using Blind_Blind_Backend.Repositories.DataGames;
+using Microsoft.AspNetCore.Http;
 
 namespace Blind_Blind_Backend.Services.DataGames.Method
 {
@@ -10,6 +11,18 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         public MusicDataService(IMusicDataRepository repository)
         {
             _repository = repository;
+        }
+
+        private async Task<byte[]?> ConvertFormFileToBytes(IFormFile? file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         #region GET
@@ -157,37 +170,43 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #endregion
 
         #region CREATE
-        public Task CreateAlbum(AlbumCreateDTO albumCreateDTO)
+        public async Task CreateAlbum(AlbumCreateDTO albumCreateDTO)
         {
+            var albumId = Guid.NewGuid().ToString();
+            byte[]? imageBytes = await ConvertFormFileToBytes(albumCreateDTO.Image_Album);
+
             var album = new Album
             {
-                Id_Album = Guid.NewGuid().ToString(),
+                Id_Album = albumId,
                 Id_Artists = albumCreateDTO.Artist,
                 Name = albumCreateDTO.Name,
                 Release_Year = albumCreateDTO.Release_Year,
                 Nb_Stream = albumCreateDTO.Nb_Stream,
-                Image_Album = albumCreateDTO.Image_Album,
+                Image_Album = imageBytes,
                 Is_Single = albumCreateDTO.Is_Single
             };
 
-            return _repository.CreateAlbum(album);
+            await _repository.CreateAlbum(album);
         }
 
-        public Task CreateArtist(ArtistCreateDTO artistCreateDTO)
+        public async Task CreateArtist(ArtistCreateDTO artistCreateDTO)
         {
+            var artistId = Guid.NewGuid().ToString();
+            byte[]? imageBytes = await ConvertFormFileToBytes(artistCreateDTO.Image_Artists);
+
             var artist = new Artists
             {
-                Id_Artists = Guid.NewGuid().ToString(),
+                Id_Artists = artistId,
                 Name = artistCreateDTO.Name,
                 Start_Date = artistCreateDTO.Start_Date,
                 Last_Release = artistCreateDTO.Last_Release,
                 Id_Type_Artists = artistCreateDTO.Id_Type_Artists,
                 Nationality = artistCreateDTO.Nationality,
                 Nb_Followers = artistCreateDTO.Nb_Followers,
-                Image_Artists = artistCreateDTO.Image_Artists
+                Image_Artists = imageBytes
             };
 
-            return _repository.CreateArtist(artist);
+            await _repository.CreateArtist(artist);
         }
 
         public async Task CreateTrack(TrackCreateDTO trackCreateDTO)
@@ -262,10 +281,12 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
 
         #region UPDATE
-        public Task UpdateAlbum(AlbumUpdateDTO albumUpdateDTO)
+        public async Task UpdateAlbum(AlbumUpdateDTO albumUpdateDTO)
         {
             if (string.IsNullOrEmpty(albumUpdateDTO.Id_Album))
                 throw new ArgumentException("L'ID de l'album est requis pour la mise à jour.");
+
+            byte[]? imageBytes = await ConvertFormFileToBytes(albumUpdateDTO.Image_Album);
 
             var album = new Album
             {
@@ -274,17 +295,19 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Name = albumUpdateDTO.Name,
                 Release_Year = albumUpdateDTO.Release_Year,
                 Nb_Stream = albumUpdateDTO.Nb_Stream,
-                Image_Album = albumUpdateDTO.Image_Album,
+                Image_Album = imageBytes,
                 Is_Single = albumUpdateDTO.Is_Single
             };
 
-            return _repository.UpdateAlbum(album);
+            await _repository.UpdateAlbum(album);
         }
 
-        public Task UpdateArtist(ArtistUpdateDTO artistUpdateDTO)
+        public async Task UpdateArtist(ArtistUpdateDTO artistUpdateDTO)
         {
             if (string.IsNullOrEmpty(artistUpdateDTO.Id_Artists))
                 throw new ArgumentException("L'ID de l'artiste est requis pour la mise à jour.");
+
+            byte[]? imageBytes = await ConvertFormFileToBytes(artistUpdateDTO.Image_Artists);
 
             var artist = new Artists
             {
@@ -295,10 +318,10 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Id_Type_Artists = artistUpdateDTO.Id_Type_Artists,
                 Nationality = artistUpdateDTO.Nationality,
                 Nb_Followers = artistUpdateDTO.Nb_Followers,
-                Image_Artists = artistUpdateDTO.Image_Artists
+                Image_Artists = imageBytes
             };
 
-            return _repository.UpdateArtist(artist);
+            await _repository.UpdateArtist(artist);
         }
 
         public async Task UpdateTrack(TrackUpdateDTO trackUpdateDTO)
@@ -440,7 +463,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Last_Release = entity.Last_Release,
                 Nationality = entity.Nationality,
                 Nb_Followers = entity.Nb_Followers,
-                Image_Artists = entity.Image_Artists,
+                Image_Artists = entity.Image_Artists != null ? Convert.ToBase64String(entity.Image_Artists) : null,
                 Type_Artists = MapTypeArtist(entity.Type_Artists)
             };
         }
@@ -468,7 +491,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Name = entity.Name,
                 Release_Year = entity.Release_Year,
                 Nb_Stream = entity.Nb_Stream,
-                Image_Album = entity.Image_Album,
+                Image_Album = entity.Image_Album != null ? Convert.ToBase64String(entity.Image_Album) : null,
                 Is_Single = entity.Is_Single,
                 Artist = MapArtist(entity.Artists)
             };

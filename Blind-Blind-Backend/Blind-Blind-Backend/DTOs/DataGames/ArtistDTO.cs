@@ -1,4 +1,5 @@
 ﻿using Blind_Blind_Backend.Entities.DataGames;
+using Microsoft.AspNetCore.Http;
 
 namespace Blind_Blind_Backend.DTOs.DataGames
 {
@@ -35,7 +36,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Nb_Followers { get; set; }
 
-        public string Image_Artists { get; set; }
+        public IFormFile? Image_Artists { get; set; }
     }
 
     public class ArtistUpdateDTO
@@ -54,7 +55,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Nb_Followers { get; set; }
 
-        public string Image_Artists { get; set; }
+        public IFormFile? Image_Artists { get; set; }
     }
 
     public class ArtistCrudDTO
@@ -73,6 +74,6 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Nb_Followers { get; set; }
 
-        public string Image_Artists { get; set; }
+        public IFormFile? Image_Artists { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Blind_Blind_Backend.DTOs.DataGames
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Blind_Blind_Backend.DTOs.DataGames
 {
     public class AlbumDTO
     {
@@ -29,7 +31,7 @@
 
         public int Nb_Stream { get; set; }
 
-        public string Image_Album { get; set; }
+        public IFormFile? Image_Album { get; set; }
 
         public bool Is_Single { get; set; }
     }
@@ -46,7 +48,7 @@
 
         public int Nb_Stream { get; set; }
 
-        public string Image_Album { get; set; }
+        public IFormFile? Image_Album { get; set; }
 
         public bool Is_Single { get; set; }
     }
@@ -63,7 +65,7 @@
 
         public int Nb_Stream { get; set; }
 
-        public string Image_Album { get; set; }
+        public IFormFile? Image_Album { get; set; }
 
         public bool Is_Single { get; set; }
     }

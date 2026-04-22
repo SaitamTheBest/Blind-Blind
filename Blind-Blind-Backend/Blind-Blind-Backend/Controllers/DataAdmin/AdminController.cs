@@ -70,7 +70,8 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
         /// <returns>Annonce créée</returns>
         [HttpPost("announcements")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<ActionResult<AnnouncementDTO>> CreateAnnouncement([FromBody] AnnouncementCreateDTO announcementCreateDTO)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AnnouncementDTO>> CreateAnnouncement([FromForm] AnnouncementCreateDTO announcementCreateDTO)
         {
             try
             {
@@ -102,7 +103,8 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
         /// <returns>Annonce mise à jour</returns>
         [HttpPut("announcements/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<ActionResult<AnnouncementDTO>> UpdateAnnouncement(int id, [FromBody] AnnouncementUpdateDTO announcementUpdateDTO)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AnnouncementDTO>> UpdateAnnouncement(int id, [FromForm] AnnouncementUpdateDTO announcementUpdateDTO)
         {
             try
             {

@@ -26,7 +26,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public int Nb_Followers { get; set; }
 
         [Column("image_artists")]
-        public string Image_Artists { get; set; }
+        public byte[]? Image_Artists { get; set; }
 
         [Column("id_type_artists")]
         public int Id_Type_Artists { get; set; }

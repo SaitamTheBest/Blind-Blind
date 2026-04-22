@@ -19,7 +19,7 @@ namespace Blind_Blind_Backend.Entities.DataAdmin
         public string Short_Description { get; set; }
 
         [Column("cover_image")]
-        public string Cover_Image { get; set; }
+        public byte[]? Cover_Image { get; set; }
 
         [Column("content")]
         [Required]

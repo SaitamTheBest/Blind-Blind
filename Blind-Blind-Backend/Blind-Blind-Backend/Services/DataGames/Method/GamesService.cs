@@ -111,7 +111,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Last_Release = entity.Last_Release,
                 Nationality = entity.Nationality,
                 Nb_Followers = entity.Nb_Followers,
-                Image_Artists = entity.Image_Artists,
+                Image_Artists = entity.Image_Artists != null ? Convert.ToBase64String(entity.Image_Artists) : null,
                 Type_Artists = MapTypeArtist(entity.Type_Artists)
             };
         }
@@ -139,7 +139,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Name = entity.Name,
                 Release_Year = entity.Release_Year,
                 Nb_Stream = entity.Nb_Stream,
-                Image_Album = entity.Image_Album,
+                Image_Album = entity.Image_Album != null ? Convert.ToBase64String(entity.Image_Album) : null,
                 Is_Single = entity.Is_Single,
                 Artist = MapArtist(entity.Artists)
             };

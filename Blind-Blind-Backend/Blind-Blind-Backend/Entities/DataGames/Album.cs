@@ -23,7 +23,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public int Nb_Stream { get; set; } 
 
         [Column("image_album")] 
-        public string Image_Album { get; set; }
+        public byte[]? Image_Album { get; set; }
 
         [Column("is_single")]
         public bool Is_Single { get; set; }

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace Blind_Blind_Backend.DTOs.DataAdmin
 {
     public class AnnouncementUpdateDTO
@@ -5,7 +7,7 @@ namespace Blind_Blind_Backend.DTOs.DataAdmin
         public int Id_Announcement { get; set; }
         public string Title { get; set; }
         public string Short_Description { get; set; }
-        public string Cover_Image { get; set; }
+        public IFormFile? Cover_Image { get; set; }
         public string Content { get; set; }
         public DateTime? Publication_Date { get; set; }
         public int Id_Announcement_Type { get; set; }
