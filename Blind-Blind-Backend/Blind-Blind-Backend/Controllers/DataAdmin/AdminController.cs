@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace Blind_Blind_Backend.Controllers.DataAdmin
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/admin")]
     [Authorize]
     public class AdminController : ControllerBase
     {
