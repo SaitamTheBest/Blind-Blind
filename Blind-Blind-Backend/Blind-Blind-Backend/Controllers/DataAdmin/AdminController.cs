@@ -80,7 +80,7 @@ namespace Blind_Blind_Backend.Controllers.DataAdmin
                     return BadRequest(ModelState);
                 }
 
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userId = User.FindFirst("Id_User")?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Unauthorized(new { message = "Utilisateur non identifié" });
