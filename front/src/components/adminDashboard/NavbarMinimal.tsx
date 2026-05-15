@@ -6,6 +6,7 @@ import {
   IconUser,
   IconMusic,
   IconVinyl,
+  IconSpeakerphone,
 } from '@tabler/icons-react';
 import { Avatar, Center, Stack, Tooltip, UnstyledButton } from '@mantine/core';
 import LogoBlindBlind from '../../res/Blind-Blind-logo-noir.png';
@@ -18,7 +19,8 @@ export type AdminTab =
   | 'library'
   | 'releases'
   | 'accounts'
-  | 'security';
+  | 'security'
+  | 'announcements';
 
 interface NavbarLinkProps {
   icon: React.ComponentType<{ size?: number; stroke?: number }>;
@@ -53,6 +55,7 @@ const navItems: { icon: NavbarLinkProps['icon']; label: string; value: AdminTab 
   { icon: IconUser, label: 'Accounts', value: 'accounts' },
   { icon: IconMusic, label: 'Submissions', value: 'songs' },
   { icon: IconVinyl, label: 'Library', value: 'library' },
+  { icon: IconSpeakerphone, label: 'Announcements', value: 'announcements' },
   { icon: IconFingerprint, label: 'Security', value: 'security' },
   { icon: IconCalendarStats, label: 'Releases', value: 'releases' },
 ];

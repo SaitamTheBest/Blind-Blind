@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { API_URL } from "../config";
 import { Container, Paper, Text, Title } from "@mantine/core";
 import { NavbarMinimal, type AdminTab } from "../components/adminDashboard/NavbarMinimal";
 import AccountsTab from "../components/adminDashboard/Accounts/AccountsTab";
 import MusicSuggestionsTab from "../components/adminDashboard/Submissions/MusicSuggestionsTab";
 import DiscsTab from "../components/adminDashboard/Library/LibraryTab";
+import AnnouncementsTab from "../components/adminDashboard/Announcements/AnnouncementsTab";
 
 function DashboardTab() {
   return (
@@ -40,6 +40,7 @@ export default function AdminDashboard() {
         {activeTab === "accounts" && <AccountsTab />}
         {activeTab === "songs" && <MusicSuggestionsTab />}
         {activeTab === "library" && <DiscsTab />}
+        {activeTab === "announcements" && <AnnouncementsTab />}
         {activeTab === "analytics" && <PlaceholderTab title="Analytics" />}
         {activeTab === "releases" && <PlaceholderTab title="Releases" />}
         {activeTab === "security" && <PlaceholderTab title="Security" />}

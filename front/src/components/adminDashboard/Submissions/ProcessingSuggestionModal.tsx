@@ -1,9 +1,12 @@
 import {
+  Avatar,
   ActionIcon,
+  Box,
   Button,
   Checkbox,
   Divider,
   Group,
+  Image,
   Paper,
   Radio,
   ScrollArea,
@@ -16,7 +19,8 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { IconPhoto, IconPlus, IconTrash, IconUpload, IconX } from "@tabler/icons-react";
 import type {
   AlbumOption,
   ArtistOption,
@@ -66,6 +70,147 @@ function toIsoDate(value: Date | string | null): string | null {
   return `${year}-${month}-${day}`;
 }
 
+function getArtistImageSrc(imageValue?: string | null): string | undefined {
+  if (!imageValue) {
+    return undefined;
+  }
+
+  const trimmedValue = imageValue.trim();
+
+  if (!trimmedValue) {
+    return undefined;
+  }
+
+  if (
+    trimmedValue.startsWith("http://") ||
+    trimmedValue.startsWith("https://") ||
+    trimmedValue.startsWith("data:image/")
+  ) {
+    return trimmedValue;
+  }
+
+  return `data:image/jpeg;base64,${trimmedValue}`;
+}
+
+function renderArtistOption({ option }: { option: any }) {
+  const imageSrc = getArtistImageSrc(option.imageArtists);
+
+  return (
+    <Group gap="sm" wrap="nowrap">
+      <Avatar src={imageSrc} radius="xl" size={32}>
+        {option.label?.[0]?.toUpperCase() ?? "?"}
+      </Avatar>
+
+      <Text size="sm" fw={500}>
+        {option.label}
+      </Text>
+    </Group>
+  );
+}
+
+type ImageDropzoneFieldProps = {
+  label: string;
+  value: File | null;
+  onChange: (file: File | null) => void;
+};
+
+function ImageDropzoneField({
+  label,
+  value,
+  onChange,
+}: ImageDropzoneFieldProps) {
+  const previewUrl = value ? URL.createObjectURL(value) : null;
+
+  return (
+    <Box>
+      <Text fw={500} size="sm" mb={6}>
+        {label}
+      </Text>
+
+      <Dropzone
+        onDrop={(files) => onChange(files[0] ?? null)}
+        onReject={() => {}}
+        maxSize={8 * 1024 ** 2}
+        accept={IMAGE_MIME_TYPE}
+        multiple={false}
+        styles={{
+          root: {
+            minHeight: 150,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 12,
+            border: "2px dashed #ced4da",
+            backgroundColor: "#f8f9fa",
+            transition: "background-color 0.2s ease, border-color 0.2s ease",
+            cursor: "pointer",
+          },
+        }}
+      >
+        <Group
+          justify="center"
+          gap="md"
+          style={{ pointerEvents: "none", textAlign: "center" }}
+        >
+          <Dropzone.Accept>
+            <IconUpload size={36} stroke={1.5} />
+          </Dropzone.Accept>
+
+          <Dropzone.Reject>
+            <IconX size={36} stroke={1.5} />
+          </Dropzone.Reject>
+
+          <Dropzone.Idle>
+            <IconPhoto size={36} stroke={1.5} />
+          </Dropzone.Idle>
+
+          <div>
+            <Text fw={600}>
+              Glisse une image ici ou clique pour sélectionner un fichier
+            </Text>
+            <Text size="sm" c="dimmed">
+              PNG, JPG, WEBP jusqu'à 8 Mo
+            </Text>
+          </div>
+        </Group>
+      </Dropzone>
+
+      {value && (
+        <Group mt="xs" justify="space-between">
+          <Text size="sm" c="dimmed">
+            Fichier sélectionné : <strong>{value.name}</strong>
+          </Text>
+
+          <Button
+            size="xs"
+            variant="light"
+            color="red"
+            onClick={() => onChange(null)}
+          >
+            Retirer
+          </Button>
+        </Group>
+      )}
+
+      {previewUrl && (
+        <Image
+          src={previewUrl}
+          alt="Preview"
+          radius="md"
+          mt="md"
+          mah={180}
+          fit="contain"
+          style={{
+            backgroundColor: "#fff",
+            border: "1px solid #e5e7eb",
+          }}
+          onLoad={() => URL.revokeObjectURL(previewUrl)}
+        />
+      )}
+    </Box>
+  );
+}
+
 function ProcessingArtistFields({
   title,
   mode,
@@ -83,9 +228,9 @@ function ProcessingArtistFields({
   existingArtistId: string | null;
   onExistingArtistChange: (value: string | null) => void;
   newArtist: SuggestionProcessingForm["newArtist"];
-  onNewArtistChange: (
-    field: keyof SuggestionProcessingForm["newArtist"],
-    value: string | null
+  onNewArtistChange: <K extends keyof SuggestionProcessingForm["newArtist"]>(
+    field: K,
+    value: SuggestionProcessingForm["newArtist"][K]
   ) => void;
   artistsOptions: ArtistOption[];
   typeArtistOptions: TypeArtistOption[];
@@ -115,6 +260,7 @@ function ProcessingArtistFields({
             value={existingArtistId}
             onChange={onExistingArtistChange}
             nothingFoundMessage="Aucun artiste trouvé"
+            renderOption={renderArtistOption}
           />
         ) : (
           <Stack gap="md">
@@ -175,13 +321,10 @@ function ProcessingArtistFields({
               />
             </SimpleGrid>
 
-            <TextInput
+            <ImageDropzoneField
               label="Image artiste"
-              placeholder="URL ou base64"
               value={newArtist.imageArtists}
-              onChange={(event) =>
-                onNewArtistChange("imageArtists", event.currentTarget.value)
-              }
+              onChange={(file) => onNewArtistChange("imageArtists", file)}
             />
           </Stack>
         )}
@@ -206,9 +349,9 @@ function FeaturingCard({
   typeArtistOptions: TypeArtistOption[];
   onModeChange: (mode: "existing" | "new") => void;
   onExistingArtistChange: (value: string | null) => void;
-  onNewArtistChange: (
-    field: keyof FeaturingArtist["newArtist"],
-    value: string | null
+  onNewArtistChange: <K extends keyof FeaturingArtist["newArtist"]>(
+    field: K,
+    value: FeaturingArtist["newArtist"][K]
   ) => void;
   onRemove: () => void;
 }) {
@@ -248,6 +391,7 @@ function FeaturingCard({
             value={featuring.existingArtistId}
             onChange={onExistingArtistChange}
             nothingFoundMessage="Aucun artiste trouvé"
+            renderOption={renderArtistOption}
           />
         ) : (
           <Stack gap="md">
@@ -305,13 +449,10 @@ function FeaturingCard({
               />
             </SimpleGrid>
 
-            <TextInput
+            <ImageDropzoneField
               label="Image artiste"
-              placeholder="URL ou base64"
               value={featuring.newArtist.imageArtists}
-              onChange={(event) =>
-                onNewArtistChange("imageArtists", event.currentTarget.value)
-              }
+              onChange={(file) => onNewArtistChange("imageArtists", file)}
             />
           </Stack>
         )}
@@ -342,22 +483,22 @@ export default function ProcessingSuggestionModal({
     }));
   };
 
-  const updateNewArtist = (
-    field: keyof SuggestionProcessingForm["newArtist"],
-    value: string | null
+  const updateNewArtist = <K extends keyof SuggestionProcessingForm["newArtist"]>(
+    field: K,
+    value: SuggestionProcessingForm["newArtist"][K]
   ) => {
     setForm((prev) => ({
       ...prev,
       newArtist: {
         ...prev.newArtist,
-        [field]: value ?? "",
+        [field]: value,
       },
     }));
   };
 
-  const updateNewAlbum = (
-    field: keyof SuggestionProcessingForm["newAlbum"],
-    value: string | boolean
+  const updateNewAlbum = <K extends keyof SuggestionProcessingForm["newAlbum"]>(
+    field: K,
+    value: SuggestionProcessingForm["newAlbum"][K]
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -593,16 +734,13 @@ export default function ProcessingSuggestionModal({
                         updateNewAlbum("nbStream", event.currentTarget.value)
                       }
                     />
-
-                    <TextInput
-                      label="Image album"
-                      placeholder="URL ou base64"
-                      value={form.newAlbum.imageAlbum}
-                      onChange={(event) =>
-                        updateNewAlbum("imageAlbum", event.currentTarget.value)
-                      }
-                    />
                   </SimpleGrid>
+
+                  <ImageDropzoneField
+                    label="Image album"
+                    value={form.newAlbum.imageAlbum}
+                    onChange={(file) => updateNewAlbum("imageAlbum", file)}
+                  />
 
                   <Switch
                     label="Album single"

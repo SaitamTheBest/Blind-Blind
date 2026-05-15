@@ -47,9 +47,15 @@ type ApiAdminSuggestion = {
 
 type ApiArtist = {
   id_artists?: string;
+  id_Artists?: string;
   Id_Artists?: string;
   name?: string;
   Name?: string;
+  image_artists?: string | null;
+  image_Artists?: string | null;
+  Image_Artists?: string | null;
+  imageArtists?: string | null;
+  ImageArtists?: string | null;
 };
 
 type ApiAlbum = {
@@ -134,10 +140,34 @@ function mapApiSuggestion(item: ApiAdminSuggestion, index: number): SongSuggesti
 }
 
 function mapApiArtist(item: ApiArtist): ArtistOption | null {
-  const value = item.id_artists ?? item.Id_Artists ?? "";
-  const label = item.name ?? item.Name ?? "";
+  const rawValue =
+    item.id_artists ??
+    item.id_Artists ??
+    item.Id_Artists;
+
+  const value =
+    rawValue !== undefined && rawValue !== null ? String(rawValue) : "";
+
+  const label =
+    item.name ??
+    item.Name ??
+    "";
+
+  const imageArtists =
+    item.image_artists ??
+    item.image_Artists ??
+    item.Image_Artists ??
+    item.imageArtists ??
+    item.ImageArtists ??
+    null;
+
   if (!value || !label) return null;
-  return { value, label };
+
+  return {
+    value,
+    label,
+    imageArtists,
+  };
 }
 
 function mapApiAlbum(item: ApiAlbum): AlbumOption | null {
@@ -627,24 +657,73 @@ export default function MusicSuggestionsTab() {
     return response.json().catch(() => null);
   };
 
+  const postFormData = async (url: string, formData: FormData, token: string) => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let message = "Une requête a échoué.";
+
+      try {
+        const errorData = await response.json();
+
+        if (typeof errorData?.message === "string") {
+          message = errorData.message;
+        } else if (typeof errorData?.title === "string") {
+          message = errorData.title;
+        } else if (errorData?.errors) {
+          message = Object.entries(errorData.errors)
+            .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
+            .join(" | ");
+        }
+      } catch {
+        const errorText = await response.text();
+        if (errorText) message = errorText;
+      }
+
+      throw new Error(message);
+    }
+
+    return response.json().catch(() => null);
+  };
+
   const createArtist = async (
     artist: SuggestionProcessingForm["newArtist"],
     token: string
   ) => {
-    const payload = {
-      Name: artist.name.trim(),
-      Start_Date: artist.startDate,
-      Last_Release: artist.lastRelease,
-      Id_Type_Artists: artist.typeArtistId ? Number(artist.typeArtistId) : null,
-      Nationality: artist.nationality.trim(),
-      Nb_Followers: toNullableNumber(artist.nbFollowers),
-      Image_Artists: artist.imageArtists.trim(),
-    };
-
-    const result = await postJson(`${API_URL}/api/music-data/artist`, payload, token);
-
+    const formData = new FormData();
+  
+    formData.append("Name", artist.name.trim());
+    formData.append("Start_Date", artist.startDate ?? "");
+    formData.append("Last_Release", artist.lastRelease ?? "");
+    formData.append(
+      "Id_Type_Artists",
+      artist.typeArtistId ? String(Number(artist.typeArtistId)) : ""
+    );
+    formData.append("Nationality", artist.nationality.trim());
+    formData.append(
+      "Nb_Followers",
+      toNullableNumber(artist.nbFollowers)?.toString() ?? ""
+    );
+  
+    if (artist.imageArtists) {
+      formData.append("Image_Artists", artist.imageArtists);
+    }
+  
+    const result = await postFormData(
+      `${API_URL}/api/music-data/artist`,
+      formData,
+      token
+    );
+  
     return extractId(result, [
       "id_artists",
+      "id_Artists",
       "Id_Artists",
       "id",
       "Id",
@@ -656,16 +735,29 @@ export default function MusicSuggestionsTab() {
     artistId: string,
     token: string
   ) => {
-    const payload = {
-      Id_Artists: artistId,
-      Name: album.name.trim(),
-      Release_Year: toNullableNumber(album.releaseYear),
-      Nb_Stream: toNullableNumber(album.nbStream),
-      Image_Album: album.imageAlbum.trim(),
-      Is_Single: album.isSingle,
-    };
+    const formData = new FormData();
 
-    const result = await postJson(`${API_URL}/api/music-data/album`, payload, token);
+    formData.append("Artist", artistId);
+    formData.append("Name", album.name.trim());
+    formData.append(
+      "Release_Year",
+      toNullableNumber(album.releaseYear)?.toString() ?? ""
+    );
+    formData.append(
+      "Nb_Stream",
+      toNullableNumber(album.nbStream)?.toString() ?? ""
+    );
+    formData.append("Is_Single", String(album.isSingle));
+
+    if (album.imageAlbum) {
+      formData.append("Image_Album", album.imageAlbum);
+    }
+
+    const result = await postFormData(
+      `${API_URL}/api/music-data/album`,
+      formData,
+      token
+    );
 
     return extractId(result, [
       "id_album",
@@ -1042,7 +1134,7 @@ function createEmptySuggestionProcessingForm(): SuggestionProcessingForm {
       name: "",
       releaseYear: "",
       nbStream: "",
-      imageAlbum: "",
+      imageAlbum: null,
       isSingle: false,
     },
 
@@ -1055,7 +1147,7 @@ function createEmptySuggestionProcessingForm(): SuggestionProcessingForm {
       typeArtistId: null,
       nationality: "",
       nbFollowers: "",
-      imageArtists: "",
+      imageArtists: null,
     },
 
     trackName: "",

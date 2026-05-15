@@ -17,42 +17,16 @@ function isYear(value: string): boolean {
 
 function isDuration(value: string): boolean {
   if (!value.trim()) return false;
-
-  // Accepte mm:ss ou hh:mm:ss
   return /^(\d{2}:)?\d{2}:\d{2}$/.test(value.trim());
 }
 
-function isOptionalImageSource(value: string): boolean {
-  const trimmed = value.trim();
+function isValidImageFile(file: File | null): boolean {
+  if (!file) return true;
 
-  if (!trimmed) return true;
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  const maxSize = 8 * 1024 * 1024;
 
-  // On enlève les espaces et retours ligne éventuels
-  const normalized = trimmed.replace(/\s/g, "");
-
-  // 1) Accepte les Data URL :
-  // data:image/jpeg;base64,/9j/4AAQ...
-  const isDataUrlBase64 =
-    /^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/.test(normalized);
-
-  if (isDataUrlBase64) return true;
-
-  // 2) Accepte les base64 "bruts" :
-  // /9j/4AAQSkZJRgABAQ...
-  // iVBORw0KGgo...
-  // R0lGODlh...
-  const isRawBase64 =
-    /^[A-Za-z0-9+/]+={0,2}$/.test(normalized) && normalized.length > 100;
-
-  if (isRawBase64) return true;
-
-  // 3) Accepte les URL classiques
-  try {
-    new URL(trimmed);
-    return true;
-  } catch {
-    return false;
-  }
+  return allowedTypes.includes(file.type) && file.size <= maxSize;
 }
 
 export function validateSuggestionProcessingForm(
@@ -82,10 +56,6 @@ export function validateSuggestionProcessingForm(
     errors.push("La durée doit être au format mm:ss ou hh:mm:ss.");
   }
 
-  if (!isOptionalImageSource(form.urlSource)) {
-    errors.push("L’URL source ou l’image n’est pas valide.");
-  }
-
   if (form.artistMode === "existing") {
     if (!form.existingArtistId) {
       errors.push("Tu dois sélectionner un artiste existant.");
@@ -108,12 +78,9 @@ export function validateSuggestionProcessingForm(
       );
     }
 
-    if (
-      form.newArtist.imageArtists.trim() &&
-      !isOptionalImageSource(form.newArtist.imageArtists)
-    ) {
+    if (!isValidImageFile(form.newArtist.imageArtists)) {
       errors.push(
-        "L’image du nouvel artiste principal doit être une URL valide ou une chaîne base64 valide."
+        "L’image du nouvel artiste principal doit être au format PNG, JPG ou WEBP et faire moins de 8 Mo."
       );
     }
   }
@@ -140,12 +107,9 @@ export function validateSuggestionProcessingForm(
       errors.push("Le nombre de streams de l’album doit être un entier positif.");
     }
 
-    if (
-      form.newAlbum.imageAlbum.trim() &&
-      !isOptionalImageSource(form.newAlbum.imageAlbum)
-    ) {
+    if (!isValidImageFile(form.newAlbum.imageAlbum)) {
       errors.push(
-        "L’image du nouvel album doit être une URL valide ou une chaîne base64 valide."
+        "L’image du nouvel album doit être au format PNG, JPG ou WEBP et faire moins de 8 Mo."
       );
     }
   }
@@ -182,12 +146,9 @@ export function validateSuggestionProcessingForm(
           );
         }
 
-        if (
-          featuring.newArtist.imageArtists.trim() &&
-          !isOptionalImageSource(featuring.newArtist.imageArtists)
-        ) {
+        if (!isValidImageFile(featuring.newArtist.imageArtists)) {
           errors.push(
-            `L’image du featuring #${position} doit être une URL valide ou une chaîne base64 valide.`
+            `L’image du featuring #${position} doit être au format PNG, JPG ou WEBP et faire moins de 8 Mo.`
           );
         }
       }
