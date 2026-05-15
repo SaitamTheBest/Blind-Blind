@@ -157,7 +157,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Release_Year = entity.Release_Year,
                 Popularity = entity.Popularity,
                 Feat = entity.Feat,
-                Time = entity.Time,
+                Time = entity.Time.ToString(@"hh\:mm\:ss"),
                 Url_Source = entity.Url_Source,
                 Genre = MapGenre(entity.Genre),
                 Album = MapAlbum(entity.Album)

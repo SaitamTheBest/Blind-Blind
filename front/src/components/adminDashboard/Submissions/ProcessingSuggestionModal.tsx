@@ -135,78 +135,110 @@ function ImageDropzoneField({
         multiple={false}
         styles={{
           root: {
-            minHeight: 150,
+            minHeight: 170,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 12,
             border: "2px dashed #ced4da",
             backgroundColor: "#f8f9fa",
-            transition: "background-color 0.2s ease, border-color 0.2s ease",
+            transition:
+              "background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease",
             cursor: "pointer",
+            overflow: "hidden",
+            padding: 0,
           },
         }}
       >
-        <Group
-          justify="center"
-          gap="md"
-          style={{ pointerEvents: "none", textAlign: "center" }}
-        >
-          <Dropzone.Accept>
-            <IconUpload size={36} stroke={1.5} />
-          </Dropzone.Accept>
-
-          <Dropzone.Reject>
-            <IconX size={36} stroke={1.5} />
-          </Dropzone.Reject>
-
-          <Dropzone.Idle>
-            <IconPhoto size={36} stroke={1.5} />
-          </Dropzone.Idle>
-
-          <div>
-            <Text fw={600}>
-              Glisse une image ici ou clique pour sélectionner un fichier
-            </Text>
-            <Text size="sm" c="dimmed">
-              PNG, JPG, WEBP jusqu'à 8 Mo
-            </Text>
-          </div>
-        </Group>
-      </Dropzone>
-
-      {value && (
-        <Group mt="xs" justify="space-between">
-          <Text size="sm" c="dimmed">
-            Fichier sélectionné : <strong>{value.name}</strong>
-          </Text>
-
-          <Button
-            size="xs"
-            variant="light"
-            color="red"
-            onClick={() => onChange(null)}
+        {previewUrl ? (
+          <Box
+            style={{
+              position: "relative",
+              width: "100%",
+              minHeight: 220,
+              background: "#ffffff",
+            }}
           >
-            Retirer
-          </Button>
-        </Group>
-      )}
+            <Image
+              src={previewUrl}
+              alt="Preview"
+              h={220}
+              w="100%"
+              fit="contain"
+              style={{
+                display: "block",
+                background: "#ffffff",
+              }}
+              onLoad={() => URL.revokeObjectURL(previewUrl)}
+            />
 
-      {previewUrl && (
-        <Image
-          src={previewUrl}
-          alt="Preview"
-          radius="md"
-          mt="md"
-          mah={180}
-          fit="contain"
-          style={{
-            backgroundColor: "#fff",
-            border: "1px solid #e5e7eb",
-          }}
-          onLoad={() => URL.revokeObjectURL(previewUrl)}
-        />
-      )}
+            <ActionIcon
+              variant="filled"
+              color="red"
+              radius="xl"
+              size="sm"
+              aria-label="Retirer l'image"
+              onClick={(event) => {
+                event.stopPropagation();
+                onChange(null);
+              }}
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                zIndex: 3,
+                boxShadow: "0 6px 16px rgba(0, 0, 0, 0.18)",
+              }}
+            >
+              <IconX size={14} />
+            </ActionIcon>
+
+            <Box
+              style={{
+                position: "absolute",
+                left: 12,
+                bottom: 10,
+                zIndex: 2,
+                padding: "4px 8px",
+                borderRadius: 999,
+                background: "rgba(255, 255, 255, 0.9)",
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              <Text size="xs" c="dimmed">
+                {value?.name}
+              </Text>
+            </Box>
+          </Box>
+        ) : (
+          <Group
+            justify="center"
+            gap="md"
+            style={{ pointerEvents: "none", textAlign: "center" }}
+          >
+            <Dropzone.Accept>
+              <IconUpload size={36} stroke={1.5} />
+            </Dropzone.Accept>
+
+            <Dropzone.Reject>
+              <IconX size={36} stroke={1.5} />
+            </Dropzone.Reject>
+
+            <Dropzone.Idle>
+              <IconPhoto size={36} stroke={1.5} />
+            </Dropzone.Idle>
+
+            <div>
+              <Text fw={600}>
+                Glisse une image ici ou clique pour sélectionner un fichier
+              </Text>
+              <Text size="sm" c="dimmed">
+                PNG, JPG, WEBP jusqu'à 8 Mo
+              </Text>
+            </div>
+          </Group>
+        )}
+      </Dropzone>
     </Box>
   );
 }

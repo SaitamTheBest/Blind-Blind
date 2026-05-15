@@ -170,7 +170,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #endregion
 
         #region CREATE
-        public async Task CreateAlbum(AlbumCreateDTO albumCreateDTO)
+        public async Task<string> CreateAlbum(AlbumCreateDTO albumCreateDTO)
         {
             var albumId = Guid.NewGuid().ToString();
             byte[]? imageBytes = await ConvertFormFileToBytes(albumCreateDTO.Image_Album);
@@ -187,9 +187,11 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
 
             await _repository.CreateAlbum(album);
+
+            return album.Id_Album;
         }
 
-        public async Task CreateArtist(ArtistCreateDTO artistCreateDTO)
+        public async Task<string> CreateArtist(ArtistCreateDTO artistCreateDTO)
         {
             var artistId = Guid.NewGuid().ToString();
             byte[]? imageBytes = await ConvertFormFileToBytes(artistCreateDTO.Image_Artists);
@@ -207,9 +209,11 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
 
             await _repository.CreateArtist(artist);
+
+            return artist.Id_Artists;
         }
 
-        public async Task CreateTrack(TrackCreateDTO trackCreateDTO)
+        public async Task<string> CreateTrack(TrackCreateDTO trackCreateDTO)
         {
             var trackId = Guid.NewGuid().ToString();
             var featuringsExist = trackCreateDTO.List_Id_Featurings != null && trackCreateDTO.List_Id_Featurings.Any();
@@ -221,7 +225,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Release_Year = trackCreateDTO.Release_Year,
                 Popularity = trackCreateDTO.Popularity,
                 Feat = featuringsExist,
-                Time = trackCreateDTO.Time,
+                Time = ParseTrackDuration(trackCreateDTO.Time),
                 Url_Source = trackCreateDTO.Url_Source,
                 Id_Genre = trackCreateDTO.Id_Genre,
                 Id_Album = trackCreateDTO.Id_Album,
@@ -233,6 +237,8 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             {
                 await AddFeaturingsToTrack(trackId, trackCreateDTO.List_Id_Featurings!);
             }
+
+            return track.Id_Tracks;
         }
 
         public Task AddFeaturingsToTrack(string trackId, List<string> artistIds)
@@ -338,7 +344,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Release_Year = trackUpdateDTO.Release_Year,
                 Popularity = trackUpdateDTO.Popularity,
                 Feat = featuringsExist,
-                Time = trackUpdateDTO.Time,
+                Time = ParseTrackDuration(trackUpdateDTO.Time),
                 Url_Source = trackUpdateDTO.Url_Source,
                 Id_Genre = trackUpdateDTO.Id_Genre,
                 Id_Album = trackUpdateDTO.Id_Album,
@@ -509,7 +515,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Release_Year = entity.Release_Year,
                 Popularity = entity.Popularity,
                 Feat = entity.Feat,
-                Time = entity.Time,
+                Time = entity.Time.ToString(@"hh\:mm\:ss"),
                 Url_Source = entity.Url_Source,
                 Genre = MapGenre(entity.Genre),
                 Album = MapAlbum(entity.Album)
@@ -530,6 +536,39 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Lyric = entity.Lyric,
                 Id_Tracks = entity.Id_Tracks
             };
+        }
+
+        private static TimeSpan ParseTrackDuration(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return TimeSpan.Zero;
+            }
+
+            var trimmed = value.Trim();
+
+            // Format mm:ss, exemple : 03:45
+            if (System.Text.RegularExpressions.Regex.IsMatch(trimmed, @"^\d{1,2}:\d{2}$"))
+            {
+                var parts = trimmed.Split(':');
+                var minutes = int.Parse(parts[0]);
+                var seconds = int.Parse(parts[1]);
+
+                return new TimeSpan(0, minutes, seconds);
+            }
+
+            // Format hh:mm:ss, exemple : 00:03:45
+            if (System.Text.RegularExpressions.Regex.IsMatch(trimmed, @"^\d{1,2}:\d{2}:\d{2}$"))
+            {
+                var parts = trimmed.Split(':');
+                var hours = int.Parse(parts[0]);
+                var minutes = int.Parse(parts[1]);
+                var seconds = int.Parse(parts[2]);
+
+                return new TimeSpan(hours, minutes, seconds);
+            }
+
+            throw new ArgumentException("La durée doit être au format mm:ss ou hh:mm:ss.");
         }
         #endregion
     }

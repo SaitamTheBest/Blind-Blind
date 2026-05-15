@@ -14,14 +14,14 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public bool Feat { get; set; }
 
-        public DateTime Time { get; set; }
+        public string? Time { get; set; }
 
         public string Url_Source { get; set; }
 
         public GenreDTO Genre { get; set; }
 
         public AlbumDTO Album { get; set; }
-        
+
         public ArtistDTO Artist { get; set; }
 
         public List<ArtistDTO> Featurings { get; set; }
@@ -35,7 +35,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Popularity { get; set; }
 
-        public DateTime Time { get; set; }
+        public string? Time { get; set; }
 
         public string Url_Source { get; set; }
 
@@ -43,7 +43,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public string Id_Album { get; set; }
 
-        public string Id_Artists { get; set; }
+        public string? Id_Artists { get; set; }
 
         public List<string>? List_Id_Featurings { get; set; }
     }
@@ -58,7 +58,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Popularity { get; set; }
 
-        public DateTime Time { get; set; }
+        public string? Time { get; set; }
 
         public string Url_Source { get; set; }
 
@@ -66,7 +66,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public string Id_Album { get; set; }
 
-        public string Id_Artists { get; set; }
+        public string? Id_Artists { get; set; }
 
         public List<string>? List_Id_Featurings { get; set; }
     }
@@ -81,7 +81,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Popularity { get; set; }
 
-        public DateTime Time { get; set; }
+        public string? Time { get; set; }
 
         public string Url_Source { get; set; }
 
@@ -89,7 +89,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public string Id_Album { get; set; }
 
-        public string Id_Artists { get; set; }
+        public string? Id_Artists { get; set; }
 
         public List<string>? List_Id_Featurings { get; set; }
     }

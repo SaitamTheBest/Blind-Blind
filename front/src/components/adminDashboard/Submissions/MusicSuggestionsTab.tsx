@@ -60,11 +60,15 @@ type ApiArtist = {
 
 type ApiAlbum = {
   id_album?: string;
+  id_Album?: string;
   Id_Album?: string;
   name?: string;
   Name?: string;
   id_artists?: string;
+  id_Artists?: string;
   Id_Artists?: string;
+  artist?: string;
+  Artist?: string;
   release_year?: number;
   Release_Year?: number;
 };
@@ -170,15 +174,48 @@ function mapApiArtist(item: ApiArtist): ArtistOption | null {
   };
 }
 
+function normalizeDuration(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return "00:00:00";
+    }
+
+    if (/^\d{1,2}:\d{2}$/.test(trimmed)) {
+      return `00:${trimmed.padStart(5, "0")}`;
+    }
+
+    return trimmed;
+  }
+
 function mapApiAlbum(item: ApiAlbum): AlbumOption | null {
-  const value = item.id_album ?? item.Id_Album ?? "";
-  const label = item.name ?? item.Name ?? "";
+  const rawValue =
+    item.id_album ??
+    item.id_Album ??
+    item.Id_Album;
+
+  const value =
+    rawValue !== undefined && rawValue !== null ? String(rawValue) : "";
+
+  const label =
+    item.name ??
+    item.Name ??
+    "";
+
+  const artistId =
+    item.id_artists ??
+    item.id_Artists ??
+    item.Id_Artists ??
+    item.artist ??
+    item.Artist ??
+    undefined;
+
   if (!value || !label) return null;
 
   return {
     value,
     label,
-    artistId: item.id_artists ?? item.Id_Artists ?? undefined,
+    artistId,
     releaseYear: item.release_year ?? item.Release_Year ?? null,
   };
 }
@@ -224,15 +261,88 @@ function mapApiTypeArtist(item: ApiTypeArtist): TypeArtistOption | null {
   return { value, label };
 }
 
-function extractId(data: any, keys: string[]): string {
-  for (const key of keys) {
-    const value = data?.[key];
-    if (value !== undefined && value !== null && String(value).trim() !== "") {
-      return String(value);
-    }
+const extractId = (
+  data: unknown,
+  possibleKeys: string[]
+): string | null => {
+  if (data === null || data === undefined) {
+    return null;
   }
-  return "";
-}
+
+  if (typeof data === "string" || typeof data === "number") {
+    return String(data);
+  }
+
+  if (typeof data !== "object") {
+    return null;
+  }
+
+  const normalizedPossibleKeys = possibleKeys.map((key) =>
+    key.toLowerCase().replace(/_/g, "")
+  );
+
+  const findIdRecursively = (value: unknown): string | null => {
+    if (value === null || value === undefined) {
+      return null;
+    }
+
+    if (typeof value === "string" || typeof value === "number") {
+      return null;
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const found = findIdRecursively(item);
+        if (found) return found;
+      }
+
+      return null;
+    }
+
+    if (typeof value !== "object") {
+      return null;
+    }
+
+    const objectValue = value as Record<string, unknown>;
+
+    for (const [key, itemValue] of Object.entries(objectValue)) {
+      const normalizedKey = key.toLowerCase().replace(/_/g, "");
+
+      if (
+        normalizedPossibleKeys.includes(normalizedKey) &&
+        itemValue !== undefined &&
+        itemValue !== null &&
+        String(itemValue).trim() !== ""
+      ) {
+        return String(itemValue);
+      }
+    }
+
+    for (const itemValue of Object.values(objectValue)) {
+      const found = findIdRecursively(itemValue);
+      if (found) return found;
+    }
+
+    return null;
+  };
+
+  return findIdRecursively(data);
+};
+
+const extractRequiredId = (
+  data: unknown,
+  possibleKeys: string[],
+  errorMessage: string
+): string => {
+  const id = extractId(data, possibleKeys);
+
+  if (!id) {
+    console.log("Impossible d'extraire l'ID depuis :", data);
+    throw new Error(errorMessage);
+  }
+
+  return id;
+};
 
 function toNullableNumber(value: string): number | null {
   const trimmed = value.trim();
@@ -240,6 +350,26 @@ function toNullableNumber(value: string): number | null {
   const parsed = Number(trimmed);
   return Number.isNaN(parsed) ? null : parsed;
 }
+
+const formatApiValidationErrors = (errors: unknown): string => {
+  if (!errors || typeof errors !== "object") {
+    return "";
+  }
+
+  return Object.entries(errors as Record<string, unknown>)
+    .map(([key, value]) => {
+      if (Array.isArray(value)) {
+        return `${key}: ${value.join(", ")}`;
+      }
+
+      if (typeof value === "string") {
+        return `${key}: ${value}`;
+      }
+
+      return `${key}: ${JSON.stringify(value)}`;
+    })
+    .join(" | ");
+};
 
 export default function MusicSuggestionsTab() {
   const [suggestions, setSuggestions] = useState<SongSuggestion[]>([]);
@@ -322,7 +452,11 @@ export default function MusicSuggestionsTab() {
 
         try {
           const errorData = await response.json();
-          if (typeof errorData?.message === "string") {
+          const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+          if (validationMessage) {
+            userMessage = validationMessage;
+          } else if (typeof errorData?.message === "string") {
             userMessage = errorData.message;
           } else if (typeof errorData?.title === "string") {
             userMessage = errorData.title;
@@ -584,8 +718,14 @@ export default function MusicSuggestionsTab() {
 
         try {
           const errorData = await response.json();
-          if (typeof errorData?.message === "string") {
+          const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+          if (validationMessage) {
+            userMessage = validationMessage;
+          } else if (typeof errorData?.message === "string") {
             userMessage = errorData.message;
+          } else if (typeof errorData?.title === "string") {
+            userMessage = errorData.title;
           }
         } catch {
           const errorText = await response.text();
@@ -637,11 +777,15 @@ export default function MusicSuggestionsTab() {
     });
 
     if (!response.ok) {
-      let message = "Une requête a échoué.";
+      let message = `Erreur API (${response.status})`;
 
       try {
         const errorData = await response.json();
-        if (typeof errorData?.message === "string") {
+        const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+        if (validationMessage) {
+          message = validationMessage;
+        } else if (typeof errorData?.message === "string") {
           message = errorData.message;
         } else if (typeof errorData?.title === "string") {
           message = errorData.title;
@@ -658,6 +802,10 @@ export default function MusicSuggestionsTab() {
   };
 
   const postFormData = async (url: string, formData: FormData, token: string) => {
+    for (const [key, value] of formData.entries()) {
+      console.log("FORM DATA", key, value);
+    }
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -667,19 +815,21 @@ export default function MusicSuggestionsTab() {
     });
 
     if (!response.ok) {
-      let message = "Une requête a échoué.";
+      let message = `Erreur API (${response.status})`;
 
       try {
         const errorData = await response.json();
 
-        if (typeof errorData?.message === "string") {
+        console.log("API ERROR DATA =", errorData);
+
+        const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+        if (validationMessage) {
+          message = validationMessage;
+        } else if (typeof errorData?.message === "string") {
           message = errorData.message;
         } else if (typeof errorData?.title === "string") {
           message = errorData.title;
-        } else if (errorData?.errors) {
-          message = Object.entries(errorData.errors)
-            .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
-            .join(" | ");
         }
       } catch {
         const errorText = await response.text();
@@ -695,9 +845,9 @@ export default function MusicSuggestionsTab() {
   const createArtist = async (
     artist: SuggestionProcessingForm["newArtist"],
     token: string
-  ) => {
+  ): Promise<string> => {
     const formData = new FormData();
-  
+
     formData.append("Name", artist.name.trim());
     formData.append("Start_Date", artist.startDate ?? "");
     formData.append("Last_Release", artist.lastRelease ?? "");
@@ -710,31 +860,42 @@ export default function MusicSuggestionsTab() {
       "Nb_Followers",
       toNullableNumber(artist.nbFollowers)?.toString() ?? ""
     );
-  
+
     if (artist.imageArtists) {
       formData.append("Image_Artists", artist.imageArtists);
     }
-  
+
     const result = await postFormData(
       `${API_URL}/api/music-data/artist`,
       formData,
       token
     );
-  
-    return extractId(result, [
-      "id_artists",
-      "id_Artists",
-      "Id_Artists",
-      "id",
-      "Id",
-    ]);
+
+    console.log("CREATE ARTIST RESULT =", result);
+    console.log("CREATE ARTIST RESULT JSON =", JSON.stringify(result, null, 2));
+
+    return extractRequiredId(
+      result,
+      [
+        "id_artists",
+        "id_Artists",
+        "Id_Artists",
+        "idArtists",
+        "IdArtists",
+        "artistId",
+        "ArtistId",
+        "id",
+        "Id",
+      ],
+      "Artiste créé, mais impossible de récupérer son identifiant depuis la réponse API."
+    );
   };
 
   const createAlbum = async (
     album: SuggestionProcessingForm["newAlbum"],
     artistId: string,
     token: string
-  ) => {
+  ): Promise<string> => {
     const formData = new FormData();
 
     formData.append("Artist", artistId);
@@ -759,12 +920,24 @@ export default function MusicSuggestionsTab() {
       token
     );
 
-    return extractId(result, [
-      "id_album",
-      "Id_Album",
-      "id",
-      "Id",
-    ]);
+    console.log("CREATE ALBUM RESULT =", result);
+
+    return extractRequiredId(
+      result,
+      [
+        "id_album",
+        "id_Album",
+        "Id_Album",
+        "idAlbums",
+        "id_Albums",
+        "Id_Albums",
+        "albumId",
+        "AlbumId",
+        "id",
+        "Id",
+      ],
+      "Album créé, mais impossible de récupérer son identifiant depuis la réponse API."
+    );
   };
 
   const createTrack = async (
@@ -772,26 +945,35 @@ export default function MusicSuggestionsTab() {
     albumId: string,
     hasFeaturing: boolean,
     token: string
-  ) => {
+  ): Promise<string> => {
     const payload = {
       Name: form.trackName.trim(),
       Id_Album: albumId,
       Release_Year: toNullableNumber(form.releaseYear),
       Popularity: toNullableNumber(form.popularity),
       Feat: hasFeaturing,
-      Time: form.duration.trim(),
+      Time: normalizeDuration(form.duration),
       Url_Source: form.urlSource.trim(),
       Id_Genre: form.genreId ? Number(form.genreId) : null,
     };
 
     const result = await postJson(`${API_URL}/api/music-data/track`, payload, token);
 
-    return extractId(result, [
-      "id_tracks",
-      "Id_Tracks",
-      "id",
-      "Id",
-    ]);
+    console.log("CREATE TRACK RESULT =", result);
+
+    return extractRequiredId(
+      result,
+      [
+        "id_tracks",
+        "id_Tracks",
+        "Id_Tracks",
+        "trackId",
+        "TrackId",
+        "id",
+        "Id",
+      ],
+      "Track créée, mais impossible de récupérer son identifiant depuis la réponse API."
+    );
   };
 
   const createLyrics = async (trackId: string, lyrics: string, token: string) => {
@@ -807,9 +989,11 @@ export default function MusicSuggestionsTab() {
 
   const createFeaturing = async (
     trackId: string,
-    artistId: string,
+    artistIds: string[],
     token: string
   ) => {
+    if (artistIds.length === 0) return;
+
     const response = await fetch(
       `${API_URL}/api/music-data/track/${trackId}/featurings`,
       {
@@ -818,16 +1002,20 @@ export default function MusicSuggestionsTab() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify([artistId]),
+        body: JSON.stringify(artistIds),
       }
     );
 
     if (!response.ok) {
-      let message = "Impossible d'ajouter le featuring.";
+      let message = "Impossible d'ajouter les featurings.";
 
       try {
         const errorData = await response.json();
-        if (typeof errorData?.message === "string") {
+        const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+        if (validationMessage) {
+          message = validationMessage;
+        } else if (typeof errorData?.message === "string") {
           message = errorData.message;
         } else if (typeof errorData?.title === "string") {
           message = errorData.title;
@@ -859,7 +1047,11 @@ export default function MusicSuggestionsTab() {
 
       try {
         const errorData = await response.json();
-        if (typeof errorData?.message === "string") {
+        const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+        if (validationMessage) {
+          message = validationMessage;
+        } else if (typeof errorData?.message === "string") {
           message = errorData.message;
         } else if (typeof errorData?.title === "string") {
           message = errorData.title;
@@ -923,60 +1115,26 @@ export default function MusicSuggestionsTab() {
         token
       );
 
-      if (!trackId) {
-        throw new Error("Impossible de créer la track.");
-      }
-
       if (processingForm.hasFeaturing) {
         const featuringArtistIds: string[] = [];
-            
+
         for (const featuring of processingForm.featurings) {
           let featuringArtistId = "";
-        
+
           if (featuring.mode === "existing") {
             featuringArtistId = featuring.existingArtistId ?? "";
           } else {
             featuringArtistId = await createArtist(featuring.newArtist, token);
           }
-        
+
           if (!featuringArtistId) {
             throw new Error("Impossible de résoudre un featuring.");
           }
-        
+
           featuringArtistIds.push(featuringArtistId);
         }
-      
-        if (featuringArtistIds.length > 0) {
-          const response = await fetch(
-            `${API_URL}/api/music-data/track/${trackId}/featurings`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(featuringArtistIds),
-            }
-          );
-        
-          if (!response.ok) {
-            let message = "Impossible d'ajouter les featurings.";
-          
-            try {
-              const errorData = await response.json();
-              if (typeof errorData?.message === "string") {
-                message = errorData.message;
-              } else if (typeof errorData?.title === "string") {
-                message = errorData.title;
-              }
-            } catch {
-              const errorText = await response.text();
-              if (errorText) message = errorText;
-            }
-          
-            throw new Error(message);
-          }
-        }
+
+        await createFeaturing(trackId, featuringArtistIds, token);
       }
 
       await createLyrics(trackId, processingForm.lyrics, token);
@@ -1160,4 +1318,6 @@ function createEmptySuggestionProcessingForm(): SuggestionProcessingForm {
     hasFeaturing: false,
     featurings: [],
   };
+
+  
 }

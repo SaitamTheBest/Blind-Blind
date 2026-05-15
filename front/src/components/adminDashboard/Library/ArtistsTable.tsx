@@ -69,8 +69,8 @@ export default function ArtistsTable({ data }: ArtistsTableProps) {
 
           <Table.Tbody>
             {filteredArtists.length > 0 ? (
-              filteredArtists.map((artist) => (
-                <Table.Tr key={artist.id_Artist}>
+              filteredArtists.map((artist, index) => (
+                <Table.Tr key={artist.id_Artist ?? `${artist.name}-${index}`}>
                   <Table.Td>{artist.id_Artist}</Table.Td>
                   <Table.Td>{artist.name || "-"}</Table.Td>
                   <Table.Td>{artist.start_Date || "-"}</Table.Td>

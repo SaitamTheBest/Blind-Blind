@@ -1,4 +1,5 @@
 ﻿using Blind_Blind_Backend.DTOs.DataGames;
+using Blind_Blind_Backend.Entities.DataGames;
 using Blind_Blind_Backend.Services.DataGames;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -69,8 +70,13 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateAlbum([FromForm] AlbumCreateDTO albumCreateDTO)
         {
-            await _service.CreateAlbum(albumCreateDTO);
-            return Ok(new { message = "Album créé avec succès." });
+            var albumId = await _service.CreateAlbum(albumCreateDTO);
+
+            return Ok(new
+            {
+                message = "Album créé avec succès.",
+                id_Album = albumId
+            });
         }
 
         /// <summary>
@@ -184,8 +190,13 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateArtist([FromForm] ArtistCreateDTO artistCreateDTO)
         {
-            await _service.CreateArtist(artistCreateDTO);
-            return Ok(new { message = "Artiste créé avec succès." });
+            var artistId = await _service.CreateArtist(artistCreateDTO);
+
+            return Ok(new
+            {
+                message = "Artiste créé avec succès.",
+                id_Artists = artistId
+            });
         }
 
         /// <summary>
@@ -296,8 +307,13 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateTrack([FromBody] TrackCreateDTO trackCreateDTO)
         {
-            await _service.CreateTrack(trackCreateDTO);
-            return Ok(new { message = "Track créée avec succès." });
+            var trackId = await _service.CreateTrack(trackCreateDTO);
+
+            return Ok(new
+            {
+                message = "Track créée avec succès.",
+                id_Tracks = trackId
+            });
         }
 
         /// <summary>

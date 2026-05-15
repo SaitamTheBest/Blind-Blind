@@ -26,7 +26,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public bool Feat { get; set; }
 
         [Column("time")]
-        public DateTime Time { get; set; }
+        public TimeSpan Time { get; set; }
 
         [Column("url_source")]
         public string Url_Source { get; set; }

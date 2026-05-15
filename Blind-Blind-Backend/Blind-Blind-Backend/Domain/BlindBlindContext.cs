@@ -3,7 +3,6 @@ using Blind_Blind_Backend.Entities.DataGames;
 using Blind_Blind_Backend.Entities.DataUsers;
 using Blind_Blind_Backend.Entities.Logs;
 using Microsoft.EntityFrameworkCore;
-using System.Xml;
 
 namespace Blind_Blind_Backend.Domain
 {
@@ -43,7 +42,7 @@ namespace Blind_Blind_Backend.Domain
         public DbSet<Announcement> Announcement => Set<Announcement>();
         public DbSet<Announcement_Type> Announcement_Type => Set<Announcement_Type>();
         public DbSet<HttpLog> HttpLog => Set<HttpLog>();
-        
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,6 +51,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<User>()
                 .Property(e => e.Created_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -59,6 +59,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<User>()
                 .Property(e => e.Updated_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
                     v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
@@ -66,6 +67,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Games_Day>()
                 .Property(e => e.Date_Games)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -73,13 +75,11 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Tracks>()
                 .Property(e => e.Time)
-                .HasConversion(
-                    v => v.ToUniversalTime(),
-                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-                );
+                .HasColumnType("time without time zone");
 
             modelBuilder.Entity<Announcement>()
                 .Property(e => e.Created_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -87,6 +87,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Announcement>()
                 .Property(e => e.Updated_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
                     v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
@@ -94,6 +95,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Announcement>()
                 .Property(e => e.Publication_Date)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
                     v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
@@ -101,6 +103,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<HttpLog>()
                 .Property(e => e.CreatedAt)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -108,6 +111,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Artists>()
                 .Property(e => e.Start_Date)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -115,6 +119,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Artists>()
                 .Property(e => e.Last_Release)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -122,6 +127,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Music_Suggestions>()
                 .Property(e => e.Release_Date)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
                     v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
@@ -129,6 +135,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Music_Suggestions>()
                 .Property(e => e.Reviewed_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
                     v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
@@ -136,6 +143,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Music_Suggestions>()
                 .Property(e => e.Created_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
@@ -143,6 +151,7 @@ namespace Blind_Blind_Backend.Domain
 
             modelBuilder.Entity<Music_Suggestions>()
                 .Property(e => e.Updated_At)
+                .HasColumnType("timestamp with time zone")
                 .HasConversion(
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)

@@ -20,9 +20,9 @@ namespace Blind_Blind_Backend.Services.DataGames
         #endregion
 
         #region CREATE
-        Task CreateTrack(TrackCreateDTO trackCreateDTO);
-        Task CreateAlbum(AlbumCreateDTO albumCreateDTO);
-        Task CreateArtist(ArtistCreateDTO artistCreateDTO);
+        Task<string> CreateTrack(TrackCreateDTO trackCreateDTO);
+        Task<string> CreateAlbum(AlbumCreateDTO albumCreateDTO);
+        Task<string> CreateArtist(ArtistCreateDTO artistCreateDTO);
         Task AddFeaturingsToTrack(string trackId, List<string> artistIds);
         Task CreateGenre(GenreCrudDTO genreCrudDTO);
         Task CreateTypeArtist(Type_ArtistsCrudDTO typeArtistCrudDTO);
