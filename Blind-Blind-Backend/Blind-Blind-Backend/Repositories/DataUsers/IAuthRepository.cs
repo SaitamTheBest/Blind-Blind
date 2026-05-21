@@ -9,5 +9,6 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
         Task<RefreshToken?> GetRefreshTokenAsync(string token);
         Task UpdateRefreshTokenAsync(RefreshToken refreshToken);
         Task<ConnectionBlindBlind?> GetUserByIdAsync(string userId);
+        Task<User?> GetUserByResetTokenAsync(string token);
     }
 }

@@ -74,5 +74,39 @@ namespace Blind_Blind_Backend.Controllers.DataUsers
             await _authService.RevokeRefreshTokenAsync(refreshToken);
             return Ok();
         }
+
+        /// <summary>
+        /// Initiates the password reset process for a user by sending a password reset link to the specified email
+        /// address.
+        /// </summary>
+        /// <remarks>For security, the response does not reveal whether the email address is registered.
+        /// This prevents attackers from discovering valid user accounts.</remarks>
+        /// <param name="dto">An object containing the email address of the user requesting a password reset. The email must be valid and
+        /// associated with an existing account.</param>
+        /// <returns>An IActionResult indicating the outcome of the request. Returns a success message regardless of whether the
+        /// email exists for security reasons.</returns>
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO dto)
+        {
+            await _authService.RequestPasswordResetAsync(dto.Email);
+            return Ok(new { message = "If email exists, reset link sent" });
+        }
+
+        /// <summary>
+        /// Resets a user's password using the provided reset token and new password.
+        /// </summary>
+        /// <remarks>This endpoint is typically used as part of a password recovery workflow. The reset
+        /// token is usually obtained by the user via email or another secure channel.</remarks>
+        /// <param name="dto">An object containing the password reset token and the new password to set. The token must be valid and the
+        /// new password must meet the application's password requirements.</param>
+        /// <returns>An HTTP 200 response indicating that the password was successfully updated.</returns>
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO dto)
+        {
+            await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
+            return Ok(new { message = "Password updated" });
+        }
     }
 }

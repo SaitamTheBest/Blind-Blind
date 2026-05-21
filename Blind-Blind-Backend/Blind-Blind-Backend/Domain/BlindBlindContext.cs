@@ -65,6 +65,14 @@ namespace Blind_Blind_Backend.Domain
                     v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
                 );
 
+            modelBuilder.Entity<User>()
+                .Property(e => e.ResetTokenExpiration)
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : null
+                );
+
             modelBuilder.Entity<Games_Day>()
                 .Property(e => e.Date_Games)
                 .HasColumnType("timestamp with time zone")

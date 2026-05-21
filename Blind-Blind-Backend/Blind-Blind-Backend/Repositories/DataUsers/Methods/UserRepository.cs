@@ -21,6 +21,24 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
                 .FirstOrDefaultAsync(u => u.Id_User == id);
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            var user_id = (await _context.ConnectionBlindBlind.FirstOrDefaultAsync(c => c.Email == email))?.Id_User;
+            if (user_id == null) return null;
+            return await _context.User
+                .Include(u => u.Rank)
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id_User == user_id);
+        }
+
+        public async Task<ConnectionBlindBlind?> GetConnectionBlindBlindByIdAsync(string id)
+        {
+            return await _context.ConnectionBlindBlind
+                .Include(c => c.User)
+                .ThenInclude(u => u.Roles)
+                .FirstOrDefaultAsync(c => c.Id_User == id);
+        }
+
         public async Task<IReadOnlyList<User>> GetAllAsync()
         {
             return await _context.User

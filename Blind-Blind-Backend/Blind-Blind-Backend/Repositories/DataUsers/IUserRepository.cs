@@ -5,6 +5,8 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
     public interface IUserRepository
     {
         Task<User?> GetByIdAsync(string id);
+        Task<User?> GetByEmailAsync(string email);
+        Task<ConnectionBlindBlind?> GetConnectionBlindBlindByIdAsync(string id);
         Task<IReadOnlyList<User>> GetAllAsync();
         Task AddUserAsync(User user);
         Task UpdateUserAsync(User user);

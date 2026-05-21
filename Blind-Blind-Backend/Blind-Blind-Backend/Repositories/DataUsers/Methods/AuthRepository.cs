@@ -46,5 +46,11 @@ namespace Blind_Blind_Backend.Repositories.DataUsers.Methods
                 .ThenInclude(u => u.Roles)
                 .FirstOrDefaultAsync(c => c.Id_User == userId);
         }
+
+        public async Task<User?> GetUserByResetTokenAsync(string token)
+        {
+            return await _context.User
+                .FirstOrDefaultAsync(x => x.ResetToken == token);
+        }
     }
 }

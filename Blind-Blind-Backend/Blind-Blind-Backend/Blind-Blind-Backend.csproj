@@ -27,4 +27,11 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <!-- Inclure les ressources (images, etc.) dans la sortie de build -->
+  <ItemGroup>
+    <None Update="Ressources\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

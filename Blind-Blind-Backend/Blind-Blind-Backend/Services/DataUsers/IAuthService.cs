@@ -8,5 +8,7 @@ namespace Blind_Blind_Backend.Services.DataUsers
         Task<AuthDTO?> LoginAsync(LoginDTO login);
         Task<AuthDTO?> RefreshTokenAsync(string refreshToken);
         Task RevokeRefreshTokenAsync(string refreshToken);
+        Task RequestPasswordResetAsync(string email);
+        Task ResetPasswordAsync(string token, string newPassword);
     }
 }

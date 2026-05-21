@@ -32,6 +32,12 @@ namespace Blind_Blind_Backend.Entities.DataUsers
         [Column("updated_at")]
         public DateTime? Updated_At { get; set; }
 
+        [Column("reset_token")]
+        public string? ResetToken { get; set; }
+
+        [Column("reset_token_expiration")]
+        public DateTime? ResetTokenExpiration { get; set; }
+
         [ForeignKey(nameof(Id_Roles))]
         public virtual Roles Roles { get; set; }
 
