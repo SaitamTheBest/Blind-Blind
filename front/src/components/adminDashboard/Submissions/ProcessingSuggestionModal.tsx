@@ -9,7 +9,6 @@ import {
   Image,
   Paper,
   Radio,
-  ScrollArea,
   Select,
   SimpleGrid,
   Stack,
@@ -621,8 +620,7 @@ export default function ProcessingSuggestionModal({
         </Stack>
       </Paper>
 
-      <ScrollArea.Autosize mah={620} offsetScrollbars>
-        <Stack gap="lg" pr="xs">
+      <Stack gap="lg">
           <Paper withBorder radius="md" p="md">
             <Stack gap="md">
               <Title order={4}>Track</Title>
@@ -858,7 +856,6 @@ export default function ProcessingSuggestionModal({
             </Stack>
           </Paper>
         </Stack>
-      </ScrollArea.Autosize>
 
       {validation.errors.length > 0 && (
         <Paper withBorder radius="md" p="md" bg="rgba(255, 243, 191, 0.35)">

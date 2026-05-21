@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import { Divider, Grid, Modal, Paper, Stack, Text, Title } from "@mantine/core";
 import { API_URL } from "../../../config";
 import { notifyError, notifySuccess } from "../../../utils/notify";
@@ -95,6 +95,22 @@ type ApiTypeArtist = {
 type ProcessingContext =
   | { mode: "suggestion"; suggestionId: string }
   | { mode: "manual" };
+
+const ModalScrollArea = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>(
+  ({ style, ...props }, ref) => (
+    <div
+      ref={ref}
+      style={{
+        ...style,
+        overflowY: "auto",
+        maxHeight: "calc(100vh - 90px)",
+      }}
+      {...props}
+    />
+  )
+);
+
+ModalScrollArea.displayName = "ModalScrollArea";
 
 function getStoredAccessToken(): string | null {
   return (
@@ -688,8 +704,9 @@ export default function MusicSuggestionsTab() {
       });
       return;
     }
-
+  
     const token = getStoredAccessToken();
+  
     if (!token) {
       notifyError({
         title: "Erreur",
@@ -697,7 +714,7 @@ export default function MusicSuggestionsTab() {
       });
       return;
     }
-
+  
     try {
       const response = await fetch(
         `${API_URL}/api/admin/music-suggestions/${id}/reject`,
@@ -712,35 +729,24 @@ export default function MusicSuggestionsTab() {
           }),
         }
       );
-
+    
       if (!response.ok) {
-        let userMessage = "Impossible de refuser la suggestion.";
-
-        try {
-          const errorData = await response.json();
-          const validationMessage = formatApiValidationErrors(errorData?.errors);
-
-          if (validationMessage) {
-            userMessage = validationMessage;
-          } else if (typeof errorData?.message === "string") {
-            userMessage = errorData.message;
-          } else if (typeof errorData?.title === "string") {
-            userMessage = errorData.title;
-          }
-        } catch {
-          const errorText = await response.text();
-          if (errorText) userMessage = errorText;
-        }
-
-        throw new Error(userMessage);
+        const message = await readErrorMessage(
+          response,
+          response.status === 401
+            ? "Vous n'êtes pas autorisé à refuser cette suggestion."
+            : "Impossible de refuser la suggestion."
+        );
+      
+        throw new Error(message);
       }
-
+    
       setSuggestions((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, status: "rejected" } : item
         )
       );
-
+    
       if (
         processingContext?.mode === "suggestion" &&
         selectedSuggestion &&
@@ -748,14 +754,14 @@ export default function MusicSuggestionsTab() {
       ) {
         closeProcessingModal();
       }
-
+    
       notifySuccess({
         title: "Suggestion refusée",
         message: "La proposition a bien été refusée.",
       });
     } catch (error) {
       console.error("Erreur refus suggestion :", error);
-
+    
       notifyError({
         title: "Erreur",
         message:
@@ -799,6 +805,38 @@ export default function MusicSuggestionsTab() {
     }
 
     return response.json().catch(() => null);
+  };
+
+  const readErrorMessage = async (
+    response: Response,
+    fallbackMessage: string
+  ): Promise<string> => {
+    const rawBody = await response.text();
+
+    if (!rawBody) {
+      return fallbackMessage;
+    }
+
+    try {
+      const errorData = JSON.parse(rawBody);
+      const validationMessage = formatApiValidationErrors(errorData?.errors);
+
+      if (validationMessage) {
+        return validationMessage;
+      }
+
+      if (typeof errorData?.message === "string") {
+        return errorData.message;
+      }
+
+      if (typeof errorData?.title === "string") {
+        return errorData.title;
+      }
+
+      return rawBody;
+    } catch {
+      return rawBody;
+    }
   };
 
   const postFormData = async (url: string, formData: FormData, token: string) => {
@@ -1264,8 +1302,27 @@ export default function MusicSuggestionsTab() {
             ? "Ajouter une musique manuellement"
             : "Traiter une suggestion"
         }
-        size="xl"
+        size="95vw"
         centered
+        radius="lg"
+        scrollAreaComponent={ModalScrollArea}
+        styles={{
+          content: {
+            maxWidth: 1200,
+            maxHeight: "calc(100vh - 32px)",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          },
+          header: {
+            flexShrink: 0,
+          },
+          body: {
+            flex: 1,
+            overflowY: "auto",
+            paddingRight: 24,
+          },
+        }}
       >
         <ProcessingSuggestionModal
           suggestion={modalSuggestion}
