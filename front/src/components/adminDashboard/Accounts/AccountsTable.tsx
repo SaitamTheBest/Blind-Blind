@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ActionIcon,
   Avatar,
   Badge,
   Box,
@@ -11,11 +12,13 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import {
   IconChevronDown,
   IconChevronUp,
   IconSearch,
+  IconTrash,
 } from "@tabler/icons-react";
 
 export type PlayerStatus = "active" | "inactive" | "banned" | "unknown";
@@ -41,10 +44,11 @@ type AccountsTableProps = {
   inactivePlayers: number;
   bannedPlayers: number;
   loading?: boolean;
+  deletingPlayerId?: string | null;
   onSearchChange: (value: string) => void;
   onStatusFilterChange: (value: "all" | PlayerStatus) => void;
+  onDeletePlayer: (player: Player) => void;
 };
-
 function formatElo(value: number) {
   if (!Number.isFinite(value)) return "—";
   return `${value}`;
@@ -85,9 +89,12 @@ export default function AccountsTable({
   inactivePlayers,
   bannedPlayers,
   loading = false,
+  deletingPlayerId = null,
   onSearchChange,
   onStatusFilterChange,
+  onDeletePlayer,
 }: AccountsTableProps) {
+
   const [openedRowId, setOpenedRowId] = useState<string | null>(null);
 
   return (
@@ -244,34 +251,50 @@ export default function AccountsTable({
                         borderTop: "1px solid #edf0f2",
                       }}
                     >
-                      <Group gap="lg" wrap="wrap">
-                        <Text size="sm" c="black">
-                          <Text span fw={600}>
-                            Elo :
-                          </Text>{" "}
-                          {formatElo(player.elo)}
-                        </Text>
-
-                        <Text size="sm" c="black">
-                          <Text span fw={600}>
-                            Rank :
-                          </Text>{" "}
-                          {player.rankName || "Non classé"}
-                        </Text>
-
-                        <Text size="sm" c="black">
-                          <Text span fw={600}>
-                            Créé le :
-                          </Text>{" "}
-                          {player.createdAt || "—"}
-                        </Text>
-
-                        <Text size="sm" c="black">
-                          <Text span fw={600}>
-                            Dernière mise à jour :
-                          </Text>{" "}
-                          {player.updatedAt || "—"}
-                        </Text>
+                      <Group justify="space-between" align="center" wrap="nowrap">
+                        <Group gap="lg" wrap="wrap" style={{ minWidth: 0 }}>
+                          <Text size="sm" c="black">
+                            <Text span fw={600}>
+                              Elo :
+                            </Text>{" "}
+                            {formatElo(player.elo)}
+                          </Text>
+                    
+                          <Text size="sm" c="black">
+                            <Text span fw={600}>
+                              Rank :
+                            </Text>{" "}
+                            {player.rankName || "Non classé"}
+                          </Text>
+                    
+                          <Text size="sm" c="black">
+                            <Text span fw={600}>
+                              Créé le :
+                            </Text>{" "}
+                            {player.createdAt || "—"}
+                          </Text>
+                    
+                          <Text size="sm" c="black">
+                            <Text span fw={600}>
+                              Dernière mise à jour :
+                            </Text>{" "}
+                            {player.updatedAt || "—"}
+                          </Text>
+                        </Group>
+                    
+                        <Tooltip label="Supprimer le compte">
+                          <ActionIcon
+                            color="red"
+                            variant="light"
+                            radius="sm"
+                            loading={deletingPlayerId === player.id}
+                            onClick={() => onDeletePlayer(player)}
+                            aria-label={`Supprimer le compte de ${player.pseudo}`}
+                            style={{ flexShrink: 0 }}
+                          >
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </Tooltip>
                       </Group>
                     </Box>
                   </Collapse>

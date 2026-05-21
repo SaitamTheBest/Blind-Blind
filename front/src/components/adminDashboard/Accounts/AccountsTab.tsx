@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { notifyError, notifySuccess } from "../../../utils/notify";
 import { Alert, Loader, Stack, Text } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { API_URL } from "../../../config";
 import AccountsStats from "./AccountsStats";
 import AccountsTable, { type Player, type PlayerStatus } from "./AccountsTable";
+import DeleteAccountConfirmModal from "./DeleteAccountConfirmModal";
 
 type ApiRank = {
   rank_Name?: string;
@@ -321,6 +323,8 @@ export default function AccountsTab() {
   const [statusFilter, setStatusFilter] = useState<"all" | PlayerStatus>("all");
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [playerToDelete, setPlayerToDelete] = useState<Player | null>(null);
+  const [deletingPlayerId, setDeletingPlayerId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   const fetchUsers = useCallback(async () => {
@@ -417,6 +421,66 @@ export default function AccountsTab() {
     loadData();
   }, [loadData]);
 
+  const openDeletePlayerModal = useCallback((player: Player) => {
+    setPlayerToDelete(player);
+  }, []);
+
+  const closeDeletePlayerModal = useCallback(() => {
+    if (deletingPlayerId) return;
+    setPlayerToDelete(null);
+  }, [deletingPlayerId]);
+
+  const confirmDeletePlayer = useCallback(async () => {
+    if (!playerToDelete) return;
+
+    const token = getStoredAccessToken();
+
+    if (!token) {
+      notifyError({
+        title: "Erreur",
+        message: "Aucun token trouvé. Reconnecte-toi.",
+      });
+      return;
+    }
+
+    setDeletingPlayerId(playerToDelete.id);
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/users/delete/${playerToDelete.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || "Impossible de supprimer cet utilisateur.");
+      }
+
+      notifySuccess({
+        title: "Compte supprimé",
+        message: `Le compte de ${playerToDelete.pseudo} a bien été supprimé.`,
+      });
+
+      setPlayerToDelete(null);
+      await loadData();
+    } catch (error) {
+      notifyError({
+        title: "Erreur",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue pendant la suppression.",
+      });
+    } finally {
+      setDeletingPlayerId(null);
+    }
+  }, [loadData, playerToDelete]);
+
   const filteredPlayers = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
@@ -484,10 +548,21 @@ export default function AccountsTab() {
           inactivePlayers={derivedStats.inactivePlayers}
           bannedPlayers={derivedStats.bannedPlayers}
           loading={isLoading}
+          deletingPlayerId={deletingPlayerId}
           onSearchChange={setSearch}
           onStatusFilterChange={setStatusFilter}
+          onDeletePlayer={openDeletePlayerModal}
         />
       )}
+
+      <DeleteAccountConfirmModal
+        opened={Boolean(playerToDelete)}
+        player={playerToDelete}
+        loading={Boolean(deletingPlayerId)}
+        onClose={closeDeletePlayerModal}
+        onConfirm={confirmDeletePlayer}
+      />
+      
     </Stack>
   );
 }
