@@ -111,5 +111,15 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
         {
             return await _context.ConnectionBlindBlind.CountAsync();
         }
+
+        public async Task<DateTime?> GetLastLoginAsync(string userId)
+        {
+            var lastRefreshToken = await _context.RefreshTokens
+                .Where(rt => rt.Id_User == userId && !rt.IsRevoked)
+                .OrderByDescending(rt => rt.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            return lastRefreshToken?.CreatedAt.DateTime;
+        }
     }
 }

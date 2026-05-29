@@ -53,9 +53,9 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .FirstOrDefaultAsync(artists => artists.Id_Artists == id);
         }
 
-        public async Task<Games_Day> GetGameDay(DateTime date, string id_game)
+        public async Task<Games_Day> GetGameDay(DateTime date, int id_game)
         {
-            if (string.IsNullOrEmpty(id_game))
+            if (id_game <= 0)
             {
                 throw new ArgumentNullException("Id_Game cannot be null.");
             }
@@ -72,6 +72,44 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                     .ThenInclude(a => a.Artists)
                         .ThenInclude(a => a.Type_Artists)
                 .FirstOrDefaultAsync(tracks => tracks.Id_Tracks == id);
+        }
+
+        public async Task<Lyrics?> GetLyricsById(string id)
+        {
+            return await _context.Lyrics
+                .FirstOrDefaultAsync(l => l.Id_Lyrics == id);
+        }
+
+        public Task<List<Game>> GetAllGames()
+        {
+            return _context.Game.ToListAsync();
+        }
+
+        public async Task<Game?> GetGameById(int id)
+        {
+            return await _context.Game.FirstOrDefaultAsync(g => g.Id_Game == id);
+        }
+
+        public async Task<Games_Day?> GetGameDayById(int gameDayId)
+        {
+            return await _context.Games_Day
+                .Include(gd => gd.Game)
+                .Include(gd => gd.Tracks)
+                .Include(gd => gd.Lyrics)
+                .Include(gd => gd.Album)
+                .Include(gd => gd.Artist)
+                .FirstOrDefaultAsync(gd => gd.Id_Games_Day == gameDayId);
+        }
+
+        public async Task<bool> UpdateGameDayFoundAsync(int gameDayId, int increment)
+        {
+            var gameDay = await _context.Games_Day.FirstOrDefaultAsync(gd => gd.Id_Games_Day == gameDayId);
+            if (gameDay == null)
+                return false;
+
+            gameDay.Found += increment;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

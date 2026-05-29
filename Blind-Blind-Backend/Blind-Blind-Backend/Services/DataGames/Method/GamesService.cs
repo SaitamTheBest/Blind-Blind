@@ -25,7 +25,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         public async Task<List<AlbumDTO>> GetAllAlbums()
         {
             var albums = await _repository.GetAllAlbum();
-            
+
             if (albums == null)
                 return new List<AlbumDTO>();
 
@@ -83,6 +83,137 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             if (track == null)
                 return null;
             return MapTrack(track);
+        }
+
+        public async Task<List<GameDTO>> GetAllGames()
+        {
+            var games = await _repository.GetAllGames();
+            if (games == null)
+                return new List<GameDTO>();
+
+            return games.Select(g => new GameDTO
+            {
+                Id_Game = g.Id_Game,
+                Name = g.Name,
+                Image_Game = g.Image_Game,
+                Description = g.Description
+            }).ToList();
+        }
+
+        public async Task<GameDTO?> GetGameById(int id)
+        {
+            var game = await _repository.GetGameById(id);
+            if (game == null)
+                return null;
+
+            return new GameDTO
+            {
+                Id_Game = game.Id_Game,
+                Name = game.Name,
+                Image_Game = game.Image_Game,
+                Description = game.Description
+            };
+        }
+
+        public async Task<TrackVerificationDTO> VerifyTrack(string trackId, TrackDTO submittedTrack)
+        {
+            var correctTrack = await GetTrackById(trackId);
+            if (correctTrack == null)
+                throw new InvalidOperationException($"Track with id {trackId} not found");
+
+            return new TrackVerificationDTO
+            {
+                Name = VerifyItem(correctTrack.Name, submittedTrack.Name),
+                Artists = VerifyItem(correctTrack.Artist?.Name, submittedTrack.Artist?.Name),
+                Nationality = VerifyItem(correctTrack.Artist?.Nationality, submittedTrack.Artist?.Nationality),
+                Genres = VerifyItem(correctTrack.Genre?.Libelle, submittedTrack.Genre?.Libelle),
+                Album = VerifyItem(correctTrack.Album?.Name, submittedTrack.Album?.Name),
+                Followers = VerifyNumeric(correctTrack.Artist?.Nb_Followers ?? 0, submittedTrack.Artist?.Nb_Followers ?? 0),
+                Popularity = VerifyNumeric(correctTrack.Popularity, submittedTrack.Popularity),
+                Release_Date = VerifyNumeric(correctTrack.Release_Year, submittedTrack.Release_Year)
+            };
+        }
+
+        public async Task<ArtistVerificationDTO> VerifyArtist(string artistId, ArtistDTO submittedArtist)
+        {
+            var correctArtist = await GetArtistById(artistId);
+            if (correctArtist == null)
+                throw new InvalidOperationException($"Artist with id {artistId} not found");
+
+            return new ArtistVerificationDTO
+            {
+                Name = VerifyItem(correctArtist.Name, submittedArtist.Name),
+                Nationality = VerifyItem(correctArtist.Nationality, submittedArtist.Nationality),
+                Followers = VerifyNumeric(correctArtist.Nb_Followers, submittedArtist.Nb_Followers),
+                Start_Date = VerifyItem(correctArtist.Start_Date.ToString("yyyy-MM-dd"), submittedArtist.Start_Date.ToString("yyyy-MM-dd")),
+                Last_Release = VerifyItem(correctArtist.Last_Release.ToString("yyyy-MM-dd"), submittedArtist.Last_Release.ToString("yyyy-MM-dd"))
+            };
+        }
+
+        public async Task<AlbumVerificationDTO> VerifyAlbum(string albumId, AlbumDTO submittedAlbum)
+        {
+            var correctAlbum = await GetAlbumById(albumId);
+            if (correctAlbum == null)
+                throw new InvalidOperationException($"Album with id {albumId} not found");
+
+            return new AlbumVerificationDTO
+            {
+                Name = VerifyItem(correctAlbum.Name, submittedAlbum.Name),
+                Artist = VerifyItem(correctAlbum.Artist?.Name, submittedAlbum.Artist?.Name),
+                Release_Year = VerifyNumeric(correctAlbum.Release_Year, submittedAlbum.Release_Year),
+                Nb_Stream = VerifyNumeric(correctAlbum.Nb_Stream, submittedAlbum.Nb_Stream)
+            };
+        }
+
+        public async Task<LyricsVerificationDTO> VerifyLyrics(string lyricsId, LyricsDTO submittedLyrics)
+        {
+            var correctLyrics = await _repository.GetLyricsById(lyricsId);
+            if (correctLyrics == null)
+                throw new InvalidOperationException($"Lyrics with id {lyricsId} not found");
+
+            var correctLyricsDTO = new LyricsDTO
+            {
+                Id_Lyrics = correctLyrics.Id_Lyrics,
+                Lyric = correctLyrics.Lyric,
+                Id_Tracks = correctLyrics.Id_Tracks
+            };
+
+            return new LyricsVerificationDTO
+            {
+                Lyric = VerifyItem(correctLyricsDTO.Lyric, submittedLyrics.Lyric),
+                Track = VerifyItem(correctLyricsDTO.Id_Tracks, submittedLyrics.Id_Tracks)
+            };
+        }
+
+        public async Task<bool> IncrementGameDayFoundAsync(int gameDayId)
+        {
+            return await _repository.UpdateGameDayFoundAsync(gameDayId, 1);
+        }
+
+        private VerificationResultDTO VerifyItem(string? correctValue, string? submittedValue)
+        {
+            if (string.IsNullOrEmpty(correctValue) && string.IsNullOrEmpty(submittedValue))
+                return new VerificationResultDTO { IsCorrect = true, Status = "correct" };
+
+            if (string.IsNullOrEmpty(correctValue) || string.IsNullOrEmpty(submittedValue))
+                return new VerificationResultDTO { IsCorrect = false, Status = "incorrect" };
+
+            bool isExact = correctValue.Equals(submittedValue, StringComparison.OrdinalIgnoreCase);
+            return new VerificationResultDTO
+            {
+                IsCorrect = isExact,
+                Status = isExact ? "correct" : "incorrect"
+            };
+        }
+
+        private VerificationResultDTO VerifyNumeric(int correctValue, int submittedValue)
+        {
+            bool isCorrect = correctValue == submittedValue;
+            return new VerificationResultDTO
+            {
+                IsCorrect = isCorrect,
+                Status = isCorrect ? "correct" : "incorrect"
+            };
         }
 
         #region Mapping Methods
@@ -169,3 +300,4 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #endregion
     }
 }
+

@@ -14,5 +14,191 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         {
             _service = service;
         }
+
+        /// <summary>
+        /// Retrieves all available games with their information
+        /// </summary>
+        [HttpGet]
+        public async Task<ActionResult<List<GameDTO>>> GetAllGames()
+        {
+            var games = await _service.GetAllGames();
+            return Ok(games);
+        }
+
+        /// <summary>
+        /// Retrieves a specific game by its ID
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GameDTO>> GetGameById(int id)
+        {
+            var game = await _service.GetGameById(id);
+            if (game == null)
+                return NotFound($"Game with id {id} not found");
+            return Ok(game);
+        }
+
+        /// <summary>
+        /// Retrieves all tracks
+        /// </summary>
+        [HttpGet("tracks")]
+        public async Task<ActionResult<List<TrackDTO>>> GetAllTracks()
+        {
+            var tracks = await _service.GetAllTracks();
+            return Ok(tracks);
+        }
+
+        /// <summary>
+        /// Retrieves a specific track by its ID
+        /// </summary>
+        [HttpGet("tracks/{id}")]
+        public async Task<ActionResult<TrackDTO>> GetTrackById(string id)
+        {
+            var track = await _service.GetTrackById(id);
+            if (track == null)
+                return NotFound($"Track with id {id} not found");
+            return Ok(track);
+        }
+
+        /// <summary>
+        /// Retrieves all artists
+        /// </summary>
+        [HttpGet("artists")]
+        public async Task<ActionResult<List<ArtistDTO>>> GetAllArtists()
+        {
+            var artists = await _service.GetAllArtists();
+            return Ok(artists);
+        }
+
+        /// <summary>
+        /// Retrieves a specific artist by its ID
+        /// </summary>
+        [HttpGet("artists/{id}")]
+        public async Task<ActionResult<ArtistDTO>> GetArtistById(string id)
+        {
+            var artist = await _service.GetArtistById(id);
+            if (artist == null)
+                return NotFound($"Artist with id {id} not found");
+            return Ok(artist);
+        }
+
+        /// <summary>
+        /// Retrieves all albums
+        /// </summary>
+        [HttpGet("albums")]
+        public async Task<ActionResult<List<AlbumDTO>>> GetAllAlbums()
+        {
+            var albums = await _service.GetAllAlbums();
+            return Ok(albums);
+        }
+
+        /// <summary>
+        /// Retrieves a specific album by its ID
+        /// </summary>
+        [HttpGet("albums/{id}")]
+        public async Task<ActionResult<AlbumDTO>> GetAlbumById(string id)
+        {
+            var album = await _service.GetAlbumById(id);
+            if (album == null)
+                return NotFound($"Album with id {id} not found");
+            return Ok(album);
+        }
+
+        /// <summary>
+        /// Verifies a submitted track against the correct track
+        /// Returns verification results for each field (name, artists, nationality, genres, album, followers, popularity, release_date)
+        /// Each field has a status: "correct", "incorrect", or "partial"
+        /// </summary>
+        [HttpPost("verify/track/{trackId}")]
+        public async Task<ActionResult<TrackVerificationDTO>> VerifyTrack(string trackId, [FromBody] TrackDTO submittedTrack)
+        {
+            if (submittedTrack == null)
+                return BadRequest("Submitted track data is required");
+
+            try
+            {
+                var verification = await _service.VerifyTrack(trackId, submittedTrack);
+                return Ok(verification);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Verifies a submitted artist against the correct artist
+        /// Returns verification results for each field (name, nationality, followers, start_date, last_release)
+        /// </summary>
+        [HttpPost("verify/artist/{artistId}")]
+        public async Task<ActionResult<ArtistVerificationDTO>> VerifyArtist(string artistId, [FromBody] ArtistDTO submittedArtist)
+        {
+            if (submittedArtist == null)
+                return BadRequest("Submitted artist data is required");
+
+            try
+            {
+                var verification = await _service.VerifyArtist(artistId, submittedArtist);
+                return Ok(verification);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Verifies a submitted album against the correct album
+        /// Returns verification results for each field (name, artist, release_year, nb_stream)
+        /// </summary>
+        [HttpPost("verify/album/{albumId}")]
+        public async Task<ActionResult<AlbumVerificationDTO>> VerifyAlbum(string albumId, [FromBody] AlbumDTO submittedAlbum)
+        {
+            if (submittedAlbum == null)
+                return BadRequest("Submitted album data is required");
+
+            try
+            {
+                var verification = await _service.VerifyAlbum(albumId, submittedAlbum);
+                return Ok(verification);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Verifies submitted lyrics against the correct lyrics
+        /// Returns verification results for each field (lyric, track)
+        /// </summary>
+        [HttpPost("verify/lyrics/{lyricsId}")]
+        public async Task<ActionResult<LyricsVerificationDTO>> VerifyLyrics(string lyricsId, [FromBody] LyricsDTO submittedLyrics)
+        {
+            if (submittedLyrics == null)
+                return BadRequest("Submitted lyrics data is required");
+
+            try
+            {
+                var verification = await _service.VerifyLyrics(lyricsId, submittedLyrics);
+                return Ok(verification);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Increments the Found counter for a game of the day
+        /// Called when a user successfully completes a guess for today's game
+        /// </summary>
+        [HttpPut("game-day/{gameDayId}/increment-found")]
+        public async Task<IActionResult> IncrementGameDayFound(int gameDayId)
+        {
+            var result = await _service.IncrementGameDayFoundAsync(gameDayId);
+            if (!result)
+                return NotFound($"Game day with id {gameDayId} not found");
+            return Ok();
+        }
     }
 }

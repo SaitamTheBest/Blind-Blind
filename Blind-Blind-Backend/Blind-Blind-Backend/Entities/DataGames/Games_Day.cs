@@ -8,7 +8,10 @@ namespace Blind_Blind_Backend.Entities.DataGames {
     {
         [Key]
         [Column("id_games_day")]
-        public string Id_Games_Day { get; set; }
+        public int Id_Games_Day { get; set; }
+
+        [Column("id_game")]
+        public int Id_Game { get; set; }
 
         [Column("id_tracks")]
         public string Id_Tracks { get; set; }
@@ -27,6 +30,9 @@ namespace Blind_Blind_Backend.Entities.DataGames {
 
         [Column("found")]
         public int Found { get; set; }
+
+        [ForeignKey(nameof(Id_Game))]
+        public virtual Game Game { get; set; }
 
         [ForeignKey(nameof(Id_Tracks))]
         public virtual Tracks Tracks { get; set; }

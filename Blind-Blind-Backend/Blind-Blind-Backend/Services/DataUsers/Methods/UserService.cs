@@ -21,6 +21,8 @@ public class UserService : IUserService
         if (user == null)
             return null;
 
+        var lastLogin = await _userRepository.GetLastLoginAsync(id);
+
         return new UserDTO
         {
             Id_User = user.Id_User,
@@ -38,7 +40,8 @@ public class UserService : IUserService
                 Role_Name = user.Roles.Role_Name,
             } : null,
             Created_At = user.Created_At,
-            Updated_At = user.Updated_At
+            Updated_At = user.Updated_At,
+            Last_Login = lastLogin
         };
     }
 
@@ -52,6 +55,8 @@ public class UserService : IUserService
         var userDTOs = new List<UserDTO>();
         foreach (var user in users)
         {
+            var lastLogin = await _userRepository.GetLastLoginAsync(user.Id_User);
+
             var userDTO = new UserDTO
             {
                 Id_User = user.Id_User,
@@ -69,7 +74,8 @@ public class UserService : IUserService
                     Role_Name = user.Roles.Role_Name,
                 } : null,
                 Created_At = user.Created_At,
-                Updated_At = user.Updated_At
+                Updated_At = user.Updated_At,
+                Last_Login = lastLogin
             };
             userDTOs.Add(userDTO);
         }

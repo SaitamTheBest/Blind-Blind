@@ -18,5 +18,6 @@ namespace Blind_Blind_Backend.Repositories.DataUsers
         Task<int> GetTotalRanksAsync();
         Task<int> GetTotalRolesAsync();
         Task<int> GetTotalConnectionsAsync();
+        Task<DateTime?> GetLastLoginAsync(string userId);
     }
 }

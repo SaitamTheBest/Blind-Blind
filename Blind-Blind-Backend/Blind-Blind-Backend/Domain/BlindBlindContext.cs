@@ -18,6 +18,7 @@ namespace Blind_Blind_Backend.Domain
         public DbSet<Album> Album => Set<Album>();
         public DbSet<Artists> Artists => Set<Artists>();
         public DbSet<Featurings> Featurings => Set<Featurings>();
+        public DbSet<Game> Game => Set<Game>();
         public DbSet<Games_Day> Games_Day => Set<Games_Day>();
         public DbSet<Genre_Tracks> Genres => Set<Genre_Tracks>();
         public DbSet<Lyrics> Lyrics => Set<Lyrics>();
