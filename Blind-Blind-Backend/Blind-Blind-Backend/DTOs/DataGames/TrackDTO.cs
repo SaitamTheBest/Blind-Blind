@@ -4,7 +4,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 {
     public class TrackDTO
     {
-        public string Id_Track { get; set; }
+        public Guid Id_Track { get; set; }
 
         public string Name { get; set; }
 
@@ -41,16 +41,16 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Id_Genre { get; set; }
 
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
-        public string? Id_Artists { get; set; }
+        public Guid? Id_Artists { get; set; }
 
-        public List<string>? List_Id_Featurings { get; set; }
+        public List<Guid>? List_Id_Featurings { get; set; }
     }
 
     public class TrackUpdateDTO
     {
-        public string Id_Tracks { get; set; }
+        public Guid Id_Tracks { get; set; }
 
         public string Name { get; set; }
 
@@ -64,16 +64,16 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Id_Genre { get; set; }
 
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
-        public string? Id_Artists { get; set; }
+        public Guid? Id_Artists { get; set; }
 
-        public List<string>? List_Id_Featurings { get; set; }
+        public List<Guid>? List_Id_Featurings { get; set; }
     }
 
     public class TrackCrudDTO
     {
-        public string? Id_Tracks { get; set; }
+        public Guid? Id_Tracks { get; set; }
 
         public string Name { get; set; }
 
@@ -87,10 +87,10 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
         public int Id_Genre { get; set; }
 
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
-        public string? Id_Artists { get; set; }
+        public Guid? Id_Artists { get; set; }
 
-        public List<string>? List_Id_Featurings { get; set; }
+        public List<Guid>? List_Id_Featurings { get; set; }
     }
 }

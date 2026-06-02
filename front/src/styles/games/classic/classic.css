@@ -1,253 +1,52 @@
-.classic-container {
-    position: relative;
-    min-height: calc(100vh - 140px);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    --s: 200px;
-    --c1: #ffffff;
-    --c2: #e8e8e8;
-    --c3: #ededed;
+/* ===== CELL REVEAL ANIMATION (DAILY GAME STYLE) ===== */
 
-    background:
-            repeating-conic-gradient(from 30deg,#0000 0 120deg,var(--c3) 0 50%)
-            calc(var(--s)/2) calc(var(--s)*tan(30deg)/2),
-            repeating-conic-gradient(from 30deg,var(--c1) 0 60deg,var(--c2) 0 120deg,var(--c3) 0 50%);
-    background-size: var(--s) calc(var(--s)*tan(30deg));
-    overflow: hidden;
-}
-
-.content {
-    position: relative;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 1100px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-h3 {
-    font-size: 1.5rem;
-    margin-top: 20px;
-    color: #555;
-}
-
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.popup-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 600px;
-}
-
-.album-image {
-    width: 40%;
-    height: auto;
-    border-radius: 10px;
-    border: 1px solid #000000;
-}
-
-.close-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.new-row td {
+.table-row {
     opacity: 0;
-    transform: translateX(-30px);
-    animation: fadeInLeft 0.5s ease forwards;
+    transform: translateY(10px);
+    animation: rowFadeIn 0.25s ease forwards;
 }
 
-tr:not(.new-row) td {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-@keyframes fadeInLeft {
+@keyframes rowFadeIn {
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
-.loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+/* animation séquentielle des cellules */
+.table-cell {
+    opacity: 0;
+    transform: scale(0.85);
+    animation: cellReveal 0.45s ease forwards;
+    animation-delay: var(--d);
 }
 
-.loading-message {
-    font-size: 1.5rem;
-    color: #555;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top: 4px solid #555;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.hint-trigger {
-    display: inline-block;
-    margin: 1rem;
-    cursor: pointer;
-}
-
-.hint-circle {
-    width: 35px;
-    height: 35px;
-    background-color: #cce5ff;
-    color: #007bff;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    transition: background-color 0.3s ease;
-}
-
-.hint-circle:hover {
-    background-color: #a3d0ff;
-}
-
-/* Style pour tablette */
-@media screen and (max-width: 1150px) {
-    .content {
-        width: 775px;
-        padding: 16px;
+@keyframes cellReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) rotateX(45deg);
+        filter: blur(2px);
     }
-
-    .popup-content {
-        width: 90%;
-        padding: 15px;
+    60% {
+        opacity: 1;
+        transform: scale(1.05) rotateX(0deg);
+        filter: blur(0);
     }
-
-    .album-image {
-        width: 60%;
-    }
-
-    .loading-message {
-        font-size: 1.2rem;
-    }
-
-    .popup-content {
-        width: 500px;
-        padding: 16px;
-    }
-
-    .album-image {
-        width: 50%;
-        max-height: 300px;
-        object-fit: cover;
+    100% {
+        opacity: 1;
+        transform: scale(1);
     }
 }
 
-/* Style poour téléphone en mode portrait */
-@media screen and (max-width: 800px) {
-    .content {
-        width: 90%;
-        padding: 12px;
-    }
+/* effet "correct / wrong / partial" (optionnel futur backend) */
+.cell-correct {
+    background: rgba(46, 204, 113, 0.25);
+}
 
-    .popup-content {
-        width: 80%;
-        max-width: 400px;
-        padding: 12px;
-    }
+.cell-wrong {
+    background: rgba(231, 76, 60, 0.15);
+}
 
-    .album-image {
-        width: 50%;
-        height: auto;
-        object-fit: contain;
-        margin-bottom: 12px;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    h3 {
-        font-size: 1.2rem;
-    }
-
-    .loading {
-        flex-direction: column;
-    }
-
-    .spinner {
-        width: 40px;
-        height: 40px;
-        min-width: 25px;
-        min-height: 25px;
-        aspect-ratio: 1/1;
-    }
-
-    .loading-message {
-        font-size: 1rem;
-    }
-
-    .hint-circle {
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
-    }
-
-    .popup-content p {
-        font-size: 0.95rem;
-    }
+.cell-partial {
+    background: rgba(241, 196, 15, 0.18);
 }

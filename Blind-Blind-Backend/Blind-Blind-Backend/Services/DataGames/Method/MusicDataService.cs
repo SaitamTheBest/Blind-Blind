@@ -26,7 +26,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         }
 
         #region GET
-        public async Task<AlbumDTO?> GetAlbumById(string id)
+        public async Task<AlbumDTO?> GetAlbumById(Guid id)
         {
             var album = await _repository.GetAlbumById(id);
 
@@ -83,7 +83,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return trackDTOs;
         }
 
-        public async Task<ArtistDTO?> GetArtistById(string id)
+        public async Task<ArtistDTO?> GetArtistById(Guid id)
         {
             var artist = await _repository.GetArtistById(id);
             if (artist == null)
@@ -91,7 +91,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return MapArtist(artist);
         }
 
-        public async Task<TrackDTO?> GetTrackById(string id)
+        public async Task<TrackDTO?> GetTrackById(Guid id)
         {
             var track = await _repository.GetTrackById(id);
             if (track == null)
@@ -160,7 +160,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return lyricsDTOs;
         }
 
-        public async Task<LyricsDTO?> GetLyricsById(string id)
+        public async Task<LyricsDTO?> GetLyricsById(Guid id)
         {
             var lyrics = await _repository.GetLyricsById(id);
             if (lyrics == null)
@@ -170,15 +170,15 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #endregion
 
         #region CREATE
-        public async Task<string> CreateAlbum(AlbumCreateDTO albumCreateDTO)
+        public async Task<Guid> CreateAlbum(AlbumCreateDTO albumCreateDTO)
         {
-            var albumId = Guid.NewGuid().ToString();
+            var albumId = Guid.NewGuid();
             byte[]? imageBytes = await ConvertFormFileToBytes(albumCreateDTO.Image_Album);
 
             var album = new Album
             {
                 Id_Album = albumId,
-                Id_Artists = albumCreateDTO.Artist,
+                Id_Artists = albumCreateDTO.Id_Artist,
                 Name = albumCreateDTO.Name,
                 Release_Year = albumCreateDTO.Release_Year,
                 Nb_Stream = albumCreateDTO.Nb_Stream,
@@ -191,9 +191,9 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return album.Id_Album;
         }
 
-        public async Task<string> CreateArtist(ArtistCreateDTO artistCreateDTO)
+        public async Task<Guid> CreateArtist(ArtistCreateDTO artistCreateDTO)
         {
-            var artistId = Guid.NewGuid().ToString();
+            var artistId = Guid.NewGuid();
             byte[]? imageBytes = await ConvertFormFileToBytes(artistCreateDTO.Image_Artists);
 
             var artist = new Artists
@@ -213,9 +213,9 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return artist.Id_Artists;
         }
 
-        public async Task<string> CreateTrack(TrackCreateDTO trackCreateDTO)
+        public async Task<Guid> CreateTrack(TrackCreateDTO trackCreateDTO)
         {
-            var trackId = Guid.NewGuid().ToString();
+            var trackId = Guid.NewGuid();
             var featuringsExist = trackCreateDTO.List_Id_Featurings != null && trackCreateDTO.List_Id_Featurings.Any();
 
             var track = new Tracks
@@ -241,7 +241,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return track.Id_Tracks;
         }
 
-        public Task AddFeaturingsToTrack(string trackId, List<string> artistIds)
+        public Task AddFeaturingsToTrack(Guid trackId, List<Guid> artistIds)
         {
             var featurings = artistIds.Select(artistId => new Featurings
             {
@@ -276,7 +276,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         {
             var lyrics = new Lyrics
             {
-                Id_Lyrics = Guid.NewGuid().ToString(),
+                Id_Lyrics = Guid.NewGuid(),
                 Lyric = lyricsCreateDTO.Lyric,
                 Id_Tracks = lyricsCreateDTO.Id_Tracks
             };
@@ -289,7 +289,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #region UPDATE
         public async Task UpdateAlbum(AlbumUpdateDTO albumUpdateDTO)
         {
-            if (string.IsNullOrEmpty(albumUpdateDTO.Id_Album))
+            if (albumUpdateDTO.Id_Album == Guid.Empty)
                 throw new ArgumentException("L'ID de l'album est requis pour la mise à jour.");
 
             byte[]? imageBytes = await ConvertFormFileToBytes(albumUpdateDTO.Image_Album);
@@ -297,7 +297,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             var album = new Album
             {
                 Id_Album = albumUpdateDTO.Id_Album,
-                Id_Artists = albumUpdateDTO.Artist,
+                Id_Artists = albumUpdateDTO.Id_Artist,
                 Name = albumUpdateDTO.Name,
                 Release_Year = albumUpdateDTO.Release_Year,
                 Nb_Stream = albumUpdateDTO.Nb_Stream,
@@ -310,7 +310,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
         public async Task UpdateArtist(ArtistUpdateDTO artistUpdateDTO)
         {
-            if (string.IsNullOrEmpty(artistUpdateDTO.Id_Artists))
+            if (artistUpdateDTO.Id_Artists == Guid.Empty)
                 throw new ArgumentException("L'ID de l'artiste est requis pour la mise à jour.");
 
             byte[]? imageBytes = await ConvertFormFileToBytes(artistUpdateDTO.Image_Artists);
@@ -332,7 +332,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
         public async Task UpdateTrack(TrackUpdateDTO trackUpdateDTO)
         {
-            if (string.IsNullOrEmpty(trackUpdateDTO.Id_Tracks))
+            if (trackUpdateDTO.Id_Tracks == Guid.Empty)
                 throw new ArgumentException("L'ID de la track est requis pour la mise à jour.");
 
             var featuringsExist = trackUpdateDTO.List_Id_Featurings != null && trackUpdateDTO.List_Id_Featurings.Any();
@@ -352,10 +352,10 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
             await _repository.UpdateTrack(track);
 
-            await UpdateFeaturingsForTrack(trackUpdateDTO.Id_Tracks, trackUpdateDTO.List_Id_Featurings ?? new List<string>());
+            await UpdateFeaturingsForTrack(trackUpdateDTO.Id_Tracks, trackUpdateDTO.List_Id_Featurings ?? new List<Guid>());
         }
 
-        public async Task UpdateFeaturingsForTrack(string trackId, List<string> artistIds)
+        public async Task UpdateFeaturingsForTrack(Guid trackId, List<Guid> artistIds)
         {
             await _repository.DeleteFeaturingsByTrackAsync(trackId);
 
@@ -387,7 +387,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
         public Task UpdateLyrics(LyricsUpdateDTO lyricsUpdateDTO)
         {
-            if (string.IsNullOrEmpty(lyricsUpdateDTO.Id_Lyrics))
+            if (lyricsUpdateDTO.Id_Lyrics == Guid.Empty)
                 throw new ArgumentException("L'ID des paroles est requis pour la mise à jour.");
 
             var lyrics = new Lyrics
@@ -402,23 +402,23 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #endregion
 
         #region DELETE
-        public Task DeleteAlbum(string id)
+        public Task DeleteAlbum(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 throw new ArgumentException("L'ID est requis pour la suppression.");
             return _repository.DeleteAlbum(id);
         }
 
-        public Task DeleteArtist(string id)
+        public Task DeleteArtist(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 throw new ArgumentException("L'ID est requis pour la suppression.");
             return _repository.DeleteArtist(id);
         }
 
-        public async Task DeleteTrack(string id)
+        public async Task DeleteTrack(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 throw new ArgumentException("L'ID est requis pour la suppression.");
 
             await _repository.DeleteFeaturingsByTrackAsync(id);
@@ -435,9 +435,9 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return _repository.DeleteTypeArtist(id);
         }
 
-        public Task DeleteLyrics(string id)
+        public Task DeleteLyrics(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 throw new ArgumentException("L'ID est requis pour la suppression.");
             return _repository.DeleteLyrics(id);
         }

@@ -9,14 +9,15 @@ namespace Blind_Blind_Backend.Repositories.DataGames
         Task<List<Artists>> GetAllArtists();
         Task<List<Album>> GetAllAlbum();
 
-        Task<Tracks?> GetTrackById(string id);
-        Task<Artists?> GetArtistById(string id);
-        Task<Album?> GetAlbumById(string id);
-        Task<Lyrics?> GetLyricsById(string id);
+        Task<Tracks?> GetTrackById(Guid id);
+        Task<Artists?> GetArtistById(Guid id);
+        Task<Album?> GetAlbumById(Guid id);
+        Task<Lyrics?> GetLyricsById(Guid id);
 
         #region Game of the day
 
-        Task<Games_Day> GetGameDay(DateTime date, int id_game);
+        Task<Games_Day> GetGameDayByIdGame(DateTime date, int id_game);
+        Task<Games_Day?> GetLatestGameDayByGameId(int id_game);
         Task<List<Game>> GetAllGames();
         Task<Game?> GetGameById(int id);
         Task<Games_Day?> GetGameDayById(int gameDayId);

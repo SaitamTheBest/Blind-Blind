@@ -1,81 +1,84 @@
-import React, { useEffect, useRef, useState } from 'react';
-import '../../../styles/games/classic/AnswersTable.css';
-import TableTitle from "../TableTitle";
-import TableBody from "../TableBody";
+import { ScrollArea, Table, Image } from "@mantine/core";
 
-type AnswersTableProps = {
-    messagesClassic: any[];
-    randomTrackClassic: any;
-};
+export default function AnswersTable({ messagesClassic }: any) {
+  if (!messagesClassic?.length) {
+    return <div>Aucune proposition pour le moment.</div>;
+  }
 
-const AnswersTable: React.FC<AnswersTableProps> = ({ messagesClassic, randomTrackClassic }) => {
-    const [storedMessagesClassic, setStoredMessagesClassic] = useState<any[]>([]);
-    const [storedRandomTrackClassic, setStoredRandomTrackClassic] = useState<any>(null);
+  return (
+    <ScrollArea>
+      <Table striped highlightOnHover withTableBorder withColumnBorders>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Artistes</Table.Th>
+            <Table.Th>Album</Table.Th>
+            <Table.Th>Image</Table.Th>
+            <Table.Th>Nationalité</Table.Th>
+            <Table.Th>Genres</Table.Th>
+            <Table.Th>Followers</Table.Th>
+            <Table.Th>Popularité</Table.Th>
+            <Table.Th>Année</Table.Th>
+            <Table.Th>Titre</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
 
-    const tableWrapperRef = useRef<HTMLDivElement>(null);
+        <Table.Tbody>
+          {messagesClassic.map((message: any, index: number) => {
+            const v = message.verification;
 
-    useEffect(() => {
-        const savedMessagesClassic = localStorage.getItem("messagesClassic");
-        const savedRandomTrackClassic = localStorage.getItem("randomTrackClassic");
+            return (
+              <Table.Tr key={index} className="table-row">
+                <Table.Td>
+                  {message.artists?.join(", ")}
+                </Table.Td>
 
-        if (savedMessagesClassic) {
-            setStoredMessagesClassic(JSON.parse(savedMessagesClassic));
-        }
+                <Table.Td className={
+                  v?.Album?.status === "correct"
+                    ? "cell-correct"
+                    : ""
+                }>
+                  {message.album}
+                </Table.Td>
 
-        if (savedRandomTrackClassic) {
-            setStoredRandomTrackClassic(JSON.parse(savedRandomTrackClassic));
-        }
-    }, []);
+                <Table.Td>
+                  {message.albumImage && (
+                    <Image
+                      src={message.albumImage}
+                      w={50}
+                      h={50}
+                      radius="sm"
+                    />
+                  )}
+                </Table.Td>
 
-    useEffect(() => {
-        if (messagesClassic.length > 0) {
-            localStorage.setItem("messagesClassic", JSON.stringify(messagesClassic));
-            setStoredMessagesClassic(messagesClassic);
+                <Table.Td>
+                  {message.nationality?.join(", ")}
+                </Table.Td>
 
-            const wrapper = tableWrapperRef.current;
-            if (!wrapper) return;
+                <Table.Td>
+                  {message.genres?.join(", ")}
+                </Table.Td>
 
-            const firstCell = wrapper.querySelector("td");
-            if (!firstCell) return;
+                <Table.Td>
+                  {message.followers?.toLocaleString("fr-FR")}
+                </Table.Td>
 
-            const cellWidth = (firstCell as HTMLElement).offsetWidth;
+                <Table.Td>
+                  {message.popularity}
+                </Table.Td>
 
-            // simulate scroll step by step (e.g. 7 cells)
-            const scrollSteps = 7;
-            const scrollDelay = 500; // ms entre chaque scroll
+                <Table.Td>
+                  {message.release_year}
+                </Table.Td>
 
-            // Reset scroll position to the start
-            wrapper.scrollLeft = 0;
-
-
-            for (let i = 1; i <= scrollSteps; i++) {
-                setTimeout(() => {
-                    wrapper.scrollBy({
-                        left: cellWidth,
-                        behavior: "smooth"
-                    });
-                }, i * scrollDelay);
-            }
-        }
-
-        if (randomTrackClassic) {
-            localStorage.setItem("randomTrackClassic", JSON.stringify(randomTrackClassic));
-            setStoredRandomTrackClassic(randomTrackClassic);
-        }
-    }, [messagesClassic, randomTrackClassic]);
-
-    if (storedMessagesClassic.length === 0) {
-        return <p className="no-guess-message">Aucune proposition pour le moment.</p>;
-    }
-
-    return (
-        <div className="table-wrapper" ref={tableWrapperRef}>
-            <table>
-                <TableTitle titles={['Artistes', 'Album', 'Nationalité', 'Genres', 'Followers', 'Popularité', 'Année', 'Titre']} />
-                <TableBody guess={storedMessagesClassic} randomItem={storedRandomTrackClassic} />
-            </table>
-        </div>
-    );
-};
-
-export default AnswersTable;
+                <Table.Td>
+                  {message.name}
+                </Table.Td>
+              </Table.Tr>
+            );
+          })}
+        </Table.Tbody>
+      </Table>
+    </ScrollArea>
+  );
+}

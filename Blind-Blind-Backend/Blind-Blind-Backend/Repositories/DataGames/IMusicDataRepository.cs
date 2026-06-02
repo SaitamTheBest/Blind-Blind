@@ -8,15 +8,15 @@ namespace Blind_Blind_Backend.Repositories.DataGames
         Task<List<Tracks>> GetAllTracks();
         Task<List<Artists>> GetAllArtists();
         Task<List<Album>> GetAllAlbum();
-        Task<Tracks?> GetTrackById(string id);
-        Task<Artists?> GetArtistById(string id);
-        Task<Album?> GetAlbumById(string id);
+        Task<Tracks?> GetTrackById(Guid id);
+        Task<Artists?> GetArtistById(Guid id);
+        Task<Album?> GetAlbumById(Guid id);
         Task<List<Genre_Tracks>> GetAllGenres();
         Task<Genre_Tracks?> GetGenreById(int id);
         Task<List<Type_Artists>> GetAllTypeArtists();
         Task<Type_Artists?> GetTypeArtistById(int id);
         Task<List<Lyrics>> GetAllLyrics();
-        Task<Lyrics?> GetLyricsById(string id);
+        Task<Lyrics?> GetLyricsById(Guid id);
         #endregion
 
         #region CREATE
@@ -39,13 +39,13 @@ namespace Blind_Blind_Backend.Repositories.DataGames
         #endregion
 
         #region DELETE
-        Task DeleteTrack(string id);
-        Task DeleteAlbum(string id);
-        Task DeleteArtist(string id);
-        Task DeleteFeaturingsByTrackAsync(string id_track);
+        Task DeleteTrack(Guid id);
+        Task DeleteAlbum(Guid id);
+        Task DeleteArtist(Guid id);
+        Task DeleteFeaturingsByTrackAsync(Guid id_track);
         Task DeleteGenre(int id);
         Task DeleteTypeArtist(int id);
-        Task DeleteLyrics(string id);
+        Task DeleteLyrics(Guid id);
         #endregion
     }
 }

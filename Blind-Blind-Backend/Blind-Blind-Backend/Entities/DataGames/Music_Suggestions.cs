@@ -46,7 +46,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public DateTime? Reviewed_At { get; set; }
 
         [Column("created_track_id")]
-        public string? Created_Track_Id { get; set; }
+        public Guid? Created_Track_Id { get; set; }
 
         [Column("created_at", TypeName = "timestamp without time zone")]
         public DateTime Created_At { get; set; }

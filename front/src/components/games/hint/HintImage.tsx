@@ -1,31 +1,21 @@
-// src/components/games/hint/HintImage.tsx
+import { Image } from "@mantine/core";
+import HintPopup from "./HintPopup";
 
-import React from 'react';
-import HintPopup from './HintPopup';
-
-interface Props {
-    isOpen: boolean;
-    imageUrl: string;
-    onClose: () => void;
+export default function HintImage({
+  isOpen,
+  imageUrl,
+  onClose,
+}: any) {
+  return (
+    <HintPopup
+      isOpen={isOpen}
+      onClose={onClose}
+      title="💡 Indice visuel"
+    >
+      <Image
+        src={imageUrl}
+        radius="md"
+      />
+    </HintPopup>
+  );
 }
-
-const HintImage: React.FC<Props> = ({ isOpen, imageUrl, onClose }) => {
-    return (
-        <HintPopup isOpen={isOpen} onClose={onClose} title="💡 Indice visuel">
-            <img
-                src={imageUrl}
-                alt="Indice visuel"
-                style={{
-                    width: '100%',
-                    maxWidth: '300px',
-                    height: 'auto',
-                    display: 'block',
-                    margin: '20px auto',
-                    borderRadius: '10px'
-                }}
-            />
-        </HintPopup>
-    );
-};
-
-export default HintImage;

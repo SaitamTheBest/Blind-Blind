@@ -1,32 +1,67 @@
-import React from 'react';
-import "../../../styles/games/classic/GuessInput.css";
+import {
+  Modal,
+  Stack,
+  Text,
+  Title,
+  Image,
+  Button,
+} from '@mantine/core';
 
 interface PopupProps {
-    isOpen: boolean;
-    trackDetails: any | null;
-    onClose: () => void;
+  isOpen: boolean;
+  trackDetails: any | null;
+  onClose: () => void;
 }
 
-const Popup: React.FC<PopupProps> = ({ isOpen, trackDetails, onClose }) => {
-    if (!isOpen || !trackDetails) return null;
+export default function SuccessPopup({
+  isOpen,
+  trackDetails,
+  onClose,
+}: PopupProps) {
+  if (!trackDetails) return null;
 
-    return (
-        <div className="popup-overlay">
-            <div className="popup-content">
-                <h2>Félicitations 🎉</h2>
-                <p>Vous avez trouvé la bonne chanson !</p>
-                <h4>Revenez demain pour une nouvelle partie ! 📀</h4>
-                <div className="track-info">
-                    <img src={trackDetails.image || ''} alt="Album cover" className="album-image" />
-                    <h3>{trackDetails.name}</h3>
-                    <p><strong>Artistes :</strong> {Array.isArray(trackDetails.artists) ? trackDetails.artists.join(', ') : trackDetails.artists || "Inconnu"}</p>
-                    <p><strong>Album :</strong> {trackDetails.album || "Inconnu"}</p>
-                    <p><strong>Date de sortie :</strong> {trackDetails.release_year || "Inconnue"}</p>
-                </div>
-                <button className="close-button" onClick={onClose}>Fermer</button>
-            </div>
-        </div>
-    );
-};
+  return (
+    <Modal
+      opened={isOpen}
+      onClose={onClose}
+      centered
+      title="🎉 Félicitations"
+      size="lg"
+    >
+      <Stack>
+        <Text>Vous avez trouvé la bonne chanson !</Text>
 
-export default Popup;
+        <Text>
+          Revenez demain pour une nouvelle partie 📀
+        </Text>
+
+        <Image
+          src={trackDetails.image}
+          alt={trackDetails.name}
+          radius="md"
+        />
+
+        <Title order={3}>
+          {trackDetails.name}
+        </Title>
+
+        <Text>
+          <b>Artistes :</b>{' '}
+          {trackDetails.artists?.join(', ')}
+        </Text>
+
+        <Text>
+          <b>Album :</b> {trackDetails.album}
+        </Text>
+
+        <Text>
+          <b>Date :</b> {trackDetails.release_year}
+        </Text>
+
+        <Button onClick={onClose}>
+          Fermer
+        </Button>
+      </Stack>
+    </Modal>
+  );
+}

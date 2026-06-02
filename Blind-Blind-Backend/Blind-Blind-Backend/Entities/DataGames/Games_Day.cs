@@ -14,16 +14,16 @@ namespace Blind_Blind_Backend.Entities.DataGames {
         public int Id_Game { get; set; }
 
         [Column("id_tracks")]
-        public string Id_Tracks { get; set; }
+        public Guid Id_Tracks { get; set; }
 
         [Column("id_lyrics")]
-        public string Id_Lyrics { get; set; }
+        public Guid Id_Lyrics { get; set; }
 
         [Column("id_album")]
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
-        [Column("id_artist")]
-        public string Id_Artists { get; set; }
+        [Column("id_artists")]
+        public Guid Id_Artists { get; set; }
 
         [Column("date_games")]
         public DateTime Date_Games { get; set; }

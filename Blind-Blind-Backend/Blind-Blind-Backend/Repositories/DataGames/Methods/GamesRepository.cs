@@ -13,7 +13,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             _context = context;
         }
 
-        public async Task<Album?> GetAlbumById(string id)
+        public async Task<Album?> GetAlbumById(Guid id)
         {
             return await _context.Album
                 .Include(a => a.Artists)
@@ -46,14 +46,14 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .ToListAsync();
         }
 
-        public async Task<Artists?> GetArtistById(string id)
+        public async Task<Artists?> GetArtistById(Guid id)
         {
             return await _context.Artists
                 .Include(a => a.Type_Artists)
                 .FirstOrDefaultAsync(artists => artists.Id_Artists == id);
         }
 
-        public async Task<Games_Day> GetGameDay(DateTime date, int id_game)
+        public async Task<Games_Day> GetGameDayByIdGame(DateTime date, int id_game)
         {
             if (id_game <= 0)
             {
@@ -61,10 +61,10 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             }
 
             return await _context.Games_Day
-                .FirstOrDefaultAsync(game_day => game_day.Date_Games == date && game_day.Id_Games_Day == id_game);
+                .FirstOrDefaultAsync(game_day => game_day.Date_Games == date && game_day.Id_Game == id_game);
         }
 
-        public async Task<Tracks?> GetTrackById(string id)
+        public async Task<Tracks?> GetTrackById(Guid id)
         {
             return await _context.Tracks
                 .Include(t => t.Genre)
@@ -74,7 +74,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .FirstOrDefaultAsync(tracks => tracks.Id_Tracks == id);
         }
 
-        public async Task<Lyrics?> GetLyricsById(string id)
+        public async Task<Lyrics?> GetLyricsById(Guid id)
         {
             return await _context.Lyrics
                 .FirstOrDefaultAsync(l => l.Id_Lyrics == id);
@@ -99,6 +99,24 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .Include(gd => gd.Album)
                 .Include(gd => gd.Artist)
                 .FirstOrDefaultAsync(gd => gd.Id_Games_Day == gameDayId);
+        }
+
+        public async Task<Games_Day?> GetLatestGameDayByGameId(int id_game)
+        {
+            if (id_game <= 0)
+            {
+                throw new ArgumentNullException("Id_Game cannot be null.");
+            }
+
+            return await _context.Games_Day
+                .Where(gd => gd.Id_Game == id_game)
+                .OrderByDescending(gd => gd.Date_Games)
+                .Include(gd => gd.Game)
+                .Include(gd => gd.Tracks)
+                .Include(gd => gd.Lyrics)
+                .Include(gd => gd.Album)
+                .Include(gd => gd.Artist)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> UpdateGameDayFoundAsync(int gameDayId, int increment)

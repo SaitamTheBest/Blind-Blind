@@ -14,7 +14,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
         }
 
         #region GET
-        public async Task<Album?> GetAlbumById(string id)
+        public async Task<Album?> GetAlbumById(Guid id)
         {
             return await context.Album
                 .Include(a => a.Artists)
@@ -49,14 +49,14 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .ToListAsync();
         }
 
-        public async Task<Artists?> GetArtistById(string id)
+        public async Task<Artists?> GetArtistById(Guid id)
         {
             return await context.Artists
                 .Include(a => a.Type_Artists)
                 .FirstOrDefaultAsync(artists => artists.Id_Artists == id);
         }
 
-        public async Task<Tracks?> GetTrackById(string id)
+        public async Task<Tracks?> GetTrackById(Guid id)
         {
             return await context.Tracks
                 .Include(t => t.Genre)
@@ -97,7 +97,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
                 .ToListAsync();
         }
 
-        public async Task<Lyrics?> GetLyricsById(string id)
+        public async Task<Lyrics?> GetLyricsById(Guid id)
         {
             return await context.Lyrics
                 .Include(l => l.Tracks)
@@ -188,7 +188,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
         #endregion
 
         #region DELETE
-        public async Task DeleteAlbum(string id)
+        public async Task DeleteAlbum(Guid id)
         {
             var album = await context.Album.FindAsync(id);
             if (album != null)
@@ -198,7 +198,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             }
         }
 
-        public async Task DeleteArtist(string id)
+        public async Task DeleteArtist(Guid id)
         {
             var artist = context.Artists.Find(id);
             if (artist != null)
@@ -208,7 +208,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             }
         }
 
-        public async Task DeleteTrack(string id)
+        public async Task DeleteTrack(Guid id)
         {
             var track = context.Tracks.Find(id);
             if (track != null)
@@ -218,7 +218,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             }
         }
 
-        public async Task DeleteFeaturingsByTrackAsync(string id_track)
+        public async Task DeleteFeaturingsByTrackAsync(Guid id_track)
         {
             var featurings = context.Featurings.Where(f => f.Id_Tracks == id_track);
             context.Featurings.RemoveRange(featurings);
@@ -245,7 +245,7 @@ namespace Blind_Blind_Backend.Repositories.DataGames.Methods
             }
         }
 
-        public async Task DeleteLyrics(string id)
+        public async Task DeleteLyrics(Guid id)
         {
             var lyrics = await context.Lyrics.FindAsync(id);
             if (lyrics != null)

@@ -5,7 +5,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 {
     public class ArtistDTO
     {
-        public string Id_Artists { get; set; }
+        public Guid Id_Artists { get; set; }
 
         public string Name { get; set; }
 
@@ -41,7 +41,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
     public class ArtistUpdateDTO
     {
-        public string Id_Artists { get; set; }
+        public Guid Id_Artists { get; set; }
 
         public string Name { get; set; }
 
@@ -60,7 +60,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
     public class ArtistCrudDTO
     {
-        public string? Id_Artists { get; set; }
+        public Guid? Id_Artists { get; set; }
 
         public string Name { get; set; }
 

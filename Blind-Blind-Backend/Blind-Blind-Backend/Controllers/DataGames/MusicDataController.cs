@@ -47,7 +47,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [HttpGet("album/{id}")]
         [ProducesResponseType(typeof(AlbumDTO), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetAlbumById(string id)
+        public IActionResult GetAlbumById(Guid id)
         {
             var album = _service.GetAlbumById(id);
             if (album == null)
@@ -121,7 +121,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> DeleteAlbum(string id)
+        public async Task<IActionResult> DeleteAlbum(Guid id)
         {
             try
             {
@@ -164,7 +164,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [HttpGet("artist/{id}")]
         [ProducesResponseType(typeof(ArtistDTO), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetArtistById(string id)
+        public IActionResult GetArtistById(Guid id)
         {
             var artist = _service.GetArtistById(id);
             if (artist == null)
@@ -240,7 +240,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> DeleteArtist(string id)
+        public async Task<IActionResult> DeleteArtist(Guid id)
         {
             try
             {
@@ -283,7 +283,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [HttpGet("track/{id}")]
         [ProducesResponseType(typeof(TrackDTO), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetTrackById(string id)
+        public IActionResult GetTrackById(Guid id)
         {
             var track = _service.GetTrackById(id);
             if (track == null)
@@ -358,7 +358,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> DeleteTrack(string id)
+        public async Task<IActionResult> DeleteTrack(Guid id)
         {
             try
             {
@@ -386,7 +386,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> AddFeaturingsToTrack(string trackId, [FromBody] List<string> artistIds)
+        public async Task<IActionResult> AddFeaturingsToTrack(Guid trackId, [FromBody] List<Guid> artistIds)
         {
             try
             {
@@ -414,7 +414,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateFeaturingsForTrack(string trackId, [FromBody] List<string> artistIds)
+        public async Task<IActionResult> UpdateFeaturingsForTrack(Guid trackId, [FromBody] List<Guid> artistIds)
         {
             try
             {
@@ -679,7 +679,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [HttpGet("lyrics/{id}")]
         [ProducesResponseType(typeof(LyricsDTO), 200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetLyricsById(string id)
+        public async Task<IActionResult> GetLyricsById(Guid id)
         {
             var lyrics = await _service.GetLyricsById(id);
             if (lyrics == null)
@@ -748,7 +748,7 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> DeleteLyrics(string id)
+        public async Task<IActionResult> DeleteLyrics(Guid id)
         {
             try
             {

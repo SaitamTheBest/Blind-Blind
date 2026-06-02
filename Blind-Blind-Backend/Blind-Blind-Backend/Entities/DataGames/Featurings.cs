@@ -8,10 +8,10 @@ namespace Blind_Blind_Backend.Entities.DataGames
     public class Featurings
     {
         [Column("id_tracks")]
-        public string Id_Tracks { get; set; }
+        public Guid Id_Tracks { get; set; }
 
         [Column("id_artists")]
-        public string Id_Artists { get; set; }
+        public Guid Id_Artists { get; set; }
 
         [ForeignKey(nameof(Id_Tracks))]
         public virtual Tracks Tracks { get; set; }

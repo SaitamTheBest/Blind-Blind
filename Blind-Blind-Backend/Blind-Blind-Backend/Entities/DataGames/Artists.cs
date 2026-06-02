@@ -8,7 +8,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
     {
         [Key]
         [Column("id_artists")]
-        public string Id_Artists { get; set; }
+        public Guid Id_Artists { get; set; }
 
         [Column("name")]
         public string Name { get; set; }

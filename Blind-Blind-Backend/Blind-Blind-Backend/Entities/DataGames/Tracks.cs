@@ -8,13 +8,13 @@ namespace Blind_Blind_Backend.Entities.DataGames
     {
         [Key]
         [Column("id_tracks")] 
-        public string Id_Tracks { get; set; }
+        public Guid Id_Tracks { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
 
         [Column("id_album")]
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
         [Column("release_year")] 
         public int Release_Year { get; set; }

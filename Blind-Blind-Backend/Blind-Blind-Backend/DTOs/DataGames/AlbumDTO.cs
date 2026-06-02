@@ -4,7 +4,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 {
     public class AlbumDTO
     {
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
         public ArtistDTO Artist { get; set; }
 
@@ -23,7 +23,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
     public class AlbumCreateDTO
     {
-        public string Artist { get; set; }
+        public Guid Id_Artist { get; set; }
 
         public string Name { get; set; }
 
@@ -38,9 +38,9 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
     public class AlbumUpdateDTO
     {
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
-        public string Artist { get; set; }
+        public Guid Id_Artist { get; set; }
 
         public string Name { get; set; }
 
@@ -55,7 +55,7 @@ namespace Blind_Blind_Backend.DTOs.DataGames
 
     public class AlbumCrudDTO
     {
-        public string Id_Album { get; set; }
+        public Guid Id_Album { get; set; }
 
         public string Artist { get; set; }
 

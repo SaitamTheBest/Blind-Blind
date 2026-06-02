@@ -12,7 +12,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             _repository = repository;
         }
 
-        public async Task<AlbumDTO?> GetAlbumById(string id)
+        public async Task<AlbumDTO?> GetAlbumById(Guid id)
         {
             var album = await _repository.GetAlbumById(id);
 
@@ -69,7 +69,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return trackDTOs;
         }
 
-        public async Task<ArtistDTO?> GetArtistById(string id)
+        public async Task<ArtistDTO?> GetArtistById(Guid id)
         {
             var artist = await _repository.GetArtistById(id);
             if (artist == null)
@@ -77,7 +77,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return MapArtist(artist);
         }
 
-        public async Task<TrackDTO?> GetTrackById(string id)
+        public async Task<TrackDTO?> GetTrackById(Guid id)
         {
             var track = await _repository.GetTrackById(id);
             if (track == null)
@@ -115,7 +115,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
         }
 
-        public async Task<TrackVerificationDTO> VerifyTrack(string trackId, TrackDTO submittedTrack)
+        public async Task<TrackVerificationDTO> VerifyTrack(Guid trackId, TrackDTO submittedTrack)
         {
             var correctTrack = await GetTrackById(trackId);
             if (correctTrack == null)
@@ -134,7 +134,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
         }
 
-        public async Task<ArtistVerificationDTO> VerifyArtist(string artistId, ArtistDTO submittedArtist)
+        public async Task<ArtistVerificationDTO> VerifyArtist(Guid artistId, ArtistDTO submittedArtist)
         {
             var correctArtist = await GetArtistById(artistId);
             if (correctArtist == null)
@@ -150,7 +150,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
         }
 
-        public async Task<AlbumVerificationDTO> VerifyAlbum(string albumId, AlbumDTO submittedAlbum)
+        public async Task<AlbumVerificationDTO> VerifyAlbum(Guid albumId, AlbumDTO submittedAlbum)
         {
             var correctAlbum = await GetAlbumById(albumId);
             if (correctAlbum == null)
@@ -165,7 +165,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             };
         }
 
-        public async Task<LyricsVerificationDTO> VerifyLyrics(string lyricsId, LyricsDTO submittedLyrics)
+        public async Task<LyricsVerificationDTO> VerifyLyrics(Guid lyricsId, LyricsDTO submittedLyrics)
         {
             var correctLyrics = await _repository.GetLyricsById(lyricsId);
             if (correctLyrics == null)
@@ -181,13 +181,105 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return new LyricsVerificationDTO
             {
                 Lyric = VerifyItem(correctLyricsDTO.Lyric, submittedLyrics.Lyric),
-                Track = VerifyItem(correctLyricsDTO.Id_Tracks, submittedLyrics.Id_Tracks)
+                Track = VerifyItem(correctLyricsDTO.Id_Tracks.ToString(), submittedLyrics.Id_Tracks.ToString())
             };
         }
 
         public async Task<bool> IncrementGameDayFoundAsync(int gameDayId)
         {
             return await _repository.UpdateGameDayFoundAsync(gameDayId, 1);
+        }
+
+        public async Task<TrackResponseDTO?> GetTrackResponseById(Guid id)
+        {
+            var track = await _repository.GetTrackById(id);
+            if (track == null)
+                return null;
+            return MapTrackResponse(track);
+        }
+
+        public async Task<ArtistResponseDTO?> GetArtistResponseById(Guid id)
+        {
+            var artist = await _repository.GetArtistById(id);
+            if (artist == null)
+                return null;
+            return MapArtistResponse(artist);
+        }
+
+        public async Task<AlbumResponseDTO?> GetAlbumResponseById(Guid id)
+        {
+            var album = await _repository.GetAlbumById(id);
+            if (album == null)
+                return null;
+            return MapAlbumResponse(album);
+        }
+
+        public async Task<GameResponseDTO?> GetGameResponseById(int id)
+        {
+            var game = await _repository.GetGameById(id);
+            if (game == null)
+                return null;
+
+            return new GameResponseDTO
+            {
+                Name = game.Name,
+                Image_Game = game.Image_Game,
+                Description = game.Description
+            };
+        }
+
+        public async Task<GameDayResponseDTO?> GetGameDayResponseById(int gameDayId)
+        {
+            var gameDay = await _repository.GetGameDayById(gameDayId);
+            if (gameDay == null)
+                return null;
+
+            return new GameDayResponseDTO
+            {
+                Id_Games_Day = gameDay.Id_Games_Day,
+                Game = gameDay.Game != null ? new GameResponseDTO
+                {
+                    Name = gameDay.Game.Name,
+                    Image_Game = gameDay.Game.Image_Game,
+                    Description = gameDay.Game.Description
+                } : null,
+                Track = gameDay.Tracks != null ? MapTrackResponse(gameDay.Tracks) : null,
+                Artist = gameDay.Artist != null ? MapArtistResponse(gameDay.Artist) : null,
+                Album = gameDay.Album != null ? MapAlbumResponse(gameDay.Album) : null,
+                Lyrics = gameDay.Lyrics != null ? new LyricsResponseDTO
+                {
+                    Lyric = gameDay.Lyrics.Lyric,
+                    Id_Tracks = gameDay.Lyrics.Id_Tracks
+                } : null,
+                Found = gameDay.Found
+            };
+        }
+
+        public async Task<GameDayResponseDTO?> GetGameDayResponseByGameId(int gameId)
+        {
+            var gameDay = await _repository.GetLatestGameDayByGameId(gameId);
+            if (gameDay == null)
+                return null;
+
+            return new GameDayResponseDTO
+            {
+                Id_Games_Day = gameDay.Id_Games_Day,
+                Game = gameDay.Game != null ? new GameResponseDTO
+                {
+                    Name = gameDay.Game.Name,
+                    Image_Game = gameDay.Game.Image_Game,
+                    Description = gameDay.Game.Description
+                } : null,
+                Track = gameDay.Tracks != null ? MapTrackResponse(gameDay.Tracks) : null,
+                Artist = gameDay.Artist != null ? MapArtistResponse(gameDay.Artist) : null,
+                Album = gameDay.Album != null ? MapAlbumResponse(gameDay.Album) : null,
+                Lyrics = gameDay.Lyrics != null ? new LyricsResponseDTO
+                {
+                    Lyric = gameDay.Lyrics.Lyric,
+                    Id_Tracks = gameDay.Lyrics.Id_Tracks
+                } : null,
+                Found = gameDay.Found
+            };
         }
 
         private VerificationResultDTO VerifyItem(string? correctValue, string? submittedValue)
@@ -292,6 +384,60 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Url_Source = entity.Url_Source,
                 Genre = MapGenre(entity.Genre),
                 Album = MapAlbum(entity.Album)
+            };
+
+            track.Artist = track.Album?.Artist;
+            return track;
+        }
+
+        private ArtistResponseDTO? MapArtistResponse(Artists? entity)
+        {
+            if (entity == null)
+                return null;
+
+            return new ArtistResponseDTO
+            {
+                Name = entity.Name,
+                Start_Date = entity.Start_Date,
+                Last_Release = entity.Last_Release,
+                Nationality = entity.Nationality,
+                Nb_Followers = entity.Nb_Followers,
+                Image_Artists = entity.Image_Artists != null ? Convert.ToBase64String(entity.Image_Artists) : null,
+                Type_Artists = MapTypeArtist(entity.Type_Artists)
+            };
+        }
+
+        private AlbumResponseDTO? MapAlbumResponse(Entities.DataGames.Album? entity)
+        {
+            if (entity == null)
+                return null;
+
+            return new AlbumResponseDTO
+            {
+                Name = entity.Name,
+                Release_Year = entity.Release_Year,
+                Nb_Stream = entity.Nb_Stream,
+                Image_Album = entity.Image_Album != null ? Convert.ToBase64String(entity.Image_Album) : null,
+                Is_Single = entity.Is_Single,
+                Artist = MapArtistResponse(entity.Artists)
+            };
+        }
+
+        private TrackResponseDTO? MapTrackResponse(Entities.DataGames.Tracks? entity)
+        {
+            if (entity == null)
+                return null;
+
+            var track = new TrackResponseDTO
+            {
+                Name = entity.Name,
+                Release_Year = entity.Release_Year,
+                Popularity = entity.Popularity,
+                Feat = entity.Feat,
+                Time = entity.Time.ToString(@"hh\:mm\:ss"),
+                Url_Source = entity.Url_Source,
+                Genre = MapGenre(entity.Genre),
+                Album = MapAlbumResponse(entity.Album)
             };
 
             track.Artist = track.Album?.Artist;
