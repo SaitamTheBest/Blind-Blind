@@ -172,12 +172,10 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
         #region CREATE
         public async Task<Guid> CreateAlbum(AlbumCreateDTO albumCreateDTO)
         {
-            var albumId = Guid.NewGuid();
             byte[]? imageBytes = await ConvertFormFileToBytes(albumCreateDTO.Image_Album);
 
             var album = new Album
             {
-                Id_Album = albumId,
                 Id_Artists = albumCreateDTO.Id_Artist,
                 Name = albumCreateDTO.Name,
                 Release_Year = albumCreateDTO.Release_Year,
@@ -193,12 +191,10 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
         public async Task<Guid> CreateArtist(ArtistCreateDTO artistCreateDTO)
         {
-            var artistId = Guid.NewGuid();
             byte[]? imageBytes = await ConvertFormFileToBytes(artistCreateDTO.Image_Artists);
 
             var artist = new Artists
             {
-                Id_Artists = artistId,
                 Name = artistCreateDTO.Name,
                 Start_Date = artistCreateDTO.Start_Date,
                 Last_Release = artistCreateDTO.Last_Release,
@@ -215,12 +211,10 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
         public async Task<Guid> CreateTrack(TrackCreateDTO trackCreateDTO)
         {
-            var trackId = Guid.NewGuid();
             var featuringsExist = trackCreateDTO.List_Id_Featurings != null && trackCreateDTO.List_Id_Featurings.Any();
 
             var track = new Tracks
             {
-                Id_Tracks = trackId,
                 Name = trackCreateDTO.Name,
                 Release_Year = trackCreateDTO.Release_Year,
                 Popularity = trackCreateDTO.Popularity,
@@ -235,7 +229,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
 
             if (featuringsExist)
             {
-                await AddFeaturingsToTrack(trackId, trackCreateDTO.List_Id_Featurings!);
+                await AddFeaturingsToTrack(track.Id_Tracks, trackCreateDTO.List_Id_Featurings!);
             }
 
             return track.Id_Tracks;

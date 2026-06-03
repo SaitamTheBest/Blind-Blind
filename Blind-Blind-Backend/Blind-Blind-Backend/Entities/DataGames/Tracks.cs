@@ -6,7 +6,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
     [Table("tracks", Schema = "blindblindv1_dataGames")]
     public class Tracks
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id_tracks")] 
         public Guid Id_Tracks { get; set; }
 
