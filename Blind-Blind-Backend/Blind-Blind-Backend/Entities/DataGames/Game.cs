@@ -14,7 +14,7 @@ namespace Blind_Blind_Backend.Entities.DataGames
         public string Name { get; set; }
 
         [Column("image_game")]
-        public string Image_Game { get; set; }
+        public byte[] Image_Game { get; set; }
 
         [Column("description")] 
         public string Description { get; set; }

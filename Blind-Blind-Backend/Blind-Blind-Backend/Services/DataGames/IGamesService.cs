@@ -10,8 +10,6 @@ namespace Blind_Blind_Backend.Services.DataGames
         Task<TrackDTO?> GetTrackById(Guid id);
         Task<ArtistDTO?> GetArtistById(Guid id);
         Task<AlbumDTO?> GetAlbumById(Guid id);
-        Task<List<GameDTO>> GetAllGames();
-        Task<GameDTO?> GetGameById(int id);
         Task<TrackResponseDTO?> GetTrackResponseById(Guid id);
         Task<ArtistResponseDTO?> GetArtistResponseById(Guid id);
         Task<AlbumResponseDTO?> GetAlbumResponseById(Guid id);

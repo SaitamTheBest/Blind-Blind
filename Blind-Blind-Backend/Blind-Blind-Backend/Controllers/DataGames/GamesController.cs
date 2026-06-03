@@ -16,28 +16,6 @@ namespace Blind_Blind_Backend.Controllers.DataGames
         }
 
         /// <summary>
-        /// Retrieves all available games with their information
-        /// </summary>
-        [HttpGet]
-        public async Task<ActionResult<List<GameDTO>>> GetAllGames()
-        {
-            var games = await _service.GetAllGames();
-            return Ok(games);
-        }
-
-        /// <summary>
-        /// Retrieves a specific game by its ID
-        /// </summary>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GameDTO>> GetGameById(int id)
-        {
-            var game = await _service.GetGameById(id);
-            if (game == null)
-                return NotFound($"Game with id {id} not found");
-            return Ok(game);
-        }
-
-        /// <summary>
         /// Retrieves all tracks
         /// </summary>
         [HttpGet("tracks")]

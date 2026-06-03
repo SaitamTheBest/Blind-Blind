@@ -85,36 +85,6 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return MapTrack(track);
         }
 
-        public async Task<List<GameDTO>> GetAllGames()
-        {
-            var games = await _repository.GetAllGames();
-            if (games == null)
-                return new List<GameDTO>();
-
-            return games.Select(g => new GameDTO
-            {
-                Id_Game = g.Id_Game,
-                Name = g.Name,
-                Image_Game = g.Image_Game,
-                Description = g.Description
-            }).ToList();
-        }
-
-        public async Task<GameDTO?> GetGameById(int id)
-        {
-            var game = await _repository.GetGameById(id);
-            if (game == null)
-                return null;
-
-            return new GameDTO
-            {
-                Id_Game = game.Id_Game,
-                Name = game.Name,
-                Image_Game = game.Image_Game,
-                Description = game.Description
-            };
-        }
-
         public async Task<TrackVerificationDTO> VerifyTrack(Guid trackId, TrackDTO submittedTrack)
         {
             var correctTrack = await GetTrackById(trackId);
@@ -223,7 +193,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
             return new GameResponseDTO
             {
                 Name = game.Name,
-                Image_Game = game.Image_Game,
+                Image_Game = game.Image_Game != null ? Convert.ToBase64String(game.Image_Game) : null,
                 Description = game.Description
             };
         }
@@ -240,7 +210,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Game = gameDay.Game != null ? new GameResponseDTO
                 {
                     Name = gameDay.Game.Name,
-                    Image_Game = gameDay.Game.Image_Game,
+                    Image_Game = gameDay.Game.Image_Game != null ? Convert.ToBase64String(gameDay.Game.Image_Game) : null,
                     Description = gameDay.Game.Description
                 } : null,
                 Track = gameDay.Tracks != null ? MapTrackResponse(gameDay.Tracks) : null,
@@ -267,7 +237,7 @@ namespace Blind_Blind_Backend.Services.DataGames.Method
                 Game = gameDay.Game != null ? new GameResponseDTO
                 {
                     Name = gameDay.Game.Name,
-                    Image_Game = gameDay.Game.Image_Game,
+                    Image_Game = gameDay.Game.Image_Game != null ? Convert.ToBase64String(gameDay.Game.Image_Game) : null,
                     Description = gameDay.Game.Description
                 } : null,
                 Track = gameDay.Tracks != null ? MapTrackResponse(gameDay.Tracks) : null,
